@@ -10,23 +10,59 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#F5F0EB;--panel:#FFFFFF;--panel2:#FAF7F4;--panel3:#F0ECE6;
-  --border:#E8E2DA;--border2:#D9D2C9;
-  --text:#1A1A1A;--dim:#6B6560;--muted:#9E9790;
-  --gold:#C4553A;--gold-dim:rgba(196,85,58,0.10);--gold-glow:rgba(196,85,58,0.05);
-  --green:#2D8B4E;--green-dim:rgba(45,139,78,0.12);
-  --red:#C4553A;--red-dim:rgba(196,85,58,0.10);
-  --blue:#4A7FB5;--purple:#7B6BA5;--cyan:#3A8C8C;--orange:#D4804A;--pink:#C47A9A;
-  --shadow-sm:0 1px 3px rgba(0,0,0,0.04);
-  --shadow:0 2px 12px rgba(0,0,0,0.06);
-  --shadow-lg:0 4px 20px rgba(0,0,0,0.08);
+  /* Light theme (default) — minimal monochrome + emerald */
+  --bg:#FAFAFA;--panel:#FFFFFF;--panel2:#F5F5F5;--panel3:#EDEDED;
+  --border:#E5E5E5;--border2:#D4D4D4;
+  --text:#0A0A0A;--dim:#525252;--muted:#A3A3A3;
+  --accent:#10B981;--accent-strong:#059669;
+  --accent-dim:rgba(16,185,129,0.10);--accent-glow:rgba(16,185,129,0.05);
+  --accent-rgb:16,185,129;
+  --gold:var(--accent);--gold-dim:var(--accent-dim);--gold-glow:var(--accent-glow);
+  --green:#10B981;--green-dim:rgba(16,185,129,0.14);
+  --red:#DC2626;--red-dim:rgba(220,38,38,0.10);
+  --amber:#D97706;
+  /* Series ramp for account colors — mostly mono, emerald reserved for accent */
+  --blue:#525252;--purple:#737373;--cyan:#10B981;
+  --orange:#404040;--pink:#A3A3A3;
+  --sidebar-bg:#0A0A0A;--sidebar-fg:#A3A3A3;--sidebar-fg-hover:#FAFAFA;
+  --sidebar-hover-bg:rgba(255,255,255,0.05);
+  --sidebar-active-bg:rgba(16,185,129,0.18);--sidebar-active-fg:#FAFAFA;
+  --tooltip-bg:#FFFFFF;--tooltip-border:#E5E5E5;
+  --on-accent:#FFFFFF;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.04);
+  --shadow:0 2px 8px rgba(0,0,0,0.06);
+  --shadow-lg:0 8px 24px rgba(0,0,0,0.08);
+}
+:root[data-theme="dark"]{
+  --bg:#0A0A0A;--panel:#141414;--panel2:#1C1C1C;--panel3:#262626;
+  --border:#262626;--border2:#3F3F3F;
+  --text:#FAFAFA;--dim:#A3A3A3;--muted:#737373;
+  --accent:#34D399;--accent-strong:#10B981;
+  --accent-dim:rgba(52,211,153,0.16);--accent-glow:rgba(52,211,153,0.07);
+  --accent-rgb:52,211,153;
+  --green:#34D399;--green-dim:rgba(52,211,153,0.18);
+  --red:#F87171;--red-dim:rgba(248,113,113,0.16);
+  --amber:#FBBF24;
+  --blue:#D4D4D4;--purple:#A3A3A3;--cyan:#34D399;
+  --orange:#FAFAFA;--pink:#737373;
+  --sidebar-bg:#000000;--sidebar-fg:#737373;--sidebar-fg-hover:#FAFAFA;
+  --sidebar-hover-bg:rgba(255,255,255,0.06);
+  --sidebar-active-bg:rgba(52,211,153,0.20);--sidebar-active-fg:#FAFAFA;
+  --tooltip-bg:#171717;--tooltip-border:#2A2A2A;
+  --on-accent:#0A0A0A;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.35);
+  --shadow:0 2px 8px rgba(0,0,0,0.45);
+  --shadow-lg:0 8px 24px rgba(0,0,0,0.55);
 }
 html{scroll-behavior:smooth}
+:root{color-scheme:light}
+:root[data-theme="dark"]{color-scheme:dark}
 body{
   font-family:'Inter',sans-serif;
   background:var(--bg);color:var(--text);
   min-height:100vh;line-height:1.55;
   -webkit-font-smoothing:antialiased;
+  transition:background-color .25s ease,color .25s ease;
 }
 .mono{font-family:'JetBrains Mono',monospace}
 
@@ -65,7 +101,7 @@ body{
 .dash-brand h1{font-size:20px;font-weight:800;letter-spacing:-0.5px;color:var(--text)}
 .dash-brand .tag{font-size:11px;color:var(--dim);background:var(--panel3);padding:4px 12px;border-radius:20px;font-weight:500}
 .dash-header-right{display:flex;align-items:center;gap:10px}
-.avatar{width:36px;height:36px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
 .reload-btn{
   background:var(--panel3);border:1px solid var(--border);color:var(--dim);
   padding:8px 18px;border-radius:20px;font:13px 'Inter',sans-serif;cursor:pointer;transition:all .2s;font-weight:500;
@@ -126,7 +162,7 @@ body{
   padding:6px 14px;border-radius:24px;font-size:11px;cursor:pointer;font-family:inherit;transition:all .15s;font-weight:500;
 }
 .chip:hover{border-color:var(--gold);color:var(--gold)}
-.chip.on{background:var(--gold);border-color:var(--gold);color:#fff;font-weight:700}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:700}
 
 /* Milestones */
 .milestones{display:flex;flex-direction:column;gap:8px}
@@ -214,7 +250,7 @@ body{
 @media(max-width:900px){.retire-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:500px){.retire-grid{grid-template-columns:1fr}}
 .ret-card{background:var(--panel3);border-radius:14px;padding:16px}
-.ret-hero-card{background:linear-gradient(135deg,rgba(196,85,58,0.06) 0%,var(--panel3) 100%);border:1.5px solid rgba(196,85,58,0.2)}
+.ret-hero-card{background:linear-gradient(135deg,var(--accent-dim) 0%,var(--panel3) 100%);border:1.5px solid var(--accent-dim)}
 .ret-label{font-size:10px;text-transform:uppercase;letter-spacing:1.3px;color:var(--muted);margin-bottom:8px}
 .ret-big{font-size:32px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums;letter-spacing:-1px}
 .ret-val{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
@@ -246,7 +282,7 @@ body{
   display:flex;justify-content:space-between;align-items:center;padding:20px;cursor:pointer;
   -webkit-user-select:none;user-select:none;transition:background .15s;
 }
-.cpanel-head:hover{background:rgba(196,85,58,0.03)}
+.cpanel-head:hover{background:var(--accent-glow)}
 .cpanel-head h3{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);margin:0;font-weight:600}
 .cpanel-summary{font-size:14px;color:var(--text);margin-top:5px;font-weight:600;font-variant-numeric:tabular-nums}
 .cpanel-chevron{
@@ -254,7 +290,7 @@ body{
   width:32px;height:32px;display:flex;align-items:center;justify-content:center;
   border-radius:10px;background:var(--panel3);
 }
-.cpanel.open .cpanel-chevron{transform:rotate(180deg);background:var(--gold);color:#fff}
+.cpanel.open .cpanel-chevron{transform:rotate(180deg);background:var(--accent);color:var(--on-accent)}
 .cpanel-body{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .25s ease;padding:0 20px}
 .cpanel.open .cpanel-body{max-height:4000px;padding:0 20px 20px}
 .cpanel-body .panel-sub{font-size:12px;color:var(--muted);margin-bottom:14px}
@@ -270,36 +306,36 @@ body{
 /* Sidebar */
 .sidebar{
   position:fixed;left:0;top:0;bottom:0;width:72px;
-  background:#1A1A1A;z-index:100;display:none;flex-direction:column;
+  background:var(--sidebar-bg);z-index:100;display:none;flex-direction:column;
   padding:16px 0;overflow-y:auto;overflow-x:hidden;
   transition:width .2s ease;
 }
 .sidebar.visible{display:flex}
 .sidebar-logo{
-  width:42px;height:42px;border-radius:14px;background:var(--gold);
+  width:42px;height:42px;border-radius:14px;background:var(--accent);
   display:flex;align-items:center;justify-content:center;
   margin:0 auto 24px;flex-shrink:0;
-  font-weight:800;font-size:18px;color:#fff;letter-spacing:-1px;
+  font-weight:800;font-size:18px;color:var(--on-accent);letter-spacing:-1px;
 }
 .sidebar-nav{display:flex;flex-direction:column;gap:4px;padding:0 10px;flex:1}
 .sidebar-item{
   display:flex;align-items:center;gap:12px;
   padding:10px 12px;border-radius:12px;cursor:pointer;
-  color:#787878;transition:all .15s;position:relative;
+  color:var(--sidebar-fg);transition:all .15s;position:relative;
   text-decoration:none;white-space:nowrap;overflow:hidden;
 }
-.sidebar-item:hover{color:#c0c0c0;background:rgba(255,255,255,0.05)}
-.sidebar-item.active{color:#fff;background:rgba(196,85,58,0.18)}
+.sidebar-item:hover{color:var(--sidebar-fg-hover);background:var(--sidebar-hover-bg)}
+.sidebar-item.active{color:var(--sidebar-active-fg);background:var(--sidebar-active-bg)}
 .sidebar-item.active::before{
   content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
-  width:3px;height:20px;border-radius:0 3px 3px 0;background:var(--gold);
+  width:3px;height:20px;border-radius:0 3px 3px 0;background:var(--accent);
 }
 .sidebar-icon{width:22px;height:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .sidebar-icon svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .sidebar-label{font-size:12px;font-weight:500;opacity:0;transition:opacity .15s;pointer-events:none}
 .sidebar:hover{width:200px}
 .sidebar:hover .sidebar-label{opacity:1;pointer-events:auto}
-.sidebar-divider{height:1px;background:rgba(255,255,255,0.08);margin:8px 10px}
+.sidebar-divider{height:1px;background:var(--sidebar-hover-bg);margin:8px 10px}
 .sidebar-bottom{padding:0 10px;margin-top:auto;flex-shrink:0}
 
 .tab-section{display:none}
@@ -313,10 +349,51 @@ body{
   .sidebar-item{padding:10px 8px}
   #dashView.has-sidebar{padding-left:68px}
 }
+/* Bottom tab bar (mobile only) — base hidden by default; revealed in mobile @media below */
+.tabbar{
+  display:none;position:fixed;left:0;right:0;bottom:0;z-index:100;
+  background:var(--panel);border-top:1px solid var(--border);
+  padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+  box-shadow:0 -2px 12px rgba(0,0,0,0.06);
+  backdrop-filter:saturate(180%) blur(8px);
+}
+
 @media(max-width:600px){
   .sidebar{display:none!important}
-  #dashView.has-sidebar{padding-left:24px}
+  #dashView.has-sidebar{padding-left:16px;padding-right:16px;padding-bottom:88px}
+  .tabbar{display:block}
 }
+.tabbar-grid{
+  display:grid;grid-template-columns:repeat(6,1fr);gap:2px;
+  max-width:520px;margin:0 auto;
+}
+.tabbar-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:8px 4px;border-radius:10px;cursor:pointer;
+  color:var(--muted);background:transparent;border:none;
+  font-family:inherit;font-size:10px;font-weight:600;letter-spacing:.2px;
+  transition:color .15s,background .15s;
+  text-decoration:none;
+}
+.tabbar-item:hover{color:var(--text)}
+.tabbar-item.active{color:var(--accent);background:var(--accent-dim)}
+.tabbar-item svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* Theme toggle button */
+.theme-toggle{
+  background:var(--panel3);border:1px solid var(--border);color:var(--dim);
+  width:36px;height:36px;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;font-family:inherit;padding:0;
+}
+.theme-toggle:hover{color:var(--accent);border-color:var(--accent)}
+.theme-toggle svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* Tab summary (narrative) — small refinements for non-Overview tabs */
+.narrative.tab-summary{margin-top:4px;margin-bottom:16px}
+.narrative.tab-summary .em{color:var(--text);font-weight:600}
+.narrative.tab-summary .up{color:var(--green);font-weight:700}
+.narrative.tab-summary .dn{color:var(--red);font-weight:700}
 </style>
 </head>
 <body>
@@ -377,11 +454,45 @@ body{
   </div>
 </nav>
 
+<!-- MOBILE BOTTOM TAB BAR -->
+<nav class="tabbar" id="tabbar">
+  <div class="tabbar-grid">
+    <button class="tabbar-item active" data-tab="overview">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      <span>Overview</span>
+    </button>
+    <button class="tabbar-item" data-tab="growth">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Growth</span>
+    </button>
+    <button class="tabbar-item" data-tab="accounts">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Accounts</span>
+    </button>
+    <button class="tabbar-item" data-tab="returns">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+      <span>Returns</span>
+    </button>
+    <button class="tabbar-item" data-tab="retirement">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span>Retire</span>
+    </button>
+    <button class="tabbar-item" data-tab="deepdive">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span>Deep</span>
+    </button>
+  </div>
+</nav>
+
 <div class="wrap">
 
   <div class="dash-header">
     <div class="dash-brand"><h1>Portfolio Pulse</h1><span class="tag" id="dateRange"></span></div>
     <div class="dash-header-right">
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <svg id="themeIconSun" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg id="themeIconMoon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
       <button class="reload-btn" id="reloadBtn">↻ Load New File</button>
       <div class="avatar">GG</div>
     </div>
@@ -438,6 +549,8 @@ body{
 
   <!-- TAB: GROWTH -->
   <div class="tab-section" data-tab="growth">
+    <div class="narrative tab-summary" id="narrative_growth"></div>
+    <div class="g4" id="growthExtraStats"></div>
     <div class="cpanel open" id="cp_drawdown">
       <div class="cpanel-head" onclick="togglePanel('cp_drawdown')">
         <div><h3>Drawdown From Peak</h3><div class="cpanel-summary" id="sum_drawdown"></div></div>
@@ -475,6 +588,8 @@ body{
 
   <!-- TAB: ACCOUNTS -->
   <div class="tab-section" data-tab="accounts">
+    <div class="narrative tab-summary" id="narrative_accounts"></div>
+    <div class="g4" id="accountsExtraStats"></div>
     <div class="cpanel open" id="cp_composition">
       <div class="cpanel-head" onclick="togglePanel('cp_composition')">
         <div><h3>Account Composition &amp; Allocation</h3><div class="cpanel-summary" id="sum_composition"></div></div>
@@ -512,6 +627,8 @@ body{
 
   <!-- TAB: RETURNS -->
   <div class="tab-section" data-tab="returns">
+    <div class="narrative tab-summary" id="narrative_returns"></div>
+    <div class="g4" id="returnsExtraStats"></div>
     <div class="cpanel open" id="cp_heatmap">
       <div class="cpanel-head" onclick="togglePanel('cp_heatmap')">
         <div><h3>Monthly Return Heatmap</h3><div class="cpanel-summary" id="sum_heatmap"></div></div>
@@ -536,6 +653,7 @@ body{
 
   <!-- TAB: RETIREMENT -->
   <div class="tab-section" data-tab="retirement">
+    <div class="narrative tab-summary" id="narrative_retirement"></div>
     <div class="cpanel open" id="cp_retirement">
       <div class="cpanel-head" onclick="togglePanel('cp_retirement')">
         <div><h3>Retirement Projection</h3><div class="cpanel-summary" id="sum_retirement"></div></div>
@@ -576,6 +694,7 @@ body{
 
   <!-- TAB: DEEP DIVE -->
   <div class="tab-section" data-tab="deepdive">
+    <div class="narrative tab-summary" id="narrative_deepdive"></div>
     <div class="section-divider"><span>Deep Dive — Multi-Tab Insights</span></div>
 
     <div class="cpanel" id="cp_attribution" style="display:none">
@@ -642,20 +761,20 @@ function togglePanel(id){
   if(el) el.classList.toggle('open');
 }
 
-/* ===== SIDEBAR TAB NAV ===== */
+/* ===== TAB NAV (sidebar + mobile tabbar) ===== */
 function switchTab(tabName){
   document.querySelectorAll('.tab-section').forEach(s=>{
     s.classList.toggle('active', s.dataset.tab === tabName);
   });
-  document.querySelectorAll('.sidebar-item[data-tab]').forEach(i=>{
+  document.querySelectorAll('.sidebar-item[data-tab], .tabbar-item[data-tab]').forEach(i=>{
     i.classList.toggle('active', i.dataset.tab === tabName);
   });
   window.scrollTo(0,0);
   Object.values(charts).forEach(c=>{try{c.resize()}catch(e){}});
   sparkChartsGlobal.forEach(c=>{try{c.resize()}catch(e){}});
 }
-(function initSidebar(){
-  document.querySelectorAll('.sidebar-item[data-tab]').forEach(item=>{
+(function initNav(){
+  document.querySelectorAll('.sidebar-item[data-tab], .tabbar-item[data-tab]').forEach(item=>{
     item.addEventListener('click',e=>{
       e.preventDefault();
       switchTab(item.dataset.tab);
@@ -669,6 +788,56 @@ function switchTab(tabName){
   }
 })();
 
+/* ===== THEME (light / dark) ===== */
+const THEME_KEY = 'pp_theme';
+function applyTheme(t){
+  document.documentElement.dataset.theme = (t === 'dark' ? 'dark' : 'light');
+  const sun = document.getElementById('themeIconSun');
+  const moon = document.getElementById('themeIconMoon');
+  if(sun && moon){
+    sun.style.display  = t === 'dark' ? '' : 'none';
+    moon.style.display = t === 'dark' ? 'none' : '';
+  }
+}
+(function initTheme(){
+  const stored = localStorage.getItem(THEME_KEY);
+  const sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(stored || (sysDark ? 'dark' : 'light'));
+  const btn = document.getElementById('themeBtn');
+  if(btn){
+    btn.addEventListener('click', ()=>{
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(THEME_KEY, next);
+      applyTheme(next);
+      if(lastData) buildDashboard(lastData, lastWb);
+    });
+  }
+  // Follow OS changes only when user has not made an explicit choice
+  if(window.matchMedia){
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e=>{
+      if(localStorage.getItem(THEME_KEY)) return;
+      applyTheme(e.matches ? 'dark' : 'light');
+      if(lastData) buildDashboard(lastData, lastWb);
+    });
+  }
+})();
+
+/* ===== THEME-AWARE COLOR HELPERS ===== */
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function hexToRgb(hex){
+  hex = hex.replace('#','');
+  if(hex.length === 3) hex = hex.split('').map(c=>c+c).join('');
+  return [parseInt(hex.substring(0,2),16), parseInt(hex.substring(2,4),16), parseInt(hex.substring(4,6),16)];
+}
+function rgba(hexOrRgb, a){
+  if(!hexOrRgb) return `rgba(0,0,0,${a})`;
+  if(hexOrRgb.startsWith && hexOrRgb.startsWith('rgb')) return hexOrRgb;
+  const [r,g,b] = hexToRgb(hexOrRgb);
+  return `rgba(${r},${g},${b},${a})`;
+}
+const accentRgba = a => rgba(cssVar('--accent'), a);
+const gridColorFn = () => rgba(cssVar('--border'), 0.7);
+
 /* ===== GLOBALS ===== */
 const $ = id => document.getElementById(id);
 const fmt = n => n < 0 ? '−$' + Math.abs(Math.round(n)).toLocaleString() : '$' + Math.round(n).toLocaleString();
@@ -677,21 +846,33 @@ const pct = (n,d=1) => (n*100).toFixed(d)+'%';
 const dateStr = d => d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
 const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-const ACCOUNT_META = [
-  {k:'savings',label:'Savings',c:'#4A7FB5'},
-  {k:'stocks',label:'Stocks',c:'#2D8B4E'},
-  {k:'ups',label:'UPS',c:'#7B6BA5'},
-  {k:'utma',label:'UTMA',c:'#C4553A'},
-  {k:'inheritance',label:'Inheritance',c:'#B8943A'},
-  {k:'ira',label:'IRA',c:'#C47A9A'},
-  {k:'tsp',label:'TSP',c:'#3A8C8C'},
-  {k:'k401',label:'401K',c:'#D4804A'},
-  {k:'b403',label:'403B',c:'#5A9E6F'},
-  {k:'crypto',label:'Crypto',c:'#B94432'},
-];
+// Theme-aware account color ramp. Resolved at build time so toggling theme
+// re-binds the right shades.
+function buildAccountMeta(){
+  // Mostly monochrome ramp + emerald accent, paired by account.
+  const c = (name, fallback) => {
+    const v = cssVar(name);
+    return v || fallback;
+  };
+  return [
+    {k:'savings',     label:'Savings',     c:c('--text','#0A0A0A')},
+    {k:'stocks',      label:'Stocks',      c:c('--accent','#10B981')},
+    {k:'ups',         label:'UPS',         c:c('--dim','#525252')},
+    {k:'utma',        label:'UTMA',        c:c('--accent-strong','#059669')},
+    {k:'inheritance', label:'Inheritance', c:c('--muted','#A3A3A3')},
+    {k:'ira',         label:'IRA',         c:c('--border2','#D4D4D4')},
+    {k:'tsp',         label:'TSP',         c:c('--accent','#10B981')},
+    {k:'k401',        label:'401K',        c:c('--text','#0A0A0A')},
+    {k:'b403',        label:'403B',        c:c('--dim','#525252')},
+    {k:'crypto',      label:'Crypto',      c:c('--amber','#D97706')},
+  ];
+}
+// Kept for backward references; rebuilt at the top of buildDashboard.
+let ACCOUNT_META = buildAccountMeta();
 
 let charts = {};
 let sparkChartsGlobal = [];
+let lastData = null, lastWb = null;
 
 /* ===== FILE HANDLING ===== */
 const dropZone = $('dropZone'), fileInput = $('fileInput');
@@ -706,6 +887,7 @@ $('reloadBtn').addEventListener('click',()=>{
   document.getElementById('sidebar').classList.remove('visible');
   Object.values(charts).forEach(c=>{try{c.destroy()}catch(e){}});charts={};
   sparkChartsGlobal.forEach(c=>{try{c.destroy()}catch(e){}});sparkChartsGlobal=[];fileInput.value='';
+  lastData = null; lastWb = null;
 });
 
 function handleFile(file){
@@ -782,6 +964,18 @@ function buildDashboard(DATA, wb){
   $('dashView').classList.add('has-sidebar');
   document.getElementById('sidebar').classList.add('visible');
 
+  // Cache so theme toggle can rebuild without re-uploading the file
+  lastData = DATA; lastWb = wb;
+
+  // Tear down any prior charts (re-render after theme switch or file reload)
+  Object.values(charts).forEach(c=>{try{c.destroy()}catch(e){}});
+  charts = {};
+  sparkChartsGlobal.forEach(c=>{try{c.destroy()}catch(e){}});
+  sparkChartsGlobal = [];
+
+  // Pick up the current theme's account color ramp
+  ACCOUNT_META = buildAccountMeta();
+
   const first=DATA[0],last=DATA[DATA.length-1];
   const years=(last.date-first.date)/(365.25*24*60*60*1000);
   const growth=last.total-first.total;
@@ -800,14 +994,60 @@ function buildDashboard(DATA, wb){
   const worst=changes.reduce((a,b)=>b.chg<a.chg?b:a);
   const avgChg=changes.reduce((s,c)=>s+c.chg,0)/changes.length;
 
-  // Max drawdown
+  // Max drawdown — track peak/trough indices for duration & recovery analysis
   let peak=DATA[0].total,maxDD=0,peakVal=0,troughVal=0;
+  let peakIdx=0,troughIdx=0,maxDDPeakIdx=0,maxDDTroughIdx=0;
   const ddSeries=[];
-  for(const d of DATA){
-    if(d.total>peak)peak=d.total;
+  for(let i=0;i<DATA.length;i++){
+    const d=DATA[i];
+    if(d.total>peak){peak=d.total;peakIdx=i}
     const dd=(d.total-peak)/peak;
     ddSeries.push(dd);
-    if(dd<maxDD){maxDD=dd;peakVal=peak;troughVal=d.total}
+    if(dd<maxDD){maxDD=dd;peakVal=peak;troughVal=d.total;maxDDPeakIdx=peakIdx;maxDDTroughIdx=i}
+  }
+  // Weeks from peak to trough (depth of decline)
+  const ddDurationWeeks = maxDDTroughIdx - maxDDPeakIdx;
+  // Weeks to recover back to peak; -1 if never recovered
+  let recoveryWeeks = -1;
+  for(let i=maxDDTroughIdx;i<DATA.length;i++){
+    if(DATA[i].total >= peakVal){ recoveryWeeks = i - maxDDTroughIdx; break; }
+  }
+  // Current drawdown vs all-time high
+  const currentDD = ddSeries[ddSeries.length-1];
+  const ath = Math.max(...DATA.map(d=>d.total));
+  const athIdx = DATA.findIndex(d=>d.total===ath);
+  const daysSinceATH = Math.round((last.date - DATA[athIdx].date) / (24*60*60*1000));
+
+  // Annualized volatility from weekly % changes (stdev × sqrt(52))
+  const pctChanges = changes.map(c=>c.pct);
+  const mean = pctChanges.reduce((a,b)=>a+b,0) / pctChanges.length;
+  const variance = pctChanges.reduce((s,x)=>s+(x-mean)**2,0) / pctChanges.length;
+  const volWeekly = Math.sqrt(variance);
+  const volAnnual = volWeekly * Math.sqrt(52);
+
+  // Median weekly $ change (sorted middle value)
+  const sortedChg = changes.map(c=>c.chg).slice().sort((a,b)=>a-b);
+  const medianChg = sortedChg.length%2
+    ? sortedChg[(sortedChg.length-1)/2]
+    : (sortedChg[sortedChg.length/2-1] + sortedChg[sortedChg.length/2]) / 2;
+
+  // Longest streak (consecutive positive weeks)
+  let curStreak=0, longestStreak=0;
+  for(const c of changes){
+    if(c.chg>0){curStreak++; if(curStreak>longestStreak) longestStreak=curStreak;}
+    else curStreak=0;
+  }
+
+  // Rolling-return trend signal (13wk vs 52wk near the end of the series)
+  function _rr(d,w){if(d.length<=w) return null; return (d[d.length-1].total/d[d.length-1-w].total - 1);}
+  const cur13 = _rr(DATA, 13);
+  const cur52 = _rr(DATA, 52);
+  let trendLabel = '—', trendClass = 'em';
+  if(cur13!=null && cur52!=null){
+    const ann13 = Math.pow(1+cur13, 4) - 1; // annualize 13wk
+    if(ann13 > cur52 + 0.03){ trendLabel='accelerating'; trendClass='up'; }
+    else if(ann13 < cur52 - 0.03){ trendLabel='cooling'; trendClass='dn'; }
+    else { trendLabel='steady'; trendClass='em'; }
   }
 
   // ===== HEADER & NARRATIVE =====
@@ -819,14 +1059,17 @@ function buildDashboard(DATA, wb){
   $('sMultiple').textContent=multiple.toFixed(2)+'×';
   $('sWinRate').textContent=pct(up/(up+down),0);
 
+  const athLine = daysSinceATH === 0
+    ? `<strong class="up">At all-time high.</strong>`
+    : `Last all-time high was <strong>${dateStr(DATA[athIdx].date)}</strong> — <strong>${daysSinceATH}</strong> day${daysSinceATH===1?'':'s'} ago, currently <strong class="${currentDD<-0.001?'dn':'up'}">${pct(currentDD)}</strong> off peak.`;
   $('narrative').innerHTML=`
     <span class="sparkle">✦</span> Started at <strong>${fmt(first.total)}</strong> in <strong>${first.date.toLocaleDateString('en-US',{month:'long',year:'numeric'})}</strong>,
     now at <strong>${fmt(last.total)}</strong> — a <strong>${multiple.toFixed(2)}× return</strong> over <strong>${years.toFixed(1)} years</strong> (${pct(cagr)} CAGR).
-    <strong>${up} green weeks</strong> vs. ${down} red — a <strong>${pct(up/(up+down),0)} win rate</strong>.
-    Average weekly gain: <strong>${fmt(avgChg)}</strong>.
+    <strong>${up} green weeks</strong> vs. ${down} red — a <strong>${pct(up/(up+down),0)} win rate</strong>; median week is <strong>${medianChg>=0?'+':''}${fmt(medianChg)}</strong> and longest winning streak ran <strong>${longestStreak} weeks</strong>.
     Best week: <strong class="pos">+${fmt(best.chg)}</strong> (${dateStr(best.date)}).
     Worst: <strong class="neg">${fmt(worst.chg)}</strong> (${dateStr(worst.date)}).
     Deepest drawdown: <strong class="neg">${pct(maxDD)}</strong> — from ${fmtK(peakVal)} to ${fmtK(troughVal)}.
+    ${athLine}
   `;
 
   $('statCards').innerHTML=`
@@ -836,23 +1079,54 @@ function buildDashboard(DATA, wb){
     <div class="stat-card"><div class="label">Avg Weekly Gain</div><div class="value">${fmt(avgChg)}</div><div class="sub">across ${changes.length} weeks</div></div>
   `;
 
+  // ===== GROWTH TAB — narrative + extra metrics =====
+  const recoveryLabel = recoveryWeeks < 0
+    ? (currentDD < -0.001 ? 'still recovering' : 'never tested below current peak')
+    : `${recoveryWeeks} weeks to recover`;
+  $('narrative_growth').innerHTML = `
+    <span class="sparkle">✦</span> Annualized weekly volatility is <span class="em">${pct(volAnnual)}</span>${volAnnual<0.10?' (low)':volAnnual<0.20?' (moderate)':' (high)'}.
+    The deepest drawdown was <span class="dn">${pct(maxDD)}</span>, ${ddDurationWeeks} week${ddDurationWeeks===1?'':'s'} from peak to trough — ${recoveryLabel}.
+    Recent 13-week pace looks <span class="${trendClass}">${trendLabel}</span> against the trailing 52-week trend.
+    Median week is <span class="em">${medianChg>=0?'+':''}${fmt(medianChg)}</span>; longest winning streak <span class="up">${longestStreak} weeks</span>.
+  `;
+  $('growthExtraStats').innerHTML = `
+    <div class="stat-card"><div class="label">Volatility (annual)</div><div class="value">${pct(volAnnual)}</div><div class="sub">weekly stdev × √52</div></div>
+    <div class="stat-card"><div class="label">Drawdown Duration</div><div class="value neg">${ddDurationWeeks} wk</div><div class="sub">${dateStr(DATA[maxDDPeakIdx].date)} → ${dateStr(DATA[maxDDTroughIdx].date)}</div></div>
+    <div class="stat-card"><div class="label">Recovery</div><div class="value ${recoveryWeeks<0?'neg':'pos'}">${recoveryWeeks<0?'—':recoveryWeeks+' wk'}</div><div class="sub">${recoveryWeeks<0?'not yet recovered':'trough → new high'}</div></div>
+    <div class="stat-card"><div class="label">Longest Streak</div><div class="value pos">${longestStreak} wk</div><div class="sub">consecutive positive weeks</div></div>
+  `;
+
   // ===== CHART DEFAULTS =====
-  Chart.defaults.color='#6B6560';
-  Chart.defaults.borderColor='#E8E2DA';
+  const C_TEXT = cssVar('--text');
+  const C_DIM = cssVar('--dim');
+  const C_MUTED = cssVar('--muted');
+  const C_BORDER = cssVar('--border');
+  const C_BORDER2 = cssVar('--border2');
+  const C_ACCENT = cssVar('--accent');
+  const C_GREEN = cssVar('--green');
+  const C_RED = cssVar('--red');
+  const C_TOOLTIP_BG = cssVar('--tooltip-bg');
+  const C_TOOLTIP_BORDER = cssVar('--tooltip-border');
+  const gridColor = rgba(C_BORDER, 0.7);
+  const tooltipBase = {
+    backgroundColor:C_TOOLTIP_BG, borderColor:C_TOOLTIP_BORDER, borderWidth:1,
+    titleColor:C_TEXT, bodyColor:C_DIM, padding:10, cornerRadius:8, displayColors:false
+  };
+  Chart.defaults.color = C_DIM;
+  Chart.defaults.borderColor = C_BORDER;
   Chart.defaults.font.family="'Inter',sans-serif";
   const labels=DATA.map(d=>d.date.toISOString().slice(0,10));
   const totals=DATA.map(d=>d.total);
-  const gridColor='rgba(232,226,218,0.7)';
 
   // ===== 1. TOTAL CHART =====
   const totalCtx=$('totalChart');
   const tGrad=totalCtx.getContext('2d').createLinearGradient(0,0,0,340);
-  tGrad.addColorStop(0,'rgba(196,85,58,0.20)');tGrad.addColorStop(1,'rgba(196,85,58,0)');
+  tGrad.addColorStop(0, rgba(C_ACCENT,0.22)); tGrad.addColorStop(1, rgba(C_ACCENT,0));
   charts.total=new Chart(totalCtx,{
     type:'line',
-    data:{labels,datasets:[{data:totals,borderColor:'#C4553A',backgroundColor:tGrad,fill:true,tension:0.25,pointRadius:0,pointHoverRadius:5,pointHoverBackgroundColor:'#C4553A',borderWidth:2}]},
+    data:{labels,datasets:[{data:totals,borderColor:C_ACCENT,backgroundColor:tGrad,fill:true,tension:0.25,pointRadius:0,pointHoverRadius:5,pointHoverBackgroundColor:C_ACCENT,borderWidth:2}]},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{display:false},tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',padding:12,callbacks:{label:c=>'Net Worth: '+fmt(c.parsed.y)}}},
+      plugins:{legend:{display:false},tooltip:{...tooltipBase,padding:12,callbacks:{label:c=>'Net Worth: '+fmt(c.parsed.y)}}},
       scales:{x:{ticks:{maxTicksLimit:10},grid:{color:gridColor}},y:{ticks:{callback:v=>fmtK(v)},grid:{color:gridColor}}}
     }
   });
@@ -877,16 +1151,16 @@ function buildDashboard(DATA, wb){
   // ===== 2. DRAWDOWN CHART =====
   const ddCtx=$('drawdownChart');
   const ddGrad=ddCtx.getContext('2d').createLinearGradient(0,0,0,220);
-  ddGrad.addColorStop(0,'rgba(196,85,58,0.18)');ddGrad.addColorStop(1,'rgba(196,85,58,0)');
+  ddGrad.addColorStop(0, rgba(C_RED,0.18)); ddGrad.addColorStop(1, rgba(C_RED,0));
   charts.drawdown=new Chart(ddCtx,{
     type:'line',
     data:{labels,datasets:[{
       data:ddSeries.map(v=>v*100),
-      borderColor:'#C4553A',backgroundColor:ddGrad,fill:true,
+      borderColor:C_RED,backgroundColor:ddGrad,fill:true,
       tension:0.2,pointRadius:0,borderWidth:1.5
     }]},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{display:false},tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#C4553A',bodyColor:'#6B6560',callbacks:{label:c=>c.parsed.y.toFixed(2)+'% from peak'}}},
+      plugins:{legend:{display:false},tooltip:{...tooltipBase,titleColor:C_RED,callbacks:{label:c=>c.parsed.y.toFixed(2)+'% from peak'}}},
       scales:{x:{ticks:{maxTicksLimit:10},grid:{color:gridColor}},y:{ticks:{callback:v=>v.toFixed(0)+'%'},grid:{color:gridColor},max:0}}
     }
   });
@@ -895,17 +1169,17 @@ function buildDashboard(DATA, wb){
   const activeAccounts=ACCOUNT_META.filter(a=>last[a.k]>0);
   charts.stack=new Chart($('stackChart'),{
     type:'line',
-    data:{labels,datasets:activeAccounts.map(a=>({label:a.label,data:DATA.map(d=>d[a.k]),backgroundColor:a.c+'bb',borderColor:a.c,borderWidth:1,fill:true,pointRadius:0,tension:0.2}))},
+    data:{labels,datasets:activeAccounts.map(a=>({label:a.label,data:DATA.map(d=>d[a.k]),backgroundColor:rgba(a.c,0.73),borderColor:a.c,borderWidth:1,fill:true,pointRadius:0,tension:0.2}))},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:8}},tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:8,color:C_DIM}},tooltip:{...tooltipBase,callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},
       scales:{x:{stacked:true,ticks:{maxTicksLimit:8},grid:{display:false}},y:{stacked:true,ticks:{callback:v=>fmtK(v)},grid:{color:gridColor}}}
     }
   });
   charts.donut=new Chart($('donutChart'),{
     type:'doughnut',
-    data:{labels:activeAccounts.map(a=>a.label),datasets:[{data:activeAccounts.map(a=>last[a.k]),backgroundColor:activeAccounts.map(a=>a.c),borderColor:'#FFFFFF',borderWidth:2}]},
+    data:{labels:activeAccounts.map(a=>a.label),datasets:[{data:activeAccounts.map(a=>last[a.k]),backgroundColor:activeAccounts.map(a=>a.c),borderColor:cssVar('--panel'),borderWidth:2}]},
     options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
-      plugins:{legend:{position:'right',labels:{boxWidth:10,font:{size:11},padding:6}},tooltip:{callbacks:{label:c=>c.label+': '+fmt(c.parsed)+' ('+pct(c.parsed/last.total)+')'}}}
+      plugins:{legend:{position:'right',labels:{boxWidth:10,font:{size:11},padding:6,color:C_DIM}},tooltip:{...tooltipBase,callbacks:{label:c=>c.label+': '+fmt(c.parsed)+' ('+pct(c.parsed/last.total)+')'}}}
     }
   });
 
@@ -923,13 +1197,13 @@ function buildDashboard(DATA, wb){
   charts.rolling=new Chart($('rollingChart'),{
     type:'line',
     data:{labels,datasets:[
-      {label:'13-Week Return',data:roll13,borderColor:'#4A7FB5',borderWidth:2,tension:0.3,pointRadius:0,borderDash:[]},
-      {label:'52-Week Return',data:roll52,borderColor:'#C4553A',borderWidth:2,tension:0.3,pointRadius:0},
-      {label:'Zero Line',data:Array(DATA.length).fill(0),borderColor:'#D9D2C9',borderWidth:1,borderDash:[4,4],pointRadius:0}
+      {label:'13-Week Return',data:roll13,borderColor:C_DIM,borderWidth:2,tension:0.3,pointRadius:0,borderDash:[]},
+      {label:'52-Week Return',data:roll52,borderColor:C_ACCENT,borderWidth:2,tension:0.3,pointRadius:0},
+      {label:'Zero Line',data:Array(DATA.length).fill(0),borderColor:C_BORDER2,borderWidth:1,borderDash:[4,4],pointRadius:0}
     ]},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},filter:item=>item.text!=='Zero Line'}},
-        tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',filter:item=>item.dataset.label!=='Zero Line',callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(2)+'%'}}
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},color:C_DIM,filter:item=>item.text!=='Zero Line'}},
+        tooltip:{...tooltipBase,filter:item=>item.dataset.label!=='Zero Line',callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(2)+'%'}}
       },
       scales:{x:{ticks:{maxTicksLimit:10},grid:{color:gridColor}},y:{ticks:{callback:v=>v.toFixed(0)+'%'},grid:{color:gridColor}}}
     }
@@ -957,15 +1231,15 @@ function buildDashboard(DATA, wb){
   }
   const hmYears=Object.keys(monthlyReturns).map(Number).sort();
 
-  // Color scale: green for positive, red for negative
+  // Color scale: emerald for positive, red for negative
   function hmColor(val){
     if(val===undefined)return 'transparent';
     const abs=Math.min(Math.abs(val),0.15);
     const intensity=abs/0.15;
     if(val>=0){
-      return `rgba(45,139,78,${0.08+intensity*0.35})`;
+      return rgba(C_GREEN, 0.10 + intensity*0.45);
     } else {
-      return `rgba(196,85,58,${0.08+intensity*0.35})`;
+      return rgba(C_RED, 0.10 + intensity*0.45);
     }
   }
 
@@ -980,7 +1254,7 @@ function buildDashboard(DATA, wb){
       if(v!==undefined){
         yrTotal+=v;yrCount++;
         const sign=v>=0?'+':'';
-        hmHTML+=`<td style="background:${hmColor(v)};color:${Math.abs(v)>0.03?'#1A1A1A':'#6B6560'}" title="${monthNames[m-1]} ${yr}: ${sign}${(v*100).toFixed(2)}%">${sign}${(v*100).toFixed(1)}%</td>`;
+        hmHTML+=`<td style="background:${hmColor(v)};color:${Math.abs(v)>0.03?'var(--text)':'var(--dim)'}" title="${monthNames[m-1]} ${yr}: ${sign}${(v*100).toFixed(2)}%">${sign}${(v*100).toFixed(1)}%</td>`;
       } else {
         hmHTML+=`<td class="empty"></td>`;
       }
@@ -988,7 +1262,7 @@ function buildDashboard(DATA, wb){
     if(yrCount>0){
       const yrAvg=yrTotal;
       const sign=yrAvg>=0?'+':'';
-      hmHTML+=`<td style="background:${hmColor(yrAvg/yrCount*2)};font-weight:800;color:#1A1A1A" title="Full year ${yr}: ${sign}${(yrAvg*100).toFixed(2)}%">${sign}${(yrAvg*100).toFixed(1)}%</td>`;
+      hmHTML+=`<td style="background:${hmColor(yrAvg/yrCount*2)};font-weight:800;color:var(--text)" title="Full year ${yr}: ${sign}${(yrAvg*100).toFixed(2)}%">${sign}${(yrAvg*100).toFixed(1)}%</td>`;
     } else {
       hmHTML+=`<td class="empty"></td>`;
     }
@@ -1004,6 +1278,49 @@ function buildDashboard(DATA, wb){
     if(count>0){const avg=total/count; if(avg>bestMonth.v){bestMonth.v=avg;bestMonth.m=m} if(avg<worstMonth.v){worstMonth.v=avg;worstMonth.m=m}}
   }
   if(bestMonth.m) $('sum_heatmap').textContent = 'Best avg month: '+monthNames[bestMonth.m-1]+' (+'+pct(bestMonth.v)+') · Worst: '+monthNames[worstMonth.m-1]+' ('+pct(worstMonth.v)+')';
+
+  // ===== RETURNS TAB — narrative + extras =====
+  {
+    const allMonthly = [];
+    for(const yr of hmYears){
+      for(let m=1;m<=12;m++){
+        const v = monthlyReturns[yr]?.[m];
+        if(v!==undefined) allMonthly.push(v);
+      }
+    }
+    const posMonths = allMonthly.filter(v=>v>0);
+    const negMonths = allMonthly.filter(v=>v<0);
+    const posRate = allMonthly.length ? posMonths.length/allMonthly.length : 0;
+    const avgUp = posMonths.length ? posMonths.reduce((a,b)=>a+b,0)/posMonths.length : 0;
+    const avgDn = negMonths.length ? negMonths.reduce((a,b)=>a+b,0)/negMonths.length : 0;
+
+    // YTD vs trailing 12 months
+    const nowYr = last.date.getFullYear();
+    let ytdRet = 0, ytdMonths = 0;
+    for(let m=1;m<=12;m++){
+      const v = monthlyReturns[nowYr]?.[m];
+      if(v!==undefined){ ytdRet = (1+ytdRet)*(1+v) - 1; ytdMonths++; }
+    }
+    // trailing 12-month compounded return from the underlying data
+    let trailing12 = null;
+    if(DATA.length >= 52){
+      trailing12 = (last.total / DATA[DATA.length-52].total) - 1;
+    }
+
+    $('narrative_returns').innerHTML = `
+      <span class="sparkle">✦</span> <span class="em">${(posRate*100).toFixed(0)}%</span> of tracked months end positive.
+      Best calendar month historically: <span class="up">${bestMonth.m?monthNames[bestMonth.m-1]:'—'}</span> (avg <span class="up">${bestMonth.m?'+'+pct(bestMonth.v):'—'}</span>);
+      worst: <span class="dn">${worstMonth.m?monthNames[worstMonth.m-1]:'—'}</span> (avg <span class="dn">${worstMonth.m?pct(worstMonth.v):'—'}</span>).
+      Average up-month is <span class="up">+${pct(avgUp)}</span> vs an average down-month of <span class="dn">${pct(avgDn)}</span>.
+      YTD: <span class="${ytdRet>=0?'up':'dn'}">${ytdRet>=0?'+':''}${pct(ytdRet)}</span> across ${ytdMonths} month${ytdMonths===1?'':'s'}${trailing12!=null?`; trailing 12mo <span class="${trailing12>=0?'up':'dn'}">${trailing12>=0?'+':''}${pct(trailing12)}</span>`:''}.
+    `;
+    $('returnsExtraStats').innerHTML = `
+      <div class="stat-card"><div class="label">Positive Months</div><div class="value pos">${(posRate*100).toFixed(0)}%</div><div class="sub">${posMonths.length} of ${allMonthly.length}</div></div>
+      <div class="stat-card"><div class="label">Avg Up Month</div><div class="value pos">+${pct(avgUp)}</div><div class="sub">${posMonths.length} months</div></div>
+      <div class="stat-card"><div class="label">Avg Down Month</div><div class="value neg">${pct(avgDn)}</div><div class="sub">${negMonths.length} months</div></div>
+      <div class="stat-card"><div class="label">YTD Return</div><div class="value ${ytdRet>=0?'pos':'neg'}">${ytdRet>=0?'+':''}${pct(ytdRet)}</div><div class="sub">${ytdMonths} mo · ${nowYr}</div></div>
+    `;
+  }
 
 
   // ===== 6. ACCOUNT SCOREBOARD + SMALL MULTIPLES =====
@@ -1025,6 +1342,44 @@ function buildDashboard(DATA, wb){
     };
   }).filter(Boolean).sort((a,b)=>b.cagr-a.cagr);
 
+  // ===== ACCOUNTS TAB — narrative + extras =====
+  {
+    const totalNow = last.total;
+    const shares = activeAccounts.map(a=>({label:a.label, k:a.k, share:last[a.k]/totalNow, val:last[a.k]}))
+                                 .sort((a,b)=>b.share-a.share);
+    const top = shares[0];
+    const significant = shares.filter(s=>s.share>=0.05);
+    const concentrated = top && top.share > 0.40;
+    const topPerf = acctPerf[0];
+    const worstPerf = acctPerf[acctPerf.length-1];
+    // YoY: largest single-account change over the last ~52 weeks
+    let yoy = null;
+    if(DATA.length >= 52){
+      const past = DATA[DATA.length-52];
+      yoy = activeAccounts.map(a=>{
+        const before = past[a.k] || 0;
+        const now = last[a.k] || 0;
+        if(before <= 0) return null;
+        return {label:a.label, chg:(now/before - 1)};
+      }).filter(Boolean).sort((a,b)=>b.chg - a.chg);
+    }
+    const yoyTop = yoy && yoy.length ? yoy[0] : null;
+    const yoyBot = yoy && yoy.length ? yoy[yoy.length-1] : null;
+
+    $('narrative_accounts').innerHTML = `
+      <span class="sparkle">✦</span> Largest holding is <span class="em">${top?top.label:'—'}</span> at <span class="em">${top?pct(top.share):'—'}</span> of net worth${concentrated?' — <span class="dn">concentration risk above 40%</span>':''}.
+      ${significant.length} account${significant.length===1?'':'s'} contribute over 5% of the portfolio.
+      Top performer by CAGR: <span class="up">${topPerf?topPerf.label:'—'}</span> at <span class="up">${topPerf?pct(topPerf.cagr):'—'}</span>/yr${worstPerf && worstPerf!==topPerf?`; weakest: <span class="dn">${worstPerf.label}</span> at <span class="${worstPerf.cagr>=0?'up':'dn'}">${pct(worstPerf.cagr)}</span>/yr`:''}.
+      ${yoyTop?`Last 52 weeks — biggest mover up: <span class="up">${yoyTop.label} ${yoyTop.chg>=0?'+':''}${pct(yoyTop.chg)}</span>${yoyBot && yoyBot!==yoyTop?`, down: <span class="${yoyBot.chg>=0?'up':'dn'}">${yoyBot.label} ${yoyBot.chg>=0?'+':''}${pct(yoyBot.chg)}</span>`:''}.`:''}
+    `;
+    $('accountsExtraStats').innerHTML = `
+      <div class="stat-card"><div class="label">Top Concentration</div><div class="value ${concentrated?'neg':''}">${top?pct(top.share):'—'}</div><div class="sub">${top?top.label:''}</div></div>
+      <div class="stat-card"><div class="label">Significant Accounts</div><div class="value">${significant.length}</div><div class="sub">share &ge; 5%</div></div>
+      <div class="stat-card"><div class="label">Best 52wk Mover</div><div class="value pos">${yoyTop?(yoyTop.chg>=0?'+':'')+pct(yoyTop.chg):'—'}</div><div class="sub">${yoyTop?yoyTop.label:''}</div></div>
+      <div class="stat-card"><div class="label">Weakest 52wk Mover</div><div class="value ${yoyBot && yoyBot.chg<0?'neg':''}">${yoyBot?(yoyBot.chg>=0?'+':'')+pct(yoyBot.chg):'—'}</div><div class="sub">${yoyBot?yoyBot.label:''}</div></div>
+    `;
+  }
+
   // Scoreboard bar chart - horizontal bars sorted by CAGR
   charts.score=new Chart($('scoreChart'),{
     type:'bar',
@@ -1032,8 +1387,8 @@ function buildDashboard(DATA, wb){
       labels:acctPerf.map(a=>a.label),
       datasets:[{
         data:acctPerf.map(a=>a.cagr*100),
-        backgroundColor:acctPerf.map(a=>a.cagr>=0?a.c+'cc':'rgba(196,85,58,0.5)'),
-        borderColor:acctPerf.map(a=>a.c),
+        backgroundColor:acctPerf.map(a=>a.cagr>=0?rgba(a.c,0.8):rgba(C_RED,0.55)),
+        borderColor:acctPerf.map(a=>a.cagr>=0?a.c:C_RED),
         borderWidth:1, borderRadius:4
       }]
     },
@@ -1041,7 +1396,7 @@ function buildDashboard(DATA, wb){
       responsive:true,maintainAspectRatio:false,indexAxis:'y',
       plugins:{
         legend:{display:false},
-        tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',
+        tooltip:{...tooltipBase,displayColors:false,
           callbacks:{label:c=>{
             const a=acctPerf[c.dataIndex];
             return [
@@ -1055,8 +1410,8 @@ function buildDashboard(DATA, wb){
       },
       scales:{
         x:{ticks:{callback:v=>v.toFixed(0)+'%'},grid:{color:gridColor},
-          title:{display:true,text:'Compound Annual Growth Rate',color:'#9E9790',font:{size:11}}},
-        y:{grid:{display:false},ticks:{font:{size:12,weight:'600'}}}
+          title:{display:true,text:'Compound Annual Growth Rate',color:C_MUTED,font:{size:11}}},
+        y:{grid:{display:false},ticks:{font:{size:12,weight:'600'},color:C_TEXT}}
       }
     }
   });
@@ -1095,7 +1450,7 @@ function buildDashboard(DATA, wb){
       const canvas=document.getElementById('spark'+i);
       const ctx=canvas.getContext('2d');
       const grad=ctx.createLinearGradient(0,0,0,90);
-      grad.addColorStop(0,a.c+'55');grad.addColorStop(1,a.c+'00');
+      grad.addColorStop(0, rgba(a.c,0.32)); grad.addColorStop(1, rgba(a.c,0));
 
       const nonZeroData=DATA.filter(d=>d[a.k]>0);
       const sparkLabels=nonZeroData.map(d=>d.date.toISOString().slice(0,10));
@@ -1117,8 +1472,8 @@ function buildDashboard(DATA, wb){
           responsive:true,maintainAspectRatio:false,
           interaction:{mode:'index',intersect:false},
           plugins:{legend:{display:false},tooltip:{
-            backgroundColor:'#fff',borderColor:a.c,borderWidth:1,titleColor:a.c,bodyColor:'#6B6560',
-            titleFont:{size:10},bodyFont:{size:11},padding:8,
+            backgroundColor:C_TOOLTIP_BG,borderColor:a.c,borderWidth:1,titleColor:a.c,bodyColor:C_DIM,
+            titleFont:{size:10},bodyFont:{size:11},padding:8,cornerRadius:8,displayColors:false,
             callbacks:{
               title:items=>items[0].label,
               label:c=>mode==='indexed'
@@ -1128,9 +1483,9 @@ function buildDashboard(DATA, wb){
           }},
           scales:{
             x:{display:false},
-            y:{display:true,ticks:{maxTicksLimit:3,font:{size:9},color:'#9E9790',
+            y:{display:true,ticks:{maxTicksLimit:3,font:{size:9},color:C_MUTED,
               callback:v=>mode==='indexed'?v.toFixed(0):fmtK(v)
-            },grid:{color:'rgba(232,226,218,0.5)'},border:{display:false}}
+            },grid:{color:rgba(C_BORDER,0.5)},border:{display:false}}
           }
         }
       });
@@ -1143,13 +1498,14 @@ function buildDashboard(DATA, wb){
   if(acctPerf.length>0) $('sum_accounts').textContent = 'Top performer: '+acctPerf[0].label+' at '+pct(acctPerf[0].cagr)+'/yr CAGR · '+acctPerf.length+' accounts tracked';
 
 
-  // Toggle between dollar value and indexed view
+  // Toggle between dollar value and indexed view.
+  // Use onclick (not addEventListener) so rebuilds (e.g. theme change) don't stack listeners.
   $('sparkViewControls').querySelectorAll('.chip').forEach(btn=>{
-    btn.addEventListener('click',()=>{
+    btn.onclick = ()=>{
       $('sparkViewControls').querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
       btn.classList.add('on');
       buildSparkGrid(btn.dataset.mode);
-    });
+    };
   });
 
 
@@ -1171,10 +1527,10 @@ function buildDashboard(DATA, wb){
   const hLabels=Object.keys(buckets).map(Number).sort((a,b)=>a-b);
   charts.hist=new Chart($('histChart'),{
     type:'bar',
-    data:{labels:hLabels.map(b=>fmtK(b)),datasets:[{data:hLabels.map(b=>buckets[b]),backgroundColor:hLabels.map(b=>b>=0?'rgba(45,139,78,0.55)':'rgba(196,85,58,0.55)'),borderRadius:6}]},
+    data:{labels:hLabels.map(b=>fmtK(b)),datasets:[{data:hLabels.map(b=>buckets[b]),backgroundColor:hLabels.map(b=>b>=0?rgba(C_GREEN,0.6):rgba(C_RED,0.6)),borderRadius:6}]},
     options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>c[0].label+' range',label:c=>c.parsed.y+' weeks'}}},
-      scales:{x:{grid:{display:false},title:{display:true,text:'Weekly $ Change Bucket',color:'#9E9790',font:{size:11}}},y:{grid:{color:gridColor},title:{display:true,text:'# of Weeks',color:'#9E9790',font:{size:11}}}}
+      plugins:{legend:{display:false},tooltip:{...tooltipBase,callbacks:{title:c=>c[0].label+' range',label:c=>c.parsed.y+' weeks'}}},
+      scales:{x:{grid:{display:false},title:{display:true,text:'Weekly $ Change Bucket',color:C_MUTED,font:{size:11}}},y:{grid:{color:gridColor},title:{display:true,text:'# of Weeks',color:C_MUTED,font:{size:11}}}}
     }
   });
 
@@ -1183,8 +1539,8 @@ function buildDashboard(DATA, wb){
   const yLabels=Object.keys(yearMap);const yVals=Object.values(yearMap);
   charts.year=new Chart($('yearChart'),{
     type:'bar',
-    data:{labels:yLabels,datasets:[{data:yVals,backgroundColor:yLabels.map((_,i)=>i===yLabels.length-1?'#C4553A':'#D9D2C9'),borderRadius:8}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.parsed.y)}}},
+    data:{labels:yLabels,datasets:[{data:yVals,backgroundColor:yLabels.map((_,i)=>i===yLabels.length-1?C_ACCENT:C_BORDER2),borderRadius:8}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...tooltipBase,callbacks:{label:c=>fmt(c.parsed.y)}}},
       scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>fmtK(v)},grid:{color:gridColor}}}
     }
   });
@@ -1244,6 +1600,33 @@ function buildDashboard(DATA, wb){
   const retRateEl=$('retRate'), retYearsEl=$('retYears'), retContribEl=$('retContrib'), retInflEl=$('retInfl');
   let retChart=null;
 
+  function renderRetirementNarrative(p){
+    const realReturn = ((1 + p.annualRate) / (1 + p.inflRate) - 1);
+    // Time to "FI" using the 4% rule against current contribution income (very rough)
+    const annualSpendProxy = p.monthlyContrib * 12;  // sub for current annual savings as a stand-in
+    const fiNumber = annualSpendProxy / 0.04;
+    // Solve for years until balance compounded with contribs hits fiNumber
+    let bal = p.lastTotal;
+    const mRate = Math.pow(1+p.annualRate, 1/12) - 1;
+    let yrsToFI = null;
+    if(fiNumber > p.lastTotal){
+      for(let m=1; m<=80*12; m++){
+        bal = bal*(1+mRate) + p.monthlyContrib;
+        if(bal >= fiNumber){ yrsToFI = m/12; break; }
+      }
+    } else {
+      yrsToFI = 0;
+    }
+    const incomeGap = p.monthlyIncomeReal - annualSpendProxy/12; // 4% rule income vs current monthly savings rate as a rough yardstick
+    $('narrative_retirement').innerHTML = `
+      <span class="sparkle">✦</span> At <span class="em">${pct(p.annualRate)}</span> nominal return and <span class="em">${fmt(p.monthlyContrib)}/mo</span> contributions over <span class="em">${p.yrsToRet.toFixed(1)} years</span>,
+      the projection lands at <span class="em">${fmt(p.finalNominal)}</span> (<span class="em">${fmt(p.finalReal)}</span> in today's dollars).
+      Real return after <span class="em">${pct(p.inflRate)}</span> inflation: <span class="${realReturn>=0?'up':'dn'}">${pct(realReturn)}</span>.
+      Under the 4% rule that's <span class="up">${fmt(p.monthlyIncomeReal)}/mo</span> spendable in today's dollars; nest egg lasts <span class="em">${p.runwayYears>=80?'80+':p.runwayYears}</span> years.
+      ${yrsToFI!=null?`Rough years-to-FI at your current savings rate: <span class="em">${yrsToFI===0?'already there':yrsToFI.toFixed(1)+' yrs'}</span>.`:''}
+    `;
+  }
+
   // Compute contribution-stripped CAGR for reference badge
   const estTotalContribs=3596*12*years;
   const estInvestGrowth=last.total-first.total-estTotalContribs;
@@ -1251,15 +1634,15 @@ function buildDashboard(DATA, wb){
 
   // Build clickable reference badges
   const retRefs=[
-    {label:'Conservative',rate:6,color:'var(--blue)'},
-    {label:'S&P 500 Avg',rate:10,color:'var(--green)'},
-    {label:`Your ${years.toFixed(0)}yr Est.`,rate:Math.round(fullInvestRate*1000)/10,color:'var(--gold)'},
+    {label:'Conservative',rate:6,color:'var(--dim)'},
+    {label:'S&P 500 Avg',rate:10,color:'var(--accent)'},
+    {label:`Your ${years.toFixed(0)}yr Est.`,rate:Math.round(fullInvestRate*1000)/10,color:'var(--accent-strong)'},
   ];
   $('retRateRefs').innerHTML=retRefs.map(r=>
     `<button class="rc-ref" data-rate="${r.rate}" style="border-color:${r.color};color:${r.color}" title="Set slider to ${r.rate}%">${r.label}: ${r.rate}%</button>`
   ).join('');
   $('retRateRefs').querySelectorAll('.rc-ref').forEach(btn=>{
-    btn.addEventListener('click',()=>{retRateEl.value=btn.dataset.rate;computeRetirement()});
+    btn.onclick = ()=>{retRateEl.value=btn.dataset.rate;computeRetirement()};
   });
 
   function computeRetirement(){
@@ -1332,30 +1715,33 @@ function buildDashboard(DATA, wb){
     } else {
       const rCtx=$('retChart');
       const nGrad=rCtx.getContext('2d').createLinearGradient(0,0,0,240);
-      nGrad.addColorStop(0,'rgba(196,85,58,0.18)');nGrad.addColorStop(1,'rgba(196,85,58,0)');
+      nGrad.addColorStop(0, rgba(C_ACCENT,0.20)); nGrad.addColorStop(1, rgba(C_ACCENT,0));
       const rGrad=rCtx.getContext('2d').createLinearGradient(0,0,0,240);
-      rGrad.addColorStop(0,'rgba(58,140,140,0.18)');rGrad.addColorStop(1,'rgba(58,140,140,0)');
+      rGrad.addColorStop(0, rgba(C_DIM,0.16)); rGrad.addColorStop(1, rgba(C_DIM,0));
       retChart=new Chart(rCtx,{
         type:'line',
         data:{labels:yearLabels,datasets:[
-          {label:'Nominal',data:nominalVals,borderColor:'#C4553A',backgroundColor:nGrad,fill:true,tension:0.3,pointRadius:0,borderWidth:2},
-          {label:"Today's Dollars",data:realVals,borderColor:'#3A8C8C',backgroundColor:rGrad,fill:true,tension:0.3,pointRadius:0,borderWidth:2,borderDash:[5,3]}
+          {label:'Nominal',data:nominalVals,borderColor:C_ACCENT,backgroundColor:nGrad,fill:true,tension:0.3,pointRadius:0,borderWidth:2},
+          {label:"Today's Dollars",data:realVals,borderColor:C_DIM,backgroundColor:rGrad,fill:true,tension:0.3,pointRadius:0,borderWidth:2,borderDash:[5,3]}
         ]},
         options:{responsive:true,maintainAspectRatio:false,
           interaction:{mode:'index',intersect:false},
-          plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:10}},
-            tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',
-              callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}
-            }
+          plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:10,color:C_DIM}},
+            tooltip:{...tooltipBase,callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}
           },
           scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>fmtK(v)},grid:{color:gridColor}}}
         }
       });
       charts.ret=retChart;
     }
+    // Refresh the Retirement tab narrative whenever sliders move
+    renderRetirementNarrative({finalNominal, finalReal, monthlyIncome4, monthlyIncomeReal,
+      runwayYears, annualRate, yrsToRet, monthlyContrib, inflRate, lastTotal:last.total});
   }
 
-  [retRateEl,retYearsEl,retContribEl,retInflEl].forEach(el=>el.addEventListener('input',computeRetirement));
+  // Use direct property assignment (not addEventListener) so re-builds
+  // (e.g. theme toggle) don't double-fire listeners on the same elements.
+  [retRateEl,retYearsEl,retContribEl,retInflEl].forEach(el=>el.oninput=computeRetirement);
   computeRetirement();
 
 
@@ -1366,6 +1752,7 @@ function buildDashboard(DATA, wb){
     return cell ? cell.v : null;
   };
   const gvn = (ws,r,c) => { const v=gv(ws,r,c); return typeof v==='number'?v:0; };
+  const deepDive = { attr:null, avp:null, pacing:null };
 
   // ---- GROWTH ATTRIBUTION (Sheet1) ----
   const s1 = wb.Sheets['Sheet1'];
@@ -1389,6 +1776,7 @@ function buildDashboard(DATA, wb){
 
       if(attrData.length>0){
         $('cp_attribution').style.display='';
+        deepDive.attr = { totals, attrData };
         $('sum_attribution').textContent = pct(totals.contribs/(totals.ending-totals.begin))+' from new money · '+pct((totals.growth+totals.divs+totals.fees)/(totals.ending-totals.begin))+' from returns';
 
         // Stacked bar chart: per account breakdown
@@ -1396,15 +1784,14 @@ function buildDashboard(DATA, wb){
         charts.attr = new Chart($('attrChart'),{
           type:'bar',
           data:{labels:attrLabels,datasets:[
-            {label:'Contributions',data:attrData.map(a=>a.contribs),backgroundColor:'#4A7FB5',borderRadius:4},
-            {label:'Dividends',data:attrData.map(a=>a.divs),backgroundColor:'#2D8B4E',borderRadius:4},
-            {label:'Market Growth',data:attrData.map(a=>a.growth),backgroundColor:'#C4553A',borderRadius:4},
-            {label:'Fees',data:attrData.map(a=>a.fees),backgroundColor:'#B94432',borderRadius:4}
+            {label:'Contributions',data:attrData.map(a=>a.contribs),backgroundColor:C_DIM,borderRadius:4},
+            {label:'Dividends',data:attrData.map(a=>a.divs),backgroundColor:C_GREEN,borderRadius:4},
+            {label:'Market Growth',data:attrData.map(a=>a.growth),backgroundColor:C_ACCENT,borderRadius:4},
+            {label:'Fees',data:attrData.map(a=>a.fees),backgroundColor:C_RED,borderRadius:4}
           ]},
           options:{responsive:true,maintainAspectRatio:false,
-            plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:8}},
-              tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',
-                callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},
+            plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:8,color:C_DIM}},
+              tooltip:{...tooltipBase,callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},
             scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10}}},
               y:{stacked:true,ticks:{callback:v=>fmtK(v)},grid:{color:gridColor}}}
           }
@@ -1413,9 +1800,9 @@ function buildDashboard(DATA, wb){
         // Waterfall summary
         const wfItems = [
           {label:'Starting Balance',val:totals.begin,color:'var(--dim)'},
-          {label:'Contributions',val:totals.contribs,color:'var(--blue)'},
+          {label:'Contributions',val:totals.contribs,color:'var(--text)'},
           {label:'Dividends',val:totals.divs,color:'var(--green)'},
-          {label:'Market Growth',val:totals.growth,color:'var(--gold)'},
+          {label:'Market Growth',val:totals.growth,color:'var(--accent)'},
           {label:'Fees',val:totals.fees,color:'var(--red)'},
         ];
         const maxVal = Math.max(...wfItems.map(w=>Math.abs(w.val)));
@@ -1433,7 +1820,7 @@ function buildDashboard(DATA, wb){
         wfHTML += `<div class="wf-row" style="border-top:2px solid var(--border);padding-top:12px;margin-top:4px">
           <div class="wf-label" style="font-weight:700;color:var(--text)">Ending Balance</div>
           <div class="wf-bar-wrap"></div>
-          <div class="wf-val" style="color:var(--gold);font-size:15px">${fmt(totals.ending)}</div>
+          <div class="wf-val" style="color:var(--accent);font-size:15px">${fmt(totals.ending)}</div>
         </div>`;
         const contribPct = totals.contribs/(totals.ending-totals.begin)*100;
         const growthPct = (totals.growth+totals.divs+totals.fees)/(totals.ending-totals.begin)*100;
@@ -1478,6 +1865,7 @@ function buildDashboard(DATA, wb){
         $('cp_avp').style.display='';
         if(actualYears.length>0){
           const latestActual=actualYears[actualYears.length-1]; const latestDelta=latestActual.actEnd-latestActual.estEnd;
+          deepDive.avp = { latestActual, latestDelta, years:actualYears.length };
           $('sum_avp').textContent = (latestDelta>=0?'+':'')+fmt(latestDelta)+' vs plan in '+latestActual.year+' · '+actualYears.length+' years of data';
         }
 
@@ -1486,16 +1874,15 @@ function buildDashboard(DATA, wb){
           type:'line',
           data:{labels:allYears.map(r=>r.year.toString()),datasets:[
             {label:'Estimated (7.5%)',data:allYears.map(r=>r.estEnd||null),
-              borderColor:'#9E9790',borderWidth:2,borderDash:[5,3],pointRadius:3,
-              pointBackgroundColor:'#9E9790',tension:0.2},
+              borderColor:C_MUTED,borderWidth:2,borderDash:[5,3],pointRadius:3,
+              pointBackgroundColor:C_MUTED,tension:0.2},
             {label:'Actual',data:allYears.map(r=>r.actEnd||null),
-              borderColor:'#C4553A',borderWidth:2.5,pointRadius:4,
-              pointBackgroundColor:'#C4553A',tension:0.2}
+              borderColor:C_ACCENT,borderWidth:2.5,pointRadius:4,
+              pointBackgroundColor:C_ACCENT,tension:0.2}
           ]},
           options:{responsive:true,maintainAspectRatio:false,spanGaps:false,
-            plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:10}},
-              tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',
-                callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},
+            plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:10,color:C_DIM}},
+              tooltip:{...tooltipBase,callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},
             scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>fmtK(v)},grid:{color:gridColor}}}
           }
         });
@@ -1553,12 +1940,12 @@ function buildDashboard(DATA, wb){
         $('retIncomeGrid').innerHTML = `
           <div class="ret-income-card">
             <div class="ric-label">Portfolio (4% Rule)</div>
-            <div class="ric-val" style="color:var(--gold)">${fmt(portfolioMonthlyReal)}/mo</div>
+            <div class="ric-val" style="color:var(--accent)">${fmt(portfolioMonthlyReal)}/mo</div>
             <div class="ric-sub">In today's dollars · from ${fmt(bal)} nest egg</div>
           </div>
           <div class="ret-income-card">
             <div class="ric-label">ANG Pension</div>
-            <div class="ric-val" style="color:var(--cyan)">${fmt(estMonthly)}/mo</div>
+            <div class="ric-val" style="color:var(--dim)">${fmt(estMonthly)}/mo</div>
             <div class="ric-sub">${estTotalPts.toLocaleString()} est. points · starts at age 60</div>
           </div>
           <div class="ret-income-card" style="border-color:var(--green)">
@@ -1584,13 +1971,12 @@ function buildDashboard(DATA, wb){
         charts.retIncome = new Chart($('retIncomeChart'),{
           type:'bar',
           data:{labels:scenarios.map(s=>s.label),datasets:[
-            {label:'Portfolio (4%)',data:scenarioPortfolio,backgroundColor:'#C4553A',borderRadius:6},
-            {label:'ANG Pension',data:scenarios.map(()=>estMonthly),backgroundColor:'#3A8C8C',borderRadius:6}
+            {label:'Portfolio (4%)',data:scenarioPortfolio,backgroundColor:C_ACCENT,borderRadius:6},
+            {label:'ANG Pension',data:scenarios.map(()=>estMonthly),backgroundColor:C_DIM,borderRadius:6}
           ]},
           options:{responsive:true,maintainAspectRatio:false,
-            plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:8}},
-              tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',
-                callbacks:{
+            plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:8,color:C_DIM}},
+              tooltip:{...tooltipBase,callbacks:{
                   label:c=>c.dataset.label+': '+fmt(c.parsed.y)+'/mo',
                   afterBody:(items)=>{
                     const idx=items[0].dataIndex;
@@ -1600,7 +1986,7 @@ function buildDashboard(DATA, wb){
                 }}},
             scales:{x:{stacked:true,grid:{display:false}},
               y:{stacked:true,ticks:{callback:v=>'$'+Math.round(v).toLocaleString()},grid:{color:gridColor},
-                title:{display:true,text:'Monthly Income (today\'s $)',color:'#9E9790',font:{size:11}}}}
+                title:{display:true,text:'Monthly Income (today\'s $)',color:C_MUTED,font:{size:11}}}}
           }
         });
       }
@@ -1640,17 +2026,18 @@ function buildDashboard(DATA, wb){
         const onTrack = projectedEmployee >= irsLimit2025 * 0.95;
 
         $('cp_pacing').style.display='';
+        deepDive.pacing = { ytdEmployee, irsLimit2025, employeePct, onTrack, projectedEmployee };
         $('sum_pacing').textContent = fmt(ytdEmployee)+' of '+fmt(irsLimit2025)+' ('+employeePct.toFixed(0)+'%) · '+(onTrack?'on pace to max':'may fall short');
 
         let pacingHTML = `
           <div class="pacing-gauge">
             <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Employee Deferrals</div>
-            <div style="font-size:36px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums">${fmt(ytdEmployee)}</div>
+            <div style="font-size:36px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums">${fmt(ytdEmployee)}</div>
             <div style="font-size:13px;color:var(--dim);margin:6px 0">of ${fmt(irsLimit2025)} IRS limit</div>
-            <div class="pacing-bar"><div class="pacing-fill" style="width:${employeePct}%;background:${onTrack?'var(--green)':'var(--orange)'}"></div></div>
+            <div class="pacing-bar"><div class="pacing-fill" style="width:${employeePct}%;background:${onTrack?'var(--green)':'var(--amber)'}"></div></div>
             <div class="pacing-info"><b>${employeePct.toFixed(1)}%</b> through ${depositCount} pay periods</div>
             <div class="pacing-info" style="margin-top:8px">
-              Projected year-end: <b style="color:${onTrack?'var(--green)':'var(--orange)'}">~${fmt(projectedEmployee)}</b>
+              Projected year-end: <b style="color:${onTrack?'var(--green)':'var(--amber)'}">~${fmt(projectedEmployee)}</b>
               ${onTrack?'— on pace to max':'— may fall short'}
             </div>
           </div>
@@ -1680,20 +2067,44 @@ function buildDashboard(DATA, wb){
         charts.pacing = new Chart($('pacingChart'),{
           type:'line',
           data:{labels:Array.from({length:estimatedTotal},(_,i)=>'#'+(i+1)),datasets:[
-            {label:'Your Deferrals',data:cumEmployee,borderColor:'#C4553A',borderWidth:2.5,pointRadius:2,tension:0.2},
-            {label:'Pace to Max',data:targetPace,borderColor:'#D9D2C9',borderWidth:1.5,borderDash:[4,4],pointRadius:0,tension:0},
-            {label:'IRS Limit',data:Array(estimatedTotal).fill(irsLimit2025),borderColor:'#B94432',borderWidth:1,borderDash:[2,3],pointRadius:0}
+            {label:'Your Deferrals',data:cumEmployee,borderColor:C_ACCENT,borderWidth:2.5,pointRadius:2,tension:0.2},
+            {label:'Pace to Max',data:targetPace,borderColor:C_BORDER2,borderWidth:1.5,borderDash:[4,4],pointRadius:0,tension:0},
+            {label:'IRS Limit',data:Array(estimatedTotal).fill(irsLimit2025),borderColor:C_RED,borderWidth:1,borderDash:[2,3],pointRadius:0}
           ]},
           options:{responsive:true,maintainAspectRatio:false,
-            plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:8}},
-              tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',
-                callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},
-            scales:{x:{grid:{display:false},title:{display:true,text:'Pay Period',color:'#9E9790',font:{size:10}}},
+            plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:8,color:C_DIM}},
+              tooltip:{...tooltipBase,callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},
+            scales:{x:{grid:{display:false},title:{display:true,text:'Pay Period',color:C_MUTED,font:{size:10}}},
               y:{ticks:{callback:v=>fmtK(v)},grid:{color:gridColor}}}
           }
         });
       }
     }catch(e){console.warn('401k pacing parse error:',e)}
+  }
+
+  // ===== DEEP DIVE — narrative =====
+  {
+    const parts = [];
+    if(deepDive.attr){
+      const t = deepDive.attr.totals;
+      const yrGain = t.ending - t.begin;
+      const contribPct = yrGain ? t.contribs/yrGain : 0;
+      const returnsPct = yrGain ? (t.growth + t.divs + t.fees)/yrGain : 0;
+      parts.push(`Of the year's <span class="em">${fmt(yrGain)}</span> in gains, <span class="em">${(contribPct*100).toFixed(0)}%</span> came from <span class="em">new contributions</span> and <span class="em">${(returnsPct*100).toFixed(0)}%</span> from <span class="em">market returns + dividends</span> (fees: <span class="dn">${fmt(t.fees)}</span>).`);
+    }
+    if(deepDive.avp){
+      const a = deepDive.avp;
+      parts.push(`Tracking <span class="${a.latestDelta>=0?'up':'dn'}">${a.latestDelta>=0?'+':''}${fmt(a.latestDelta)}</span> ${a.latestDelta>=0?'ahead of':'behind'} the 7.5% plan as of ${a.latestActual.year}, across ${a.years} year${a.years===1?'':'s'} of actual data.`);
+    }
+    if(deepDive.pacing){
+      const p = deepDive.pacing;
+      parts.push(`401(k) deferrals YTD: <span class="em">${fmt(p.ytdEmployee)}</span> of <span class="em">${fmt(p.irsLimit2025)}</span> (<span class="em">${p.employeePct.toFixed(0)}%</span>) — projected year-end <span class="${p.onTrack?'up':'dn'}">${fmt(p.projectedEmployee)}</span>${p.onTrack?', on pace to max':', may fall short'}.`);
+    }
+    if(parts.length){
+      $('narrative_deepdive').innerHTML = `<span class="sparkle">✦</span> ` + parts.join(' ');
+    } else {
+      $('narrative_deepdive').innerHTML = `<span class="sparkle">✦</span> Deep Dive sections show when the spreadsheet includes Sheet1 (attribution), Amortization (plan tracking), or 401(k) deposit history.`;
+    }
   }
 
   window.scrollTo({top:0,behavior:'smooth'});
