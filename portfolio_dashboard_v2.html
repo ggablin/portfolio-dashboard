@@ -1,0 +1,1703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Pulse</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F0EB;--panel:#FFFFFF;--panel2:#FAF7F4;--panel3:#F0ECE6;
+  --border:#E8E2DA;--border2:#D9D2C9;
+  --text:#1A1A1A;--dim:#6B6560;--muted:#9E9790;
+  --gold:#C4553A;--gold-dim:rgba(196,85,58,0.10);--gold-glow:rgba(196,85,58,0.05);
+  --green:#2D8B4E;--green-dim:rgba(45,139,78,0.12);
+  --red:#C4553A;--red-dim:rgba(196,85,58,0.10);
+  --blue:#4A7FB5;--purple:#7B6BA5;--cyan:#3A8C8C;--orange:#D4804A;--pink:#C47A9A;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.04);
+  --shadow:0 2px 12px rgba(0,0,0,0.06);
+  --shadow-lg:0 4px 20px rgba(0,0,0,0.08);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* Upload */
+#uploadView{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.upload-card{text-align:center;max-width:520px;width:100%}
+.upload-logo{
+  font-size:44px;font-weight:800;letter-spacing:-2px;
+  color:var(--gold);margin-bottom:6px;
+}
+.upload-sub{color:var(--dim);font-size:15px;margin-bottom:32px}
+.drop-zone{
+  border:2px dashed var(--border2);border-radius:20px;padding:56px 32px;cursor:pointer;
+  background:var(--panel);transition:all .25s;position:relative;overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.drop-zone::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,var(--gold-glow) 0%,transparent 65%);opacity:0;transition:opacity .3s}
+.drop-zone:hover,.drop-zone.over{border-color:var(--gold);background:var(--panel2)}
+.drop-zone:hover::before,.drop-zone.over::before{opacity:1}
+.drop-icon{font-size:48px;margin-bottom:16px;opacity:0.7;position:relative}
+.drop-text{color:var(--dim);font-size:15px;position:relative}
+.drop-text strong{color:var(--gold)}
+.drop-hint{color:var(--muted);font-size:12px;margin-top:20px;position:relative}
+#fileInput{display:none}
+.upload-error{color:var(--red);font-size:13px;margin-top:16px;min-height:20px}
+
+/* Dashboard */
+#dashView{display:none;padding:20px 24px 40px}
+.wrap{max-width:1240px;margin:0 auto}
+
+.dash-header{
+  display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;
+  background:var(--panel);border-radius:20px;padding:16px 24px;box-shadow:var(--shadow);
+}
+.dash-brand{display:flex;align-items:center;gap:12px}
+.dash-brand h1{font-size:20px;font-weight:800;letter-spacing:-0.5px;color:var(--text)}
+.dash-brand .tag{font-size:11px;color:var(--dim);background:var(--panel3);padding:4px 12px;border-radius:20px;font-weight:500}
+.dash-header-right{display:flex;align-items:center;gap:10px}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.reload-btn{
+  background:var(--panel3);border:1px solid var(--border);color:var(--dim);
+  padding:8px 18px;border-radius:20px;font:13px 'Inter',sans-serif;cursor:pointer;transition:all .2s;font-weight:500;
+}
+.reload-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* Hero */
+.hero-row{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;margin-bottom:20px}
+@media(max-width:800px){.hero-row{grid-template-columns:1fr}}
+.hero-card{
+  background:var(--panel);border-radius:20px;padding:28px;position:relative;overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.hero-card::after{display:none}
+.hero-eyebrow{font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:var(--dim);font-weight:600;margin-bottom:10px;position:relative;z-index:1}
+.hero-val{font-size:52px;font-weight:800;color:var(--gold);letter-spacing:-2px;line-height:1;position:relative;z-index:1;font-variant-numeric:tabular-nums}
+.hero-sub{color:var(--dim);font-size:13px;margin-top:8px;position:relative;z-index:1}
+.hero-sub b{color:var(--text)}
+
+.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mini-stat{background:var(--panel);border-radius:14px;padding:16px;box-shadow:var(--shadow-sm)}
+.mini-stat .l{font-size:10px;text-transform:uppercase;letter-spacing:1.3px;color:var(--muted);margin-bottom:6px}
+.mini-stat .v{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.pos{color:var(--green)} .neg{color:var(--red)}
+
+/* Narrative */
+.narrative{
+  background:var(--panel);border-left:4px solid var(--gold);
+  border-radius:16px;padding:18px 22px;margin-bottom:20px;
+  font-size:14px;color:var(--dim);line-height:1.75;box-shadow:var(--shadow-sm);
+}
+.narrative strong{color:var(--text)}
+.narrative .sparkle{color:var(--gold)}
+
+/* Panels */
+.panel{background:var(--panel);border-radius:20px;padding:18px;margin-bottom:16px;box-shadow:var(--shadow)}
+.panel h3{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);margin-bottom:14px;font-weight:600}
+.panel .panel-sub{font-size:12px;color:var(--muted);margin-top:-8px;margin-bottom:14px}
+.chart-box{position:relative}
+
+/* Grids */
+.g2{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+.g2e{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:900px){.g2,.g2e{grid-template-columns:1fr}.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.g4{grid-template-columns:1fr}}
+
+.stat-card{background:var(--panel);border-radius:16px;padding:16px;transition:transform .15s,box-shadow .15s;box-shadow:var(--shadow-sm)}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.stat-card .label{font-size:10px;text-transform:uppercase;letter-spacing:1.3px;color:var(--muted);margin-bottom:8px}
+.stat-card .value{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat-card .sub{font-size:11px;color:var(--muted);margin-top:4px}
+
+/* Controls */
+.controls{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap}
+.chip{
+  background:transparent;border:1.5px solid var(--border2);color:var(--dim);
+  padding:6px 14px;border-radius:24px;font-size:11px;cursor:pointer;font-family:inherit;transition:all .15s;font-weight:500;
+}
+.chip:hover{border-color:var(--gold);color:var(--gold)}
+.chip.on{background:var(--gold);border-color:var(--gold);color:#fff;font-weight:700}
+
+/* Milestones */
+.milestones{display:flex;flex-direction:column;gap:8px}
+.mile{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--panel);border-radius:12px;border-left:3px solid var(--gold);box-shadow:var(--shadow-sm)}
+.mile .amt{font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums;font-size:14px}
+.mile .when{font-size:11px;color:var(--dim)}
+.mile.future{opacity:0.7;border-left-color:var(--purple)}
+.mile.future .amt{color:var(--purple)}
+
+/* Heatmap */
+.heatmap-wrap{overflow-x:auto}
+.heatmap{border-collapse:separate;border-spacing:3px;width:100%}
+.heatmap th{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:4px 6px;font-weight:600}
+.heatmap td{
+  text-align:center;font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;
+  padding:8px 4px;border-radius:8px;min-width:52px;transition:transform .12s;cursor:default;
+}
+.heatmap td:hover{transform:scale(1.12);z-index:2;position:relative}
+.heatmap td.empty{background:transparent}
+.hm-label{font-size:12px;font-weight:700;color:var(--dim);text-align:right;padding-right:8px!important;min-width:42px}
+
+
+/* Pace gauge */
+.pace-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.pace-card{background:var(--panel);border-radius:14px;padding:16px;position:relative;overflow:hidden;box-shadow:var(--shadow-sm)}
+.pace-card .pc-target{font-size:18px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
+.pace-card .pc-eta{font-size:13px;color:var(--text);margin-top:4px}
+.pace-card .pc-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.pace-bar{height:4px;background:var(--border);border-radius:2px;margin-top:10px;overflow:hidden}
+.pace-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .6s ease}
+
+/* Calculator */
+.slider-val{font-size:13px;font-weight:600;color:var(--text)}
+
+/* Retirement projection */
+.retire-panel{background:var(--panel);border-radius:20px}
+.retire-controls{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+@media(max-width:700px){.retire-controls{grid-template-columns:1fr}}
+
+/* Waterfall chart items */
+.wf-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.wf-row:last-child{border-bottom:none}
+.wf-label{width:120px;font-size:13px;color:var(--dim);flex-shrink:0}
+.wf-bar-wrap{flex:1;height:22px;position:relative;background:var(--panel3);border-radius:4px;overflow:hidden}
+.wf-bar{height:100%;border-radius:4px;transition:width .5s ease}
+.wf-val{width:100px;text-align:right;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;flex-shrink:0}
+
+/* Actual vs Plan table */
+.avp-table{width:100%;border-collapse:separate;border-spacing:0 3px}
+.avp-table th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);padding:6px 10px;text-align:left;font-weight:600}
+.avp-table td{padding:8px 10px;font-size:13px;font-variant-numeric:tabular-nums;background:var(--panel3);font-weight:500;color:var(--dim)}
+.avp-table td:first-child{border-radius:8px 0 0 8px;font-weight:700;color:var(--text)}
+.avp-table td:last-child{border-radius:0 8px 8px 0}
+.avp-delta{font-size:12px;font-weight:700;padding:2px 8px;border-radius:8px;display:inline-block}
+.avp-delta.ahead{background:var(--green-dim);color:var(--green)}
+.avp-delta.behind{background:var(--red-dim);color:var(--red)}
+
+/* Retirement income panel */
+.ret-income-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px}
+@media(max-width:700px){.ret-income-grid{grid-template-columns:1fr}}
+.ret-income-card{background:var(--panel);border-radius:16px;padding:18px;text-align:center;box-shadow:var(--shadow-sm)}
+.ret-income-card .ric-val{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;margin:8px 0 4px}
+.ret-income-card .ric-label{font-size:10px;text-transform:uppercase;letter-spacing:1.3px;color:var(--muted)}
+.ret-income-card .ric-sub{font-size:12px;color:var(--dim);margin-top:4px}
+
+/* 401k pacing */
+.pacing-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.pacing-wrap{grid-template-columns:1fr}}
+.pacing-gauge{position:relative;background:var(--panel);border-radius:16px;padding:18px;text-align:center;box-shadow:var(--shadow-sm)}
+.pacing-ring-wrap{width:160px;height:160px;margin:0 auto 12px}
+.pacing-bar{height:24px;background:var(--border);border-radius:12px;overflow:hidden;margin:8px 0}
+.pacing-fill{height:100%;border-radius:12px;transition:width .6s ease}
+.pacing-info{font-size:12px;color:var(--dim);margin-top:6px}
+.pacing-info b{color:var(--text)}
+.rc-slider label{display:block;font-size:11px;color:var(--dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+.rc-slider input[type=range]{width:100%;accent-color:var(--gold);height:6px}
+.rc-refs{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.rc-ref{
+  font-size:10px;padding:4px 10px;border-radius:14px;cursor:pointer;
+  border:1.5px solid var(--border2);color:var(--dim);background:transparent;
+  font-family:inherit;transition:all .15s;white-space:nowrap;font-weight:500;
+}
+.rc-ref:hover{border-color:var(--gold);color:var(--text)}
+.retire-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:12px;margin-bottom:18px}
+@media(max-width:900px){.retire-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.retire-grid{grid-template-columns:1fr}}
+.ret-card{background:var(--panel3);border-radius:14px;padding:16px}
+.ret-hero-card{background:linear-gradient(135deg,rgba(196,85,58,0.06) 0%,var(--panel3) 100%);border:1.5px solid rgba(196,85,58,0.2)}
+.ret-label{font-size:10px;text-transform:uppercase;letter-spacing:1.3px;color:var(--muted);margin-bottom:8px}
+.ret-big{font-size:32px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums;letter-spacing:-1px}
+.ret-val{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.ret-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.retire-chart-wrap{margin-top:4px}
+.ret-disclaimer{font-size:10px;color:var(--muted);margin-top:12px;font-style:italic;text-align:center}
+
+/* Spark grid */
+.spark-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.spark-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:550px){.spark-grid{grid-template-columns:1fr}}
+.spark-card{
+  background:var(--panel);border-radius:14px;
+  padding:14px;transition:box-shadow .15s;box-shadow:var(--shadow-sm);
+}
+.spark-card:hover{box-shadow:var(--shadow)}
+.spark-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.spark-name{font-size:13px;font-weight:700}
+.spark-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px}
+.spark-badge.up{background:var(--green-dim);color:var(--green)}
+.spark-badge.dn{background:var(--red-dim);color:var(--red)}
+.spark-meta{font-size:11px;color:var(--muted);margin-bottom:8px}
+.spark-chart{height:90px;position:relative}
+
+/* Collapsible panels */
+.cpanel{background:var(--panel);border-radius:20px;margin-bottom:16px;overflow:hidden;transition:box-shadow .2s;box-shadow:var(--shadow)}
+.cpanel:hover{box-shadow:var(--shadow-lg)}
+.cpanel-head{
+  display:flex;justify-content:space-between;align-items:center;padding:20px;cursor:pointer;
+  -webkit-user-select:none;user-select:none;transition:background .15s;
+}
+.cpanel-head:hover{background:rgba(196,85,58,0.03)}
+.cpanel-head h3{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);margin:0;font-weight:600}
+.cpanel-summary{font-size:14px;color:var(--text);margin-top:5px;font-weight:600;font-variant-numeric:tabular-nums}
+.cpanel-chevron{
+  color:var(--muted);font-size:18px;transition:transform .25s;flex-shrink:0;margin-left:12px;
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  border-radius:10px;background:var(--panel3);
+}
+.cpanel.open .cpanel-chevron{transform:rotate(180deg);background:var(--gold);color:#fff}
+.cpanel-body{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .25s ease;padding:0 20px}
+.cpanel.open .cpanel-body{max-height:4000px;padding:0 20px 20px}
+.cpanel-body .panel-sub{font-size:12px;color:var(--muted);margin-bottom:14px}
+
+.footer{text-align:center;color:var(--muted);font-size:11px;margin-top:32px;padding:16px}
+
+.section-divider{
+  display:flex;align-items:center;gap:12px;margin:28px 0 18px;
+}
+.section-divider span{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:600;white-space:nowrap}
+.section-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Sidebar */
+.sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:72px;
+  background:#1A1A1A;z-index:100;display:none;flex-direction:column;
+  padding:16px 0;overflow-y:auto;overflow-x:hidden;
+  transition:width .2s ease;
+}
+.sidebar.visible{display:flex}
+.sidebar-logo{
+  width:42px;height:42px;border-radius:14px;background:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 24px;flex-shrink:0;
+  font-weight:800;font-size:18px;color:#fff;letter-spacing:-1px;
+}
+.sidebar-nav{display:flex;flex-direction:column;gap:4px;padding:0 10px;flex:1}
+.sidebar-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;border-radius:12px;cursor:pointer;
+  color:#787878;transition:all .15s;position:relative;
+  text-decoration:none;white-space:nowrap;overflow:hidden;
+}
+.sidebar-item:hover{color:#c0c0c0;background:rgba(255,255,255,0.05)}
+.sidebar-item.active{color:#fff;background:rgba(196,85,58,0.18)}
+.sidebar-item.active::before{
+  content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+  width:3px;height:20px;border-radius:0 3px 3px 0;background:var(--gold);
+}
+.sidebar-icon{width:22px;height:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.sidebar-icon svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sidebar-label{font-size:12px;font-weight:500;opacity:0;transition:opacity .15s;pointer-events:none}
+.sidebar:hover{width:200px}
+.sidebar:hover .sidebar-label{opacity:1;pointer-events:auto}
+.sidebar-divider{height:1px;background:rgba(255,255,255,0.08);margin:8px 10px}
+.sidebar-bottom{padding:0 10px;margin-top:auto;flex-shrink:0}
+
+.tab-section{display:none}
+.tab-section.active{display:block}
+
+#dashView.has-sidebar{padding-left:88px}
+@media(max-width:900px){
+  .sidebar{width:56px}
+  .sidebar:hover{width:56px}
+  .sidebar:hover .sidebar-label{opacity:0}
+  .sidebar-item{padding:10px 8px}
+  #dashView.has-sidebar{padding-left:68px}
+}
+@media(max-width:600px){
+  .sidebar{display:none!important}
+  #dashView.has-sidebar{padding-left:24px}
+}
+</style>
+</head>
+<body>
+
+<!-- UPLOAD VIEW -->
+<div id="uploadView">
+  <div class="upload-card">
+    <div class="upload-logo">Portfolio Pulse</div>
+    <div class="upload-sub">Drop your weekly balances spreadsheet. Everything stays in your browser.</div>
+    <div class="drop-zone" id="dropZone">
+      <div class="drop-icon">📊</div>
+      <div class="drop-text">Drag <strong>greg_numbers.xlsx</strong> here<br>or click to browse</div>
+      <div class="drop-hint">.xlsx only · parsed locally · nothing uploaded anywhere</div>
+    </div>
+    <input type="file" id="fileInput" accept=".xlsx,.xls">
+    <div class="upload-error" id="uploadError"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD VIEW -->
+<div id="dashView">
+
+<!-- SIDEBAR NAV -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">PP</div>
+  <div class="sidebar-nav">
+    <a class="sidebar-item active" data-tab="overview">
+      <span class="sidebar-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
+      <span class="sidebar-label">Overview</span>
+    </a>
+    <a class="sidebar-item" data-tab="growth">
+      <span class="sidebar-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+      <span class="sidebar-label">Growth</span>
+    </a>
+    <a class="sidebar-item" data-tab="accounts">
+      <span class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+      <span class="sidebar-label">Accounts</span>
+    </a>
+    <a class="sidebar-item" data-tab="returns">
+      <span class="sidebar-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+      <span class="sidebar-label">Returns</span>
+    </a>
+    <a class="sidebar-item" data-tab="retirement">
+      <span class="sidebar-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+      <span class="sidebar-label">Retirement</span>
+    </a>
+    <div class="sidebar-divider"></div>
+    <a class="sidebar-item" data-tab="deepdive">
+      <span class="sidebar-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+      <span class="sidebar-label">Deep Dive</span>
+    </a>
+  </div>
+  <div class="sidebar-bottom">
+    <a class="sidebar-item" id="sidebarReload">
+      <span class="sidebar-icon"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></span>
+      <span class="sidebar-label">New File</span>
+    </a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <div class="dash-header">
+    <div class="dash-brand"><h1>Portfolio Pulse</h1><span class="tag" id="dateRange"></span></div>
+    <div class="dash-header-right">
+      <button class="reload-btn" id="reloadBtn">↻ Load New File</button>
+      <div class="avatar">GG</div>
+    </div>
+  </div>
+
+  <!-- TAB: OVERVIEW -->
+  <div class="tab-section active" data-tab="overview">
+    <div class="hero-row">
+      <div class="hero-card">
+        <div class="hero-eyebrow">Current Net Worth</div>
+        <div class="hero-val" id="heroTotal"></div>
+        <div class="hero-sub" id="heroSub"></div>
+      </div>
+      <div class="hero-stats">
+        <div class="mini-stat"><div class="l">Total Growth</div><div class="v pos" id="sTotalGrowth"></div></div>
+        <div class="mini-stat"><div class="l">CAGR</div><div class="v" id="sCagr"></div></div>
+        <div class="mini-stat"><div class="l">Multiple</div><div class="v" id="sMultiple"></div></div>
+        <div class="mini-stat"><div class="l">Win Rate</div><div class="v" id="sWinRate"></div></div>
+      </div>
+    </div>
+
+    <div class="narrative" id="narrative"></div>
+
+    <div class="cpanel open" id="cp_milestones">
+      <div class="cpanel-head" onclick="togglePanel('cp_milestones')">
+        <div><h3>Milestones &amp; Pace</h3><div class="cpanel-summary" id="sum_milestones"></div></div>
+        <div class="cpanel-chevron">▾</div>
+      </div>
+      <div class="cpanel-body">
+        <div class="g2e">
+          <div>
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:600">Crossed</div>
+            <div class="milestones" id="milestones"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:600">Pace to Next (trailing 52wk rate)</div>
+            <div class="pace-cards" id="paceCards"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cpanel open" id="cp_networth">
+      <div class="cpanel-head" onclick="togglePanel('cp_networth')">
+        <div><h3>Net Worth Over Time</h3><div class="cpanel-summary" id="sum_networth"></div></div>
+        <div class="cpanel-chevron">▾</div>
+      </div>
+      <div class="cpanel-body">
+        <div class="controls" id="rangeControls"></div>
+        <div class="chart-box" style="height:340px"><canvas id="totalChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: GROWTH -->
+  <div class="tab-section" data-tab="growth">
+    <div class="cpanel open" id="cp_drawdown">
+      <div class="cpanel-head" onclick="togglePanel('cp_drawdown')">
+        <div><h3>Drawdown From Peak</h3><div class="cpanel-summary" id="sum_drawdown"></div></div>
+        <div class="cpanel-chevron">▾</div>
+      </div>
+      <div class="cpanel-body">
+        <p class="panel-sub">How far below the all-time high at each point — deeper dips mean bigger recoveries needed.</p>
+        <div class="chart-box" style="height:220px"><canvas id="drawdownChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="g4" id="statCards"></div>
+
+    <div class="cpanel open" id="cp_rolling">
+      <div class="cpanel-head" onclick="togglePanel('cp_rolling')">
+        <div><h3>Rolling Returns — 13wk &amp; 52wk</h3><div class="cpanel-summary" id="sum_rolling"></div></div>
+        <div class="cpanel-chevron">▾</div>
+      </div>
+      <div class="cpanel-body">
+        <p class="panel-sub">Smoothed return rates showing trend shifts before they're obvious in the raw line.</p>
+        <div class="chart-box" style="height:300px"><canvas id="rollingChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="cpanel open" id="cp_histogram">
+      <div class="cpanel-head" onclick="togglePanel('cp_histogram')">
+        <div><h3>Weekly Change Distribution</h3><div class="cpanel-summary" id="sum_histogram"></div></div>
+        <div class="cpanel-chevron">▾</div>
+      </div>
+      <div class="cpanel-body">
+        <div class="chart-box" style="height:250px"><canvas id="histChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: ACCOUNTS -->
+  <div class="tab-section" data-tab="accounts">
+    <div class="cpanel open" id="cp_composition">
+      <div class="cpanel-head" onclick="togglePanel('cp_composition')">
+        <div><h3>Account Composition &amp; Allocation</h3><div class="cpanel-summary" id="sum_composition"></div></div>
+        <div class="cpanel-chevron">▾</div>
+      </div>
+      <div class="cpanel-body">
+        <div class="g2">
+          <div><div class="chart-box" style="height:340px"><canvas id="stackChart"></canvas></div></div>
+          <div><div class="chart-box" style="height:340px"><canvas id="donutChart"></canvas></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cpanel open" id="cp_accounts">
+      <div class="cpanel-head" onclick="togglePanel('cp_accounts')">
+        <div><h3>Account Performance</h3><div class="cpanel-summary" id="sum_accounts"></div></div>
+        <div class="cpanel-chevron">▾</div>
+      </div>
+      <div class="cpanel-body">
+        <div style="margin-bottom:16px">
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:600">Annualized Growth Rate</div>
+          <div class="chart-box" style="height:280px"><canvas id="scoreChart"></canvas></div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:600">Individual Trajectories</div>
+          <div class="controls" id="sparkViewControls">
+            <button class="chip on" data-mode="dollars">Dollar Value</button>
+            <button class="chip" data-mode="indexed">Indexed to 100</button>
+          </div>
+          <div class="spark-grid" id="sparkGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: RETURNS -->
+  <div class="tab-section" data-tab="returns">
+    <div class="cpanel open" id="cp_heatmap">
+      <div class="cpanel-head" onclick="togglePanel('cp_heatmap')">
+        <div><h3>Monthly Return Heatmap</h3><div class="cpanel-summary" id="sum_heatmap"></div></div>
+        <div class="cpanel-chevron">▾</div>
+      </div>
+      <div class="cpanel-body">
+        <p class="panel-sub">Spot seasonal patterns — do certain months consistently run hot or cold?</p>
+        <div class="heatmap-wrap" id="heatmapWrap"></div>
+      </div>
+    </div>
+
+    <div class="cpanel open" id="cp_years">
+      <div class="cpanel-head" onclick="togglePanel('cp_years')">
+        <div><h3>Year-End Snapshots</h3><div class="cpanel-summary" id="sum_years"></div></div>
+        <div class="cpanel-chevron">▾</div>
+      </div>
+      <div class="cpanel-body">
+        <div class="chart-box" style="height:280px"><canvas id="yearChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: RETIREMENT -->
+  <div class="tab-section" data-tab="retirement">
+    <div class="cpanel open" id="cp_retirement">
+      <div class="cpanel-head" onclick="togglePanel('cp_retirement')">
+        <div><h3>Retirement Projection</h3><div class="cpanel-summary" id="sum_retirement"></div></div>
+        <div class="cpanel-chevron">▾</div>
+      </div>
+      <div class="cpanel-body">
+        <p class="panel-sub">Model your path to retirement. Default return is a conservative 8% — adjust with data-driven references below.</p>
+        <div class="retire-controls">
+          <div class="rc-slider">
+            <label>Annual Return: <span class="slider-val" id="retRateVal">8.0%</span></label>
+            <input type="range" id="retRate" min="0" max="15" step="0.25" value="8">
+            <div class="rc-refs" id="retRateRefs"></div>
+          </div>
+          <div class="rc-slider">
+            <label>Years to Retirement: <span class="slider-val" id="retYearsVal">22</span></label>
+            <input type="range" id="retYears" min="1" max="40" step="0.5" value="22">
+          </div>
+          <div class="rc-slider">
+            <label>Monthly Contribution: <span class="slider-val" id="retContribVal">$3,596</span></label>
+            <input type="range" id="retContrib" min="0" max="10000" step="100" value="3596">
+          </div>
+          <div class="rc-slider">
+            <label>Inflation Assumption: <span class="slider-val" id="retInflVal">3.0%</span></label>
+            <input type="range" id="retInfl" min="0" max="6" step="0.25" value="3">
+          </div>
+        </div>
+        <div class="retire-grid">
+          <div class="ret-card ret-hero-card"><div class="ret-label">Projected at Retirement</div><div class="ret-big" id="retTotal"></div><div class="ret-sub" id="retTotalSub"></div></div>
+          <div class="ret-card"><div class="ret-label">In Today's Dollars</div><div class="ret-val" id="retReal"></div><div class="ret-sub" id="retRealSub"></div></div>
+          <div class="ret-card"><div class="ret-label">Monthly Income (4% Rule)</div><div class="ret-val" style="color:var(--green)" id="retIncome"></div><div class="ret-sub" id="retIncomeSub"></div></div>
+          <div class="ret-card"><div class="ret-label">Nest Egg Lasts</div><div class="ret-val" style="color:var(--cyan)" id="retRunway"></div><div class="ret-sub" id="retRunwaySub"></div></div>
+        </div>
+        <div class="retire-chart-wrap"><div class="chart-box" style="height:240px"><canvas id="retChart"></canvas></div></div>
+        <div class="ret-disclaimer">This is a simplified model, not financial advice. Actual returns vary year to year.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: DEEP DIVE -->
+  <div class="tab-section" data-tab="deepdive">
+    <div class="section-divider"><span>Deep Dive — Multi-Tab Insights</span></div>
+
+    <div class="cpanel" id="cp_attribution" style="display:none">
+      <div class="cpanel-head" onclick="togglePanel('cp_attribution')">
+        <div><h3>Growth Attribution</h3><div class="cpanel-summary" id="sum_attribution"></div></div>
+        <div class="cpanel-chevron">▾</div>
+      </div>
+      <div class="cpanel-body">
+        <p class="panel-sub">Breaks down balance growth into contributions, dividends, fees, and pure market return.</p>
+        <div class="g2e">
+          <div class="chart-box" style="height:300px"><canvas id="attrChart"></canvas></div>
+          <div id="attrWaterfall"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cpanel" id="cp_avp" style="display:none">
+      <div class="cpanel-head" onclick="togglePanel('cp_avp')">
+        <div><h3>Actual vs. Plan</h3><div class="cpanel-summary" id="sum_avp"></div></div>
+        <div class="cpanel-chevron">▾</div>
+      </div>
+      <div class="cpanel-body">
+        <p class="panel-sub">Your real results against the 7.5% estimated projection from the Amortization tab.</p>
+        <div class="g2e">
+          <div class="chart-box" style="height:280px"><canvas id="avpChart"></canvas></div>
+          <div style="overflow-x:auto"><table class="avp-table" id="avpTable"></table></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cpanel" id="cp_retincome" style="display:none">
+      <div class="cpanel-head" onclick="togglePanel('cp_retincome')">
+        <div><h3>Total Retirement Income</h3><div class="cpanel-summary" id="sum_retincome"></div></div>
+        <div class="cpanel-chevron">▾</div>
+      </div>
+      <div class="cpanel-body">
+        <p class="panel-sub">Portfolio withdrawal + ANG pension combined. This is what retirement actually looks like.</p>
+        <div class="ret-income-grid" id="retIncomeGrid"></div>
+        <div class="chart-box" style="height:260px"><canvas id="retIncomeChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="cpanel" id="cp_pacing" style="display:none">
+      <div class="cpanel-head" onclick="togglePanel('cp_pacing')">
+        <div><h3>401(k) Contribution Pacing</h3><div class="cpanel-summary" id="sum_pacing"></div></div>
+        <div class="cpanel-chevron">▾</div>
+      </div>
+      <div class="cpanel-body">
+        <p class="panel-sub">YTD contributions vs. IRS annual limit. Are you on track to max out?</p>
+        <div class="pacing-wrap" id="pacingWrap"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Parsed live from your spreadsheet · nothing leaves your browser · past performance ≠ future results</div>
+</div>
+</div>
+
+<script>
+
+/* ===== COLLAPSIBLE PANELS ===== */
+function togglePanel(id){
+  const el = document.getElementById(id);
+  if(el) el.classList.toggle('open');
+}
+
+/* ===== SIDEBAR TAB NAV ===== */
+function switchTab(tabName){
+  document.querySelectorAll('.tab-section').forEach(s=>{
+    s.classList.toggle('active', s.dataset.tab === tabName);
+  });
+  document.querySelectorAll('.sidebar-item[data-tab]').forEach(i=>{
+    i.classList.toggle('active', i.dataset.tab === tabName);
+  });
+  window.scrollTo(0,0);
+  Object.values(charts).forEach(c=>{try{c.resize()}catch(e){}});
+  sparkChartsGlobal.forEach(c=>{try{c.resize()}catch(e){}});
+}
+(function initSidebar(){
+  document.querySelectorAll('.sidebar-item[data-tab]').forEach(item=>{
+    item.addEventListener('click',e=>{
+      e.preventDefault();
+      switchTab(item.dataset.tab);
+    });
+  });
+  const reloadBtn = document.getElementById('sidebarReload');
+  if(reloadBtn){
+    reloadBtn.addEventListener('click',()=>{
+      document.getElementById('reloadBtn').click();
+    });
+  }
+})();
+
+/* ===== GLOBALS ===== */
+const $ = id => document.getElementById(id);
+const fmt = n => n < 0 ? '−$' + Math.abs(Math.round(n)).toLocaleString() : '$' + Math.round(n).toLocaleString();
+const fmtK = n => n >= 1e6 ? '$'+(n/1e6).toFixed(2)+'M' : n >= 1e3 ? '$'+(n/1000).toFixed(0)+'k' : '$'+Math.round(n);
+const pct = (n,d=1) => (n*100).toFixed(d)+'%';
+const dateStr = d => d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+const ACCOUNT_META = [
+  {k:'savings',label:'Savings',c:'#4A7FB5'},
+  {k:'stocks',label:'Stocks',c:'#2D8B4E'},
+  {k:'ups',label:'UPS',c:'#7B6BA5'},
+  {k:'utma',label:'UTMA',c:'#C4553A'},
+  {k:'inheritance',label:'Inheritance',c:'#B8943A'},
+  {k:'ira',label:'IRA',c:'#C47A9A'},
+  {k:'tsp',label:'TSP',c:'#3A8C8C'},
+  {k:'k401',label:'401K',c:'#D4804A'},
+  {k:'b403',label:'403B',c:'#5A9E6F'},
+  {k:'crypto',label:'Crypto',c:'#B94432'},
+];
+
+let charts = {};
+let sparkChartsGlobal = [];
+
+/* ===== FILE HANDLING ===== */
+const dropZone = $('dropZone'), fileInput = $('fileInput');
+dropZone.addEventListener('click',()=>fileInput.click());
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('over')});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('over'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('over');if(e.dataTransfer.files.length)handleFile(e.dataTransfer.files[0])});
+fileInput.addEventListener('change',e=>{if(e.target.files.length)handleFile(e.target.files[0])});
+$('reloadBtn').addEventListener('click',()=>{
+  $('dashView').style.display='none';$('uploadView').style.display='flex';
+  $('dashView').classList.remove('has-sidebar');
+  document.getElementById('sidebar').classList.remove('visible');
+  Object.values(charts).forEach(c=>{try{c.destroy()}catch(e){}});charts={};
+  sparkChartsGlobal.forEach(c=>{try{c.destroy()}catch(e){}});sparkChartsGlobal=[];fileInput.value='';
+});
+
+function handleFile(file){
+  $('uploadError').textContent='';
+  if(!file.name.match(/\.xlsx?$/i)){$('uploadError').textContent='Please upload an .xlsx file.';return}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
+      const ws=wb.Sheets['Weekly Balances'];
+      if(!ws)throw new Error('No "Weekly Balances" tab found.');
+      const data=parseSheet(ws);
+      if(data.length<4)throw new Error('Not enough data rows found ('+data.length+').');
+      buildDashboard(data, wb);
+    }catch(err){$('uploadError').textContent='Error: '+err.message}
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+/* ===== PARSE ===== */
+function parseSheet(ws){
+  const range=XLSX.utils.decode_range(ws['!ref']);
+  const rows=[];const today=new Date();
+  for(let r=7;r<=range.e.r;r++){
+    const dateCell=ws[XLSX.utils.encode_cell({r,c:0})];
+    const totalCell=ws[XLSX.utils.encode_cell({r,c:12})];
+    if(!dateCell||!totalCell)continue;
+    let date=dateCell.v;
+    if(typeof date==='number')date=XLSX.SSF.parse_date_code(date);
+    if(date instanceof Date){/*ok*/}
+    else if(typeof date==='string')date=new Date(date);
+    else if(date&&date.y)date=new Date(date.y,date.m-1,date.d);
+    else continue;
+    if(isNaN(date.getTime()))continue;
+    if(date>today)continue;
+    const total=typeof totalCell.v==='number'?totalCell.v:parseFloat(totalCell.v);
+    if(!total||total<=0)continue;
+    const gv=c=>{const cell=ws[XLSX.utils.encode_cell({r,c})];return cell&&typeof cell.v==='number'?cell.v:0};
+    rows.push({date,savings:gv(1),stocks:gv(2),ups:gv(3),utma:gv(4),inheritance:gv(5),ira:gv(6),tsp:gv(7),k401:gv(8),b403:gv(9),crypto:gv(10),total});
+  }
+  rows.sort((a,b)=>a.date-b.date);
+
+  // Forward-fill: if an account had a balance and drops to 0 then comes back,
+  // carry forward the previous value (incomplete data entry, not real zeroes)
+  const acctKeys=['savings','stocks','ups','utma','inheritance','ira','tsp','k401','b403','crypto'];
+  for(let i=1;i<rows.length;i++){
+    let patched=false;
+    for(const k of acctKeys){
+      if(rows[i][k]===0 && rows[i-1][k]>0){
+        // Check if it comes back within 8 weeks
+        let comesBack=false;
+        for(let j=i+1;j<Math.min(i+8,rows.length);j++){
+          if(rows[j][k]>0){comesBack=true;break}
+        }
+        if(comesBack){
+          rows[i][k]=rows[i-1][k];
+          patched=true;
+        }
+      }
+    }
+    if(patched){
+      // Recalculate total from components
+      rows[i].total=acctKeys.reduce((s,k)=>s+rows[i][k],0);
+    }
+  }
+
+  return rows;
+}
+
+/* ===== BUILD DASHBOARD ===== */
+function buildDashboard(DATA, wb){
+  $('uploadView').style.display='none';
+  $('dashView').style.display='block';
+  $('dashView').classList.add('has-sidebar');
+  document.getElementById('sidebar').classList.add('visible');
+
+  const first=DATA[0],last=DATA[DATA.length-1];
+  const years=(last.date-first.date)/(365.25*24*60*60*1000);
+  const growth=last.total-first.total;
+  const cagr=Math.pow(last.total/first.total,1/years)-1;
+  const multiple=last.total/first.total;
+
+  // Weekly changes
+  const changes=[];
+  for(let i=1;i<DATA.length;i++){
+    const chg=DATA[i].total-DATA[i-1].total;
+    changes.push({date:DATA[i].date,chg,pct:chg/DATA[i-1].total});
+  }
+  const up=changes.filter(c=>c.chg>0).length;
+  const down=changes.filter(c=>c.chg<0).length;
+  const best=changes.reduce((a,b)=>b.chg>a.chg?b:a);
+  const worst=changes.reduce((a,b)=>b.chg<a.chg?b:a);
+  const avgChg=changes.reduce((s,c)=>s+c.chg,0)/changes.length;
+
+  // Max drawdown
+  let peak=DATA[0].total,maxDD=0,peakVal=0,troughVal=0;
+  const ddSeries=[];
+  for(const d of DATA){
+    if(d.total>peak)peak=d.total;
+    const dd=(d.total-peak)/peak;
+    ddSeries.push(dd);
+    if(dd<maxDD){maxDD=dd;peakVal=peak;troughVal=d.total}
+  }
+
+  // ===== HEADER & NARRATIVE =====
+  $('dateRange').textContent=dateStr(first.date)+' → '+dateStr(last.date)+' · '+DATA.length+' weeks';
+  $('heroTotal').textContent=fmt(last.total);
+  $('heroSub').textContent=`From ${fmt(first.total)} · ${years.toFixed(1)} years of data`;
+  $('sTotalGrowth').textContent='+'+fmt(growth);
+  $('sCagr').textContent=pct(cagr);
+  $('sMultiple').textContent=multiple.toFixed(2)+'×';
+  $('sWinRate').textContent=pct(up/(up+down),0);
+
+  $('narrative').innerHTML=`
+    <span class="sparkle">✦</span> Started at <strong>${fmt(first.total)}</strong> in <strong>${first.date.toLocaleDateString('en-US',{month:'long',year:'numeric'})}</strong>,
+    now at <strong>${fmt(last.total)}</strong> — a <strong>${multiple.toFixed(2)}× return</strong> over <strong>${years.toFixed(1)} years</strong> (${pct(cagr)} CAGR).
+    <strong>${up} green weeks</strong> vs. ${down} red — a <strong>${pct(up/(up+down),0)} win rate</strong>.
+    Average weekly gain: <strong>${fmt(avgChg)}</strong>.
+    Best week: <strong class="pos">+${fmt(best.chg)}</strong> (${dateStr(best.date)}).
+    Worst: <strong class="neg">${fmt(worst.chg)}</strong> (${dateStr(worst.date)}).
+    Deepest drawdown: <strong class="neg">${pct(maxDD)}</strong> — from ${fmtK(peakVal)} to ${fmtK(troughVal)}.
+  `;
+
+  $('statCards').innerHTML=`
+    <div class="stat-card"><div class="label">Best Week</div><div class="value pos">+${fmt(best.chg)}</div><div class="sub">${dateStr(best.date)} · +${pct(best.pct)}</div></div>
+    <div class="stat-card"><div class="label">Worst Week</div><div class="value neg">${fmt(worst.chg)}</div><div class="sub">${dateStr(worst.date)} · ${pct(worst.pct)}</div></div>
+    <div class="stat-card"><div class="label">Max Drawdown</div><div class="value neg">${pct(maxDD)}</div><div class="sub">${fmtK(peakVal)} → ${fmtK(troughVal)}</div></div>
+    <div class="stat-card"><div class="label">Avg Weekly Gain</div><div class="value">${fmt(avgChg)}</div><div class="sub">across ${changes.length} weeks</div></div>
+  `;
+
+  // ===== CHART DEFAULTS =====
+  Chart.defaults.color='#6B6560';
+  Chart.defaults.borderColor='#E8E2DA';
+  Chart.defaults.font.family="'Inter',sans-serif";
+  const labels=DATA.map(d=>d.date.toISOString().slice(0,10));
+  const totals=DATA.map(d=>d.total);
+  const gridColor='rgba(232,226,218,0.7)';
+
+  // ===== 1. TOTAL CHART =====
+  const totalCtx=$('totalChart');
+  const tGrad=totalCtx.getContext('2d').createLinearGradient(0,0,0,340);
+  tGrad.addColorStop(0,'rgba(196,85,58,0.20)');tGrad.addColorStop(1,'rgba(196,85,58,0)');
+  charts.total=new Chart(totalCtx,{
+    type:'line',
+    data:{labels,datasets:[{data:totals,borderColor:'#C4553A',backgroundColor:tGrad,fill:true,tension:0.25,pointRadius:0,pointHoverRadius:5,pointHoverBackgroundColor:'#C4553A',borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',padding:12,callbacks:{label:c=>'Net Worth: '+fmt(c.parsed.y)}}},
+      scales:{x:{ticks:{maxTicksLimit:10},grid:{color:gridColor}},y:{ticks:{callback:v=>fmtK(v)},grid:{color:gridColor}}}
+    }
+  });
+
+  // Range buttons
+  const ranges=[['all','All Time'],['3y','3 Years'],['1y','1 Year'],['6m','6 Months'],['ytd','YTD']];
+  $('rangeControls').innerHTML=ranges.map(([k,l],i)=>`<button class="chip${i===0?' on':''}" data-range="${k}">${l}</button>`).join('');
+  $('rangeControls').querySelectorAll('.chip').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      $('rangeControls').querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));btn.classList.add('on');
+      const r=btn.dataset.range;let slice;
+      if(r==='all')slice=DATA;
+      else if(r==='3y')slice=DATA.slice(-Math.min(156,DATA.length));
+      else if(r==='1y')slice=DATA.slice(-Math.min(52,DATA.length));
+      else if(r==='6m')slice=DATA.slice(-Math.min(26,DATA.length));
+      else{const yr=new Date().getFullYear();const idx=DATA.findIndex(d=>d.date.getFullYear()===yr);slice=idx>=0?DATA.slice(idx):DATA.slice(-16)}
+      charts.total.data.labels=slice.map(d=>d.date.toISOString().slice(0,10));
+      charts.total.data.datasets[0].data=slice.map(d=>d.total);charts.total.update();
+    });
+  });
+
+  // ===== 2. DRAWDOWN CHART =====
+  const ddCtx=$('drawdownChart');
+  const ddGrad=ddCtx.getContext('2d').createLinearGradient(0,0,0,220);
+  ddGrad.addColorStop(0,'rgba(196,85,58,0.18)');ddGrad.addColorStop(1,'rgba(196,85,58,0)');
+  charts.drawdown=new Chart(ddCtx,{
+    type:'line',
+    data:{labels,datasets:[{
+      data:ddSeries.map(v=>v*100),
+      borderColor:'#C4553A',backgroundColor:ddGrad,fill:true,
+      tension:0.2,pointRadius:0,borderWidth:1.5
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#C4553A',bodyColor:'#6B6560',callbacks:{label:c=>c.parsed.y.toFixed(2)+'% from peak'}}},
+      scales:{x:{ticks:{maxTicksLimit:10},grid:{color:gridColor}},y:{ticks:{callback:v=>v.toFixed(0)+'%'},grid:{color:gridColor},max:0}}
+    }
+  });
+
+  // ===== 3. STACKED AREA + DONUT =====
+  const activeAccounts=ACCOUNT_META.filter(a=>last[a.k]>0);
+  charts.stack=new Chart($('stackChart'),{
+    type:'line',
+    data:{labels,datasets:activeAccounts.map(a=>({label:a.label,data:DATA.map(d=>d[a.k]),backgroundColor:a.c+'bb',borderColor:a.c,borderWidth:1,fill:true,pointRadius:0,tension:0.2}))},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:8}},tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},
+      scales:{x:{stacked:true,ticks:{maxTicksLimit:8},grid:{display:false}},y:{stacked:true,ticks:{callback:v=>fmtK(v)},grid:{color:gridColor}}}
+    }
+  });
+  charts.donut=new Chart($('donutChart'),{
+    type:'doughnut',
+    data:{labels:activeAccounts.map(a=>a.label),datasets:[{data:activeAccounts.map(a=>last[a.k]),backgroundColor:activeAccounts.map(a=>a.c),borderColor:'#FFFFFF',borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{legend:{position:'right',labels:{boxWidth:10,font:{size:11},padding:6}},tooltip:{callbacks:{label:c=>c.label+': '+fmt(c.parsed)+' ('+pct(c.parsed/last.total)+')'}}}
+    }
+  });
+
+  // ===== 4. ROLLING RETURNS =====
+  function rollingReturn(data,window){
+    const out=[];
+    for(let i=0;i<data.length;i++){
+      if(i<window){out.push(null)}
+      else{out.push(((data[i].total/data[i-window].total)-1)*100)}
+    }
+    return out;
+  }
+  const roll13=rollingReturn(DATA,13);
+  const roll52=rollingReturn(DATA,52);
+  charts.rolling=new Chart($('rollingChart'),{
+    type:'line',
+    data:{labels,datasets:[
+      {label:'13-Week Return',data:roll13,borderColor:'#4A7FB5',borderWidth:2,tension:0.3,pointRadius:0,borderDash:[]},
+      {label:'52-Week Return',data:roll52,borderColor:'#C4553A',borderWidth:2,tension:0.3,pointRadius:0},
+      {label:'Zero Line',data:Array(DATA.length).fill(0),borderColor:'#D9D2C9',borderWidth:1,borderDash:[4,4],pointRadius:0}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},filter:item=>item.text!=='Zero Line'}},
+        tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',filter:item=>item.dataset.label!=='Zero Line',callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(2)+'%'}}
+      },
+      scales:{x:{ticks:{maxTicksLimit:10},grid:{color:gridColor}},y:{ticks:{callback:v=>v.toFixed(0)+'%'},grid:{color:gridColor}}}
+    }
+  });
+
+  // ===== 5. MONTHLY HEATMAP =====
+  const monthlyReturns={};
+  // group data by month: first and last entry per month
+  const byMonth={};
+  DATA.forEach(d=>{
+    const key=d.date.getFullYear()+'-'+(d.date.getMonth()+1);
+    if(!byMonth[key])byMonth[key]={first:d,last:d};
+    else byMonth[key].last=d;
+  });
+  // Also need the previous month's last value
+  const monthKeys=Object.keys(byMonth).sort();
+  for(let i=0;i<monthKeys.length;i++){
+    const k=monthKeys[i];
+    const prevTotal=i>0?byMonth[monthKeys[i-1]].last.total:byMonth[k].first.total;
+    const curTotal=byMonth[k].last.total;
+    const ret=(curTotal-prevTotal)/prevTotal;
+    const [yr,mo]=k.split('-').map(Number);
+    if(!monthlyReturns[yr])monthlyReturns[yr]={};
+    monthlyReturns[yr][mo]=ret;
+  }
+  const hmYears=Object.keys(monthlyReturns).map(Number).sort();
+
+  // Color scale: green for positive, red for negative
+  function hmColor(val){
+    if(val===undefined)return 'transparent';
+    const abs=Math.min(Math.abs(val),0.15);
+    const intensity=abs/0.15;
+    if(val>=0){
+      return `rgba(45,139,78,${0.08+intensity*0.35})`;
+    } else {
+      return `rgba(196,85,58,${0.08+intensity*0.35})`;
+    }
+  }
+
+  let hmHTML='<table class="heatmap"><thead><tr><th></th>';
+  for(let m=1;m<=12;m++)hmHTML+=`<th>${monthNames[m-1]}</th>`;
+  hmHTML+='<th>Year</th></tr></thead><tbody>';
+  for(const yr of hmYears){
+    hmHTML+=`<tr><td class="hm-label">${yr}</td>`;
+    let yrTotal=0,yrCount=0;
+    for(let m=1;m<=12;m++){
+      const v=monthlyReturns[yr]?.[m];
+      if(v!==undefined){
+        yrTotal+=v;yrCount++;
+        const sign=v>=0?'+':'';
+        hmHTML+=`<td style="background:${hmColor(v)};color:${Math.abs(v)>0.03?'#1A1A1A':'#6B6560'}" title="${monthNames[m-1]} ${yr}: ${sign}${(v*100).toFixed(2)}%">${sign}${(v*100).toFixed(1)}%</td>`;
+      } else {
+        hmHTML+=`<td class="empty"></td>`;
+      }
+    }
+    if(yrCount>0){
+      const yrAvg=yrTotal;
+      const sign=yrAvg>=0?'+':'';
+      hmHTML+=`<td style="background:${hmColor(yrAvg/yrCount*2)};font-weight:800;color:#1A1A1A" title="Full year ${yr}: ${sign}${(yrAvg*100).toFixed(2)}%">${sign}${(yrAvg*100).toFixed(1)}%</td>`;
+    } else {
+      hmHTML+=`<td class="empty"></td>`;
+    }
+    hmHTML+='</tr>';
+  }
+  hmHTML+='</tbody></table>';
+  $('heatmapWrap').innerHTML=hmHTML;
+  // Heatmap summary
+  const bestMonth = {m:0,v:-999}, worstMonth = {m:0,v:999};
+  for(let m=1;m<=12;m++){
+    let total=0,count=0;
+    for(const yr of hmYears){if(monthlyReturns[yr]?.[m]!==undefined){total+=monthlyReturns[yr][m];count++}}
+    if(count>0){const avg=total/count; if(avg>bestMonth.v){bestMonth.v=avg;bestMonth.m=m} if(avg<worstMonth.v){worstMonth.v=avg;worstMonth.m=m}}
+  }
+  if(bestMonth.m) $('sum_heatmap').textContent = 'Best avg month: '+monthNames[bestMonth.m-1]+' (+'+pct(bestMonth.v)+') · Worst: '+monthNames[worstMonth.m-1]+' ('+pct(worstMonth.v)+')';
+
+
+  // ===== 6. ACCOUNT SCOREBOARD + SMALL MULTIPLES =====
+  const acctPerf=activeAccounts.map(a=>{
+    const nonZero=DATA.filter(d=>d[a.k]>0);
+    if(nonZero.length<2) return null;
+    const firstD=nonZero[0], lastD=nonZero[nonZero.length-1];
+    const yrs=(lastD.date-firstD.date)/(365.25*24*60*60*1000);
+    if(yrs<0.1) return null;
+    const cagr=Math.pow(lastD[a.k]/firstD[a.k],1/yrs)-1;
+    const totalRet=(lastD[a.k]/firstD[a.k]-1)*100;
+    const firstIdx=DATA.findIndex(d=>d[a.k]>0);
+    return {
+      ...a, cagr, totalRet, yrs,
+      startVal:firstD[a.k], endVal:lastD[a.k],
+      startDate:firstD.date, endDate:lastD.date,
+      firstIdx,
+      multiple:lastD[a.k]/firstD[a.k]
+    };
+  }).filter(Boolean).sort((a,b)=>b.cagr-a.cagr);
+
+  // Scoreboard bar chart - horizontal bars sorted by CAGR
+  charts.score=new Chart($('scoreChart'),{
+    type:'bar',
+    data:{
+      labels:acctPerf.map(a=>a.label),
+      datasets:[{
+        data:acctPerf.map(a=>a.cagr*100),
+        backgroundColor:acctPerf.map(a=>a.cagr>=0?a.c+'cc':'rgba(196,85,58,0.5)'),
+        borderColor:acctPerf.map(a=>a.c),
+        borderWidth:1, borderRadius:4
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{
+        legend:{display:false},
+        tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',
+          callbacks:{label:c=>{
+            const a=acctPerf[c.dataIndex];
+            return [
+              `CAGR: ${(a.cagr*100).toFixed(1)}%`,
+              `Total: ${a.totalRet>=0?'+':''}${a.totalRet.toFixed(0)}% (${a.multiple.toFixed(1)}×)`,
+              `${fmt(a.startVal)} → ${fmt(a.endVal)}`,
+              `${a.yrs.toFixed(1)} years tracked`
+            ];
+          }}
+        }
+      },
+      scales:{
+        x:{ticks:{callback:v=>v.toFixed(0)+'%'},grid:{color:gridColor},
+          title:{display:true,text:'Compound Annual Growth Rate',color:'#9E9790',font:{size:11}}},
+        y:{grid:{display:false},ticks:{font:{size:12,weight:'600'}}}
+      }
+    }
+  });
+
+  // Small multiples sparkline grid
+  let sparkMode='dollars';
+  const sparkCharts=[];
+
+  function buildSparkGrid(mode){
+    sparkMode=mode;
+    // Destroy old charts
+    sparkCharts.forEach(c=>{try{c.destroy()}catch(e){}});
+    sparkCharts.length=0;
+    sparkChartsGlobal.forEach(c=>{try{c.destroy()}catch(e){}});
+    sparkChartsGlobal.length=0;
+
+    let gridHTML='';
+    acctPerf.forEach((a,i)=>{
+      const badge=a.cagr>=0
+        ?`<span class="spark-badge up">+${(a.cagr*100).toFixed(1)}%/yr</span>`
+        :`<span class="spark-badge dn">${(a.cagr*100).toFixed(1)}%/yr</span>`;
+      gridHTML+=`
+        <div class="spark-card">
+          <div class="spark-header">
+            <span class="spark-name" style="color:${a.c}">${a.label}</span>
+            ${badge}
+          </div>
+          <div class="spark-meta">${fmt(a.startVal)} → ${fmt(a.endVal)} · ${a.multiple.toFixed(1)}× · ${a.yrs.toFixed(1)}yr</div>
+          <div class="spark-chart"><canvas id="spark${i}"></canvas></div>
+        </div>`;
+    });
+    $('sparkGrid').innerHTML=gridHTML;
+
+    // Build each mini chart
+    acctPerf.forEach((a,i)=>{
+      const canvas=document.getElementById('spark'+i);
+      const ctx=canvas.getContext('2d');
+      const grad=ctx.createLinearGradient(0,0,0,90);
+      grad.addColorStop(0,a.c+'55');grad.addColorStop(1,a.c+'00');
+
+      const nonZeroData=DATA.filter(d=>d[a.k]>0);
+      const sparkLabels=nonZeroData.map(d=>d.date.toISOString().slice(0,10));
+      let sparkVals;
+      if(mode==='indexed'){
+        const base=nonZeroData[0][a.k];
+        sparkVals=nonZeroData.map(d=>(d[a.k]/base)*100);
+      } else {
+        sparkVals=nonZeroData.map(d=>d[a.k]);
+      }
+
+      const ch=new Chart(canvas,{
+        type:'line',
+        data:{labels:sparkLabels,datasets:[{
+          data:sparkVals,borderColor:a.c,backgroundColor:grad,
+          fill:true,tension:0.3,pointRadius:0,borderWidth:1.5
+        }]},
+        options:{
+          responsive:true,maintainAspectRatio:false,
+          interaction:{mode:'index',intersect:false},
+          plugins:{legend:{display:false},tooltip:{
+            backgroundColor:'#fff',borderColor:a.c,borderWidth:1,titleColor:a.c,bodyColor:'#6B6560',
+            titleFont:{size:10},bodyFont:{size:11},padding:8,
+            callbacks:{
+              title:items=>items[0].label,
+              label:c=>mode==='indexed'
+                ? 'Index: '+c.parsed.y.toFixed(1)+' ('+((c.parsed.y-100)>=0?'+':'')+(c.parsed.y-100).toFixed(1)+'%)'
+                : fmt(c.parsed.y)
+            }
+          }},
+          scales:{
+            x:{display:false},
+            y:{display:true,ticks:{maxTicksLimit:3,font:{size:9},color:'#9E9790',
+              callback:v=>mode==='indexed'?v.toFixed(0):fmtK(v)
+            },grid:{color:'rgba(232,226,218,0.5)'},border:{display:false}}
+          }
+        }
+      });
+      sparkCharts.push(ch);
+      sparkChartsGlobal.push(ch);
+    });
+  }
+  buildSparkGrid('dollars');
+  // Account summary
+  if(acctPerf.length>0) $('sum_accounts').textContent = 'Top performer: '+acctPerf[0].label+' at '+pct(acctPerf[0].cagr)+'/yr CAGR · '+acctPerf.length+' accounts tracked';
+
+
+  // Toggle between dollar value and indexed view
+  $('sparkViewControls').querySelectorAll('.chip').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      $('sparkViewControls').querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+      btn.classList.add('on');
+      buildSparkGrid(btn.dataset.mode);
+    });
+  });
+
+
+
+  // ===== PANEL SUMMARIES =====
+  $('sum_networth').textContent = fmt(last.total)+' — '+pct(cagr)+' CAGR over '+years.toFixed(1)+' years';
+  $('sum_drawdown').textContent = 'Max drawdown: '+pct(maxDD)+' — '+fmtK(peakVal)+' → '+fmtK(troughVal);
+  $('sum_composition').textContent = activeAccounts.filter(a=>last[a.k]>0).length+' accounts · largest: '+activeAccounts.reduce((a,b)=>last[b.k]>last[a.k]?b:a).label+' at '+pct(last[activeAccounts.reduce((a,b)=>last[b.k]>last[a.k]?b:a).k]/last.total);
+  $('sum_rolling').textContent = '52wk return: '+(roll52[roll52.length-1]!==null?roll52[roll52.length-1].toFixed(1)+'%':'N/A')+' · 13wk: '+(roll13[roll13.length-1]!==null?roll13[roll13.length-1].toFixed(1)+'%':'N/A');
+  $('sum_histogram').textContent = up+' green weeks vs '+down+' red · avg change: '+fmt(avgChg)+'/wk';
+
+  // ===== 8. HISTOGRAM =====
+  const bucketSize=5000;
+  const minB=Math.floor(worst.chg/bucketSize)*bucketSize;
+  const maxB=Math.ceil(best.chg/bucketSize)*bucketSize;
+  const buckets={};
+  for(let b=minB;b<=maxB;b+=bucketSize)buckets[b]=0;
+  for(const c of changes){const b=Math.floor(c.chg/bucketSize)*bucketSize;buckets[b]=(buckets[b]||0)+1}
+  const hLabels=Object.keys(buckets).map(Number).sort((a,b)=>a-b);
+  charts.hist=new Chart($('histChart'),{
+    type:'bar',
+    data:{labels:hLabels.map(b=>fmtK(b)),datasets:[{data:hLabels.map(b=>buckets[b]),backgroundColor:hLabels.map(b=>b>=0?'rgba(45,139,78,0.55)':'rgba(196,85,58,0.55)'),borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>c[0].label+' range',label:c=>c.parsed.y+' weeks'}}},
+      scales:{x:{grid:{display:false},title:{display:true,text:'Weekly $ Change Bucket',color:'#9E9790',font:{size:11}}},y:{grid:{color:gridColor},title:{display:true,text:'# of Weeks',color:'#9E9790',font:{size:11}}}}
+    }
+  });
+
+  // ===== 9. YEAR BARS + MILESTONES =====
+  const yearMap={};DATA.forEach(d=>{yearMap[d.date.getFullYear()]=d.total});
+  const yLabels=Object.keys(yearMap);const yVals=Object.values(yearMap);
+  charts.year=new Chart($('yearChart'),{
+    type:'bar',
+    data:{labels:yLabels,datasets:[{data:yVals,backgroundColor:yLabels.map((_,i)=>i===yLabels.length-1?'#C4553A':'#D9D2C9'),borderRadius:8}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.parsed.y)}}},
+      scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>fmtK(v)},grid:{color:gridColor}}}
+    }
+  });
+  $('sum_years').textContent = yLabels.length+' years tracked · '+fmt(yVals[0])+' → '+fmt(yVals[yVals.length-1]);
+
+  const thresholds=[250000,300000,400000,500000,600000,700000,800000,900000,1000000,1500000,2000000];
+  let mHTML='';
+  for(const t of thresholds){
+    const hit=DATA.find(d=>d.total>=t);
+    if(hit){mHTML+=`<div class="mile"><span class="amt">${fmt(t)}</span><span class="when">${dateStr(hit.date)}</span></div>`}
+    else if(t>last.total&&t<=last.total*3){
+      const gap=t-last.total;
+      mHTML+=`<div class="mile future"><span class="amt">${fmt(t)}</span><span class="when">${fmtK(gap)} to go</span></div>`;
+    }
+  }
+  $('milestones').innerHTML=mHTML;
+
+  // Milestone summary
+  const crossedCount = thresholds.filter(t=>DATA.find(d=>d.total>=t)).length;
+  const nextTarget = thresholds.find(t=>t>last.total);
+  $('sum_milestones').textContent = crossedCount+' crossed · next: '+fmt(nextTarget||0)+' ('+fmtK((nextTarget||last.total)-last.total)+' away)';
+
+
+  // ===== 10. PACE TO MILESTONE =====
+  // trailing 52wk growth rate
+  let trailing52Rate=0;
+  if(DATA.length>=52){
+    const d52=DATA[DATA.length-52];
+    trailing52Rate=(last.total/d52.total)-1;
+  } else {
+    trailing52Rate=Math.pow(last.total/first.total,1/years)-1;
+  }
+  const weeklyRate=Math.pow(1+trailing52Rate,1/52)-1;
+
+  const futureTargets=thresholds.filter(t=>t>last.total&&t<=last.total*5);
+  let paceHTML='';
+  for(const target of futureTargets){
+    if(weeklyRate<=0){
+      paceHTML+=`<div class="pace-card"><div class="pc-target">${fmt(target)}</div><div class="pc-eta">—</div><div class="pc-sub">Trailing rate is negative</div><div class="pace-bar"><div class="pace-fill" style="width:0%"></div></div></div>`;
+      continue;
+    }
+    const weeksNeeded=Math.log(target/last.total)/Math.log(1+weeklyRate);
+    const etaDate=new Date(last.date.getTime()+weeksNeeded*7*24*60*60*1000);
+    const progress=(last.total/target)*100;
+    const monthsAway=(weeksNeeded/52*12).toFixed(0);
+    paceHTML+=`
+      <div class="pace-card">
+        <div class="pc-target">${fmt(target)}</div>
+        <div class="pc-eta">${etaDate.toLocaleDateString('en-US',{month:'short',year:'numeric'})}</div>
+        <div class="pc-sub">~${monthsAway} months · at ${pct(trailing52Rate)} trailing rate</div>
+        <div class="pace-bar"><div class="pace-fill" style="width:${Math.min(progress,100)}%"></div></div>
+      </div>`;
+  }
+  $('paceCards').innerHTML=paceHTML;
+
+  // ===== RETIREMENT PROJECTION =====
+  const retRateEl=$('retRate'), retYearsEl=$('retYears'), retContribEl=$('retContrib'), retInflEl=$('retInfl');
+  let retChart=null;
+
+  // Compute contribution-stripped CAGR for reference badge
+  const estTotalContribs=3596*12*years;
+  const estInvestGrowth=last.total-first.total-estTotalContribs;
+  const fullInvestRate=years>0&&estInvestGrowth>0?Math.pow((first.total+estInvestGrowth)/first.total,1/years)-1:0.07;
+
+  // Build clickable reference badges
+  const retRefs=[
+    {label:'Conservative',rate:6,color:'var(--blue)'},
+    {label:'S&P 500 Avg',rate:10,color:'var(--green)'},
+    {label:`Your ${years.toFixed(0)}yr Est.`,rate:Math.round(fullInvestRate*1000)/10,color:'var(--gold)'},
+  ];
+  $('retRateRefs').innerHTML=retRefs.map(r=>
+    `<button class="rc-ref" data-rate="${r.rate}" style="border-color:${r.color};color:${r.color}" title="Set slider to ${r.rate}%">${r.label}: ${r.rate}%</button>`
+  ).join('');
+  $('retRateRefs').querySelectorAll('.rc-ref').forEach(btn=>{
+    btn.addEventListener('click',()=>{retRateEl.value=btn.dataset.rate;computeRetirement()});
+  });
+
+  function computeRetirement(){
+    const annualRate=parseFloat(retRateEl.value)/100;
+    const yrsToRet=parseFloat(retYearsEl.value);
+    const monthlyContrib=parseFloat(retContribEl.value);
+    const inflRate=parseFloat(retInflEl.value)/100;
+
+    $('retRateVal').textContent=(annualRate*100).toFixed(2)+'%';
+    $('retYearsVal').textContent=yrsToRet.toFixed(1);
+    $('retContribVal').textContent='$'+monthlyContrib.toLocaleString();
+    $('retInflVal').textContent=(inflRate*100).toFixed(2)+'%';
+
+    const start=last.total;
+    const monthlyRate=Math.pow(1+annualRate,1/12)-1;
+
+    // Project forward month by month
+    const yearLabels=['Now'];
+    const nominalVals=[start];
+    const realVals=[start];
+    let bal=start;
+    for(let m=1;m<=yrsToRet*12;m++){
+      bal=bal*(1+monthlyRate)+monthlyContrib;
+      if(m%12===0||m===Math.round(yrsToRet*12)){
+        const yr=m/12;
+        yearLabels.push('Y'+yr.toFixed(0));
+        nominalVals.push(bal);
+        realVals.push(bal/Math.pow(1+inflRate,yr));
+      }
+    }
+
+    const finalNominal=bal;
+    const finalReal=bal/Math.pow(1+inflRate,yrsToRet);
+
+    // 4% rule monthly income
+    const monthlyIncome4=finalNominal*0.04/12;
+    const monthlyIncomeReal=finalReal*0.04/12;
+
+    // Runway: how long does it last if withdrawing 4% of initial + inflation-adjusted raises, earning 5% in retirement?
+    const retReturn=0.05;
+    const withdrawalGrowth=inflRate;
+    let runwayBal=finalNominal;
+    let annualWithdrawal=finalNominal*0.04;
+    let runwayYears=0;
+    while(runwayBal>0&&runwayYears<80){
+      runwayBal=runwayBal*(1+retReturn)-annualWithdrawal;
+      annualWithdrawal*=(1+withdrawalGrowth);
+      runwayYears++;
+    }
+
+    // Update UI
+    $('retTotal').textContent=fmt(finalNominal);
+    $('retTotalSub').textContent=`At ${pct(annualRate)} return + ${fmt(monthlyContrib)}/mo over ${yrsToRet.toFixed(1)} yrs`;
+    $('retReal').textContent=fmt(finalReal);
+    $('retRealSub').textContent=`Adjusted for ${pct(inflRate)} annual inflation`;
+    $('retIncome').textContent=fmt(monthlyIncome4)+'/mo';
+    $('retIncomeSub').textContent=`${fmt(monthlyIncomeReal)}/mo in today's dollars`;
+    $('retRunway').textContent=runwayYears>=80?'80+ years':runwayYears+' years';
+    $('retRunwaySub').textContent=`At 4% withdrawal + 5% return in retirement`;
+    // Update collapsed summary
+    if($('sum_retirement')) $('sum_retirement').textContent = fmt(finalNominal)+' projected · '+fmt(monthlyIncome4)+'/mo income · '+runwayYears+'yr runway';
+
+
+    // Chart
+    if(retChart){
+      retChart.data.labels=yearLabels;
+      retChart.data.datasets[0].data=nominalVals;
+      retChart.data.datasets[1].data=realVals;
+      retChart.update();
+    } else {
+      const rCtx=$('retChart');
+      const nGrad=rCtx.getContext('2d').createLinearGradient(0,0,0,240);
+      nGrad.addColorStop(0,'rgba(196,85,58,0.18)');nGrad.addColorStop(1,'rgba(196,85,58,0)');
+      const rGrad=rCtx.getContext('2d').createLinearGradient(0,0,0,240);
+      rGrad.addColorStop(0,'rgba(58,140,140,0.18)');rGrad.addColorStop(1,'rgba(58,140,140,0)');
+      retChart=new Chart(rCtx,{
+        type:'line',
+        data:{labels:yearLabels,datasets:[
+          {label:'Nominal',data:nominalVals,borderColor:'#C4553A',backgroundColor:nGrad,fill:true,tension:0.3,pointRadius:0,borderWidth:2},
+          {label:"Today's Dollars",data:realVals,borderColor:'#3A8C8C',backgroundColor:rGrad,fill:true,tension:0.3,pointRadius:0,borderWidth:2,borderDash:[5,3]}
+        ]},
+        options:{responsive:true,maintainAspectRatio:false,
+          interaction:{mode:'index',intersect:false},
+          plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:10}},
+            tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',
+              callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}
+            }
+          },
+          scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>fmtK(v)},grid:{color:gridColor}}}
+        }
+      });
+      charts.ret=retChart;
+    }
+  }
+
+  [retRateEl,retYearsEl,retContribEl,retInflEl].forEach(el=>el.addEventListener('input',computeRetirement));
+  computeRetirement();
+
+
+  // ===== MULTI-TAB INSIGHTS =====
+  const gv = (ws,r,c) => {
+    if(!ws) return null;
+    const cell = ws[XLSX.utils.encode_cell({r,c})];
+    return cell ? cell.v : null;
+  };
+  const gvn = (ws,r,c) => { const v=gv(ws,r,c); return typeof v==='number'?v:0; };
+
+  // ---- GROWTH ATTRIBUTION (Sheet1) ----
+  const s1 = wb.Sheets['Sheet1'];
+  if(s1){
+    try{
+      // Rows 2-10 (0-indexed): col A=name, B=begin, C=contribs, D=divs, E=fees, F=growth, G=ending
+      const attrData = [];
+      for(let r=2;r<=10;r++){
+        const name = gv(s1,r,0);
+        if(!name) continue;
+        attrData.push({
+          name, begin:gvn(s1,r,1), contribs:gvn(s1,r,2),
+          divs:gvn(s1,r,3), fees:gvn(s1,r,4), growth:gvn(s1,r,5), ending:gvn(s1,r,6)
+        });
+      }
+      // Totals row 12
+      const totals = {
+        begin:gvn(s1,12,1), contribs:gvn(s1,12,2), divs:gvn(s1,12,3),
+        fees:gvn(s1,12,4), growth:gvn(s1,12,5), ending:gvn(s1,12,6)
+      };
+
+      if(attrData.length>0){
+        $('cp_attribution').style.display='';
+        $('sum_attribution').textContent = pct(totals.contribs/(totals.ending-totals.begin))+' from new money · '+pct((totals.growth+totals.divs+totals.fees)/(totals.ending-totals.begin))+' from returns';
+
+        // Stacked bar chart: per account breakdown
+        const attrLabels = attrData.map(a=>a.name);
+        charts.attr = new Chart($('attrChart'),{
+          type:'bar',
+          data:{labels:attrLabels,datasets:[
+            {label:'Contributions',data:attrData.map(a=>a.contribs),backgroundColor:'#4A7FB5',borderRadius:4},
+            {label:'Dividends',data:attrData.map(a=>a.divs),backgroundColor:'#2D8B4E',borderRadius:4},
+            {label:'Market Growth',data:attrData.map(a=>a.growth),backgroundColor:'#C4553A',borderRadius:4},
+            {label:'Fees',data:attrData.map(a=>a.fees),backgroundColor:'#B94432',borderRadius:4}
+          ]},
+          options:{responsive:true,maintainAspectRatio:false,
+            plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:8}},
+              tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',
+                callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},
+            scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10}}},
+              y:{stacked:true,ticks:{callback:v=>fmtK(v)},grid:{color:gridColor}}}
+          }
+        });
+
+        // Waterfall summary
+        const wfItems = [
+          {label:'Starting Balance',val:totals.begin,color:'var(--dim)'},
+          {label:'Contributions',val:totals.contribs,color:'var(--blue)'},
+          {label:'Dividends',val:totals.divs,color:'var(--green)'},
+          {label:'Market Growth',val:totals.growth,color:'var(--gold)'},
+          {label:'Fees',val:totals.fees,color:'var(--red)'},
+        ];
+        const maxVal = Math.max(...wfItems.map(w=>Math.abs(w.val)));
+        let wfHTML = '<div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:600">Year Totals</div>';
+        wfItems.forEach(w=>{
+          const pctWidth = Math.max(4, Math.abs(w.val)/maxVal*100);
+          const cls = w.val>=0?'pos':'neg';
+          wfHTML += `<div class="wf-row">
+            <div class="wf-label">${w.label}</div>
+            <div class="wf-bar-wrap"><div class="wf-bar" style="width:${pctWidth}%;background:${w.color}"></div></div>
+            <div class="wf-val ${cls}">${fmt(w.val)}</div>
+          </div>`;
+        });
+        // Total
+        wfHTML += `<div class="wf-row" style="border-top:2px solid var(--border);padding-top:12px;margin-top:4px">
+          <div class="wf-label" style="font-weight:700;color:var(--text)">Ending Balance</div>
+          <div class="wf-bar-wrap"></div>
+          <div class="wf-val" style="color:var(--gold);font-size:15px">${fmt(totals.ending)}</div>
+        </div>`;
+        const contribPct = totals.contribs/(totals.ending-totals.begin)*100;
+        const growthPct = (totals.growth+totals.divs+totals.fees)/(totals.ending-totals.begin)*100;
+        wfHTML += `<div style="margin-top:12px;font-size:12px;color:var(--dim);line-height:1.7">
+          <strong style="color:var(--text)">${contribPct.toFixed(0)}%</strong> of the year's gain came from new money.
+          <strong style="color:var(--text)">${growthPct.toFixed(0)}%</strong> came from market returns + dividends.
+        </div>`;
+        $('attrWaterfall').innerHTML = wfHTML;
+      }
+    }catch(e){console.warn('Sheet1 parse error:',e)}
+  }
+
+  // ---- ACTUAL VS PLAN (Amortization) ----
+  const amort = wb.Sheets['Amortization'];
+  if(amort){
+    try{
+      // Row 2 (0-indexed): headers. Row 3+: data
+      // Col A=Year, B=Begin, C=Contribs, D=AvgReturn, E=EstEnding, F=EstGrowth
+      // Col I(8)=ActualContribs, J(9)=ActualEnding, K(10)=ActualGrowth, L(11)=ActualReturn
+      const avpRows = [];
+      for(let r=3;r<=30;r++){
+        const year = gvn(amort,r,0);
+        if(year<2020||year>2050) continue;
+        const estEnd = gvn(amort,r,4);
+        const actEnd = gvn(amort,r,9);
+        const actReturn = gv(amort,r,11);
+        const estReturn = gvn(amort,r,3);
+        if(!estEnd && !actEnd) continue;
+        avpRows.push({
+          year, begin:gvn(amort,r,1), estContribs:gvn(amort,r,2),
+          estReturn, estEnd, estGrowth:gvn(amort,r,5),
+          actContribs:gvn(amort,r,8), actEnd, actGrowth:gvn(amort,r,10),
+          actReturn: typeof actReturn==='number'?actReturn:null
+        });
+      }
+
+      if(avpRows.length>0){
+        // Split into actual years and forecast years
+        const actualYears = avpRows.filter(r=>r.actEnd>0);
+        const allYears = avpRows.filter(r=>r.year<=2035); // cap forecast display
+
+        $('cp_avp').style.display='';
+        if(actualYears.length>0){
+          const latestActual=actualYears[actualYears.length-1]; const latestDelta=latestActual.actEnd-latestActual.estEnd;
+          $('sum_avp').textContent = (latestDelta>=0?'+':'')+fmt(latestDelta)+' vs plan in '+latestActual.year+' · '+actualYears.length+' years of data';
+        }
+
+        // Chart: actual vs estimated ending balance
+        charts.avp = new Chart($('avpChart'),{
+          type:'line',
+          data:{labels:allYears.map(r=>r.year.toString()),datasets:[
+            {label:'Estimated (7.5%)',data:allYears.map(r=>r.estEnd||null),
+              borderColor:'#9E9790',borderWidth:2,borderDash:[5,3],pointRadius:3,
+              pointBackgroundColor:'#9E9790',tension:0.2},
+            {label:'Actual',data:allYears.map(r=>r.actEnd||null),
+              borderColor:'#C4553A',borderWidth:2.5,pointRadius:4,
+              pointBackgroundColor:'#C4553A',tension:0.2}
+          ]},
+          options:{responsive:true,maintainAspectRatio:false,spanGaps:false,
+            plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:10}},
+              tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',
+                callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},
+            scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>fmtK(v)},grid:{color:gridColor}}}
+          }
+        });
+
+        // Table
+        let tHTML = '<thead><tr><th>Year</th><th>Estimated</th><th>Actual</th><th>Return</th><th>vs Plan</th></tr></thead><tbody>';
+        actualYears.forEach(r=>{
+          const delta = r.actEnd - r.estEnd;
+          const deltaClass = delta>=0?'ahead':'behind';
+          const deltaStr = delta>=0?'+'+fmt(delta):fmt(delta);
+          const retStr = r.actReturn!==null?pct(r.actReturn):'—';
+          tHTML += `<tr>
+            <td>${r.year}</td>
+            <td style="color:var(--dim)">${fmt(r.estEnd)}</td>
+            <td style="color:var(--text)">${fmt(r.actEnd)}</td>
+            <td>${retStr}</td>
+            <td><span class="avp-delta ${deltaClass}">${deltaStr}</span></td>
+          </tr>`;
+        });
+        tHTML += '</tbody>';
+        $('avpTable').innerHTML = tHTML;
+      }
+    }catch(e){console.warn('Amortization parse error:',e)}
+  }
+
+  // ---- PENSION & TOTAL RETIREMENT INCOME ----
+  const pensionWs = wb.Sheets['Pension & SS'];
+  if(pensionWs){
+    try{
+      const currentMonthly = gvn(pensionWs,19,1); // R20 0-indexed=19, col B=1
+      const estMonthly = gvn(pensionWs,19,2);     // col C=2
+      const currentPoints = gvn(pensionWs,5,2);    // R6, col C
+      const estTotalPts = gvn(pensionWs,7,2);      // R8, col C
+
+      if(estMonthly>0){
+        $('cp_retincome').style.display='';
+        $('sum_retincome').textContent = 'ANG pension: '+fmt(estMonthly)+'/mo · combined income varies by scenario';
+
+        // Use the retirement projection values
+        const retAnnualRate = parseFloat($('retRate').value)/100;
+        const retYrs = parseFloat($('retYears').value);
+        const retContrib = parseFloat($('retContrib').value);
+        const retInfl = parseFloat($('retInfl').value)/100;
+
+        const mRate = Math.pow(1+retAnnualRate,1/12)-1;
+        let bal = last.total;
+        for(let m=1;m<=retYrs*12;m++) bal=bal*(1+mRate)+retContrib;
+
+        const portfolioMonthly = bal*0.04/12;
+        const portfolioMonthlyReal = portfolioMonthly/Math.pow(1+retInfl,retYrs);
+        const pensionMonthlyReal = estMonthly; // pension pays at retirement, roughly today's dollars
+        const totalMonthly = portfolioMonthlyReal + pensionMonthlyReal;
+        const totalAnnual = totalMonthly*12;
+
+        $('retIncomeGrid').innerHTML = `
+          <div class="ret-income-card">
+            <div class="ric-label">Portfolio (4% Rule)</div>
+            <div class="ric-val" style="color:var(--gold)">${fmt(portfolioMonthlyReal)}/mo</div>
+            <div class="ric-sub">In today's dollars · from ${fmt(bal)} nest egg</div>
+          </div>
+          <div class="ret-income-card">
+            <div class="ric-label">ANG Pension</div>
+            <div class="ric-val" style="color:var(--cyan)">${fmt(estMonthly)}/mo</div>
+            <div class="ric-sub">${estTotalPts.toLocaleString()} est. points · starts at age 60</div>
+          </div>
+          <div class="ret-income-card" style="border-color:var(--green)">
+            <div class="ric-label">Combined Monthly Income</div>
+            <div class="ric-val" style="color:var(--green)">${fmt(totalMonthly)}/mo</div>
+            <div class="ric-sub">${fmt(totalAnnual)}/yr in today's dollars</div>
+          </div>
+        `;
+
+        // Stacked bar: income sources over different return scenarios
+        const scenarios = [
+          {label:'Conservative (6%)',rate:0.06},
+          {label:'Moderate (8%)',rate:0.08},
+          {label:'Aggressive (10%)',rate:0.10},
+          {label:`Your Est. (${Math.round(fullInvestRate*1000)/10}%)`,rate:fullInvestRate}
+        ];
+        const scenarioPortfolio = scenarios.map(s=>{
+          let b=last.total;const mr=Math.pow(1+s.rate,1/12)-1;
+          for(let m=1;m<=retYrs*12;m++)b=b*(1+mr)+retContrib;
+          return (b*0.04/12)/Math.pow(1+retInfl,retYrs);
+        });
+
+        charts.retIncome = new Chart($('retIncomeChart'),{
+          type:'bar',
+          data:{labels:scenarios.map(s=>s.label),datasets:[
+            {label:'Portfolio (4%)',data:scenarioPortfolio,backgroundColor:'#C4553A',borderRadius:6},
+            {label:'ANG Pension',data:scenarios.map(()=>estMonthly),backgroundColor:'#3A8C8C',borderRadius:6}
+          ]},
+          options:{responsive:true,maintainAspectRatio:false,
+            plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:8}},
+              tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',
+                callbacks:{
+                  label:c=>c.dataset.label+': '+fmt(c.parsed.y)+'/mo',
+                  afterBody:(items)=>{
+                    const idx=items[0].dataIndex;
+                    const total=scenarioPortfolio[idx]+estMonthly;
+                    return ['Total: '+fmt(total)+'/mo'];
+                  }
+                }}},
+            scales:{x:{stacked:true,grid:{display:false}},
+              y:{stacked:true,ticks:{callback:v=>'$'+Math.round(v).toLocaleString()},grid:{color:gridColor},
+                title:{display:true,text:'Monthly Income (today\'s $)',color:'#9E9790',font:{size:11}}}}
+          }
+        });
+      }
+    }catch(e){console.warn('Pension parse error:',e)}
+  }
+
+  // ---- 401(k) CONTRIBUTION PACING ----
+  if(amort){
+    try{
+      // Amortization tab rows 31+ have 401k paycheck data
+      // R33(0-indexed 32): headers: Gross Pay, 401k, Safe Harbor, Total 401k, %
+      // R34+: date, gross, 401k, safe harbor, total, %
+      const k401Deposits = [];
+      for(let r=33;r<=60;r++){
+        const dateVal = gv(amort,r,0);
+        const k401Val = gvn(amort,r,2);
+        const shVal = gvn(amort,r,3);
+        const totalVal = gvn(amort,r,4);
+        if(!dateVal || typeof dateVal==='string' || totalVal<=0) continue;
+        k401Deposits.push({date:dateVal, employee:k401Val, safeHarbor:shVal, total:totalVal});
+      }
+
+      if(k401Deposits.length>0){
+        const ytdEmployee = k401Deposits.reduce((s,d)=>s+d.employee,0);
+        const ytdSH = k401Deposits.reduce((s,d)=>s+d.safeHarbor,0);
+        const ytdTotal = k401Deposits.reduce((s,d)=>s+d.total,0);
+        const irsLimit2025 = 23500; // 2025 employee limit
+        const irsLimitTotal = 70000; // total 415 limit
+        const employeePct = Math.min(ytdEmployee/irsLimit2025*100,100);
+        const depositCount = k401Deposits.length;
+
+        // Estimated paycheck count per year (assume biweekly = 26)
+        const estimatedTotal = 26;
+        const remainingDeposits = estimatedTotal - depositCount;
+        const avgPerDeposit = ytdEmployee / depositCount;
+        const projectedEmployee = ytdEmployee + (remainingDeposits * avgPerDeposit);
+        const onTrack = projectedEmployee >= irsLimit2025 * 0.95;
+
+        $('cp_pacing').style.display='';
+        $('sum_pacing').textContent = fmt(ytdEmployee)+' of '+fmt(irsLimit2025)+' ('+employeePct.toFixed(0)+'%) · '+(onTrack?'on pace to max':'may fall short');
+
+        let pacingHTML = `
+          <div class="pacing-gauge">
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Employee Deferrals</div>
+            <div style="font-size:36px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums">${fmt(ytdEmployee)}</div>
+            <div style="font-size:13px;color:var(--dim);margin:6px 0">of ${fmt(irsLimit2025)} IRS limit</div>
+            <div class="pacing-bar"><div class="pacing-fill" style="width:${employeePct}%;background:${onTrack?'var(--green)':'var(--orange)'}"></div></div>
+            <div class="pacing-info"><b>${employeePct.toFixed(1)}%</b> through ${depositCount} pay periods</div>
+            <div class="pacing-info" style="margin-top:8px">
+              Projected year-end: <b style="color:${onTrack?'var(--green)':'var(--orange)'}">~${fmt(projectedEmployee)}</b>
+              ${onTrack?'— on pace to max':'— may fall short'}
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Deposit Breakdown</div>
+            <div class="chart-box" style="height:280px"><canvas id="pacingChart"></canvas></div>
+          </div>
+        `;
+        $('pacingWrap').innerHTML = pacingHTML;
+
+        // Cumulative 401k chart
+        const cumLabels = [];
+        const cumEmployee = [];
+        const cumTotal = [];
+        let runE=0, runT=0;
+        k401Deposits.forEach((d,i)=>{
+          runE+=d.employee; runT+=d.total;
+          cumLabels.push('#'+(i+1));
+          cumEmployee.push(runE);
+          cumTotal.push(runT);
+        });
+
+        // Target pace line
+        const targetPace = [];
+        for(let i=0;i<estimatedTotal;i++) targetPace.push(irsLimit2025/(estimatedTotal)*(i+1));
+
+        charts.pacing = new Chart($('pacingChart'),{
+          type:'line',
+          data:{labels:Array.from({length:estimatedTotal},(_,i)=>'#'+(i+1)),datasets:[
+            {label:'Your Deferrals',data:cumEmployee,borderColor:'#C4553A',borderWidth:2.5,pointRadius:2,tension:0.2},
+            {label:'Pace to Max',data:targetPace,borderColor:'#D9D2C9',borderWidth:1.5,borderDash:[4,4],pointRadius:0,tension:0},
+            {label:'IRS Limit',data:Array(estimatedTotal).fill(irsLimit2025),borderColor:'#B94432',borderWidth:1,borderDash:[2,3],pointRadius:0}
+          ]},
+          options:{responsive:true,maintainAspectRatio:false,
+            plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11},padding:8}},
+              tooltip:{backgroundColor:'#fff',borderColor:'#E8E2DA',borderWidth:1,titleColor:'#1A1A1A',bodyColor:'#6B6560',
+                callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},
+            scales:{x:{grid:{display:false},title:{display:true,text:'Pay Period',color:'#9E9790',font:{size:10}}},
+              y:{ticks:{callback:v=>fmtK(v)},grid:{color:gridColor}}}
+          }
+        });
+      }
+    }catch(e){console.warn('401k pacing parse error:',e)}
+  }
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
