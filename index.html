@@ -13,22 +13,22 @@
   /* Light theme (default) — minimal monochrome + emerald */
   --bg:#FAFAFA;--panel:#FFFFFF;--panel2:#F5F5F5;--panel3:#EDEDED;
   --border:#E5E5E5;--border2:#D4D4D4;
-  --text:#0A0A0A;--dim:#525252;--muted:#A3A3A3;
+  --text:#0A0A0A;--dim:#525252;--muted:#646464;
   --accent:#10B981;--accent-strong:#059669;
   --accent-dim:rgba(16,185,129,0.10);--accent-glow:rgba(16,185,129,0.05);
   --accent-rgb:16,185,129;
-  --gold:var(--accent);--gold-dim:var(--accent-dim);--gold-glow:var(--accent-glow);
-  --green:#10B981;--green-dim:rgba(16,185,129,0.14);
+  --gold:#047857;--gold-dim:var(--accent-dim);--gold-glow:var(--accent-glow);
+  --green:#047857;--green-dim:rgba(16,185,129,0.14);
   --red:#DC2626;--red-dim:rgba(220,38,38,0.10);
-  --amber:#D97706;
+  --amber:#B45309;
   /* Series ramp for account colors — mostly mono, emerald reserved for accent */
-  --blue:#525252;--purple:#737373;--cyan:#10B981;
+  --blue:#525252;--purple:#737373;--cyan:#047857;
   --orange:#404040;--pink:#A3A3A3;
   --sidebar-bg:#0A0A0A;--sidebar-fg:#A3A3A3;--sidebar-fg-hover:#FAFAFA;
   --sidebar-hover-bg:rgba(255,255,255,0.05);
   --sidebar-active-bg:rgba(16,185,129,0.18);--sidebar-active-fg:#FAFAFA;
   --tooltip-bg:#FFFFFF;--tooltip-border:#E5E5E5;
-  --on-accent:#FFFFFF;
+  --on-accent:#06281D;
   --shadow-sm:0 1px 2px rgba(0,0,0,0.04);
   --shadow:0 2px 8px rgba(0,0,0,0.06);
   --shadow-lg:0 8px 24px rgba(0,0,0,0.08);
@@ -36,7 +36,7 @@
 :root[data-theme="dark"]{
   --bg:#0A0A0A;--panel:#141414;--panel2:#1C1C1C;--panel3:#262626;
   --border:#262626;--border2:#3F3F3F;
-  --text:#FAFAFA;--dim:#A3A3A3;--muted:#737373;
+  --text:#FAFAFA;--dim:#A3A3A3;--muted:#9A9A9A;
   --accent:#34D399;--accent-strong:#10B981;
   --accent-dim:rgba(52,211,153,0.16);--accent-glow:rgba(52,211,153,0.07);
   --accent-rgb:52,211,153;
@@ -129,7 +129,7 @@ body{
 
 /* Narrative */
 .narrative{
-  background:var(--panel);border-left:4px solid var(--gold);
+  background:var(--panel);border:1px solid var(--border);
   border-radius:16px;padding:18px 22px;margin-bottom:20px;
   font-size:14px;color:var(--dim);line-height:1.75;box-shadow:var(--shadow-sm);
 }
@@ -138,7 +138,7 @@ body{
 
 /* Panels */
 .panel{background:var(--panel);border-radius:20px;padding:18px;margin-bottom:16px;box-shadow:var(--shadow)}
-.panel h3{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);margin-bottom:14px;font-weight:600}
+.panel h3{font-size:15px;letter-spacing:-0.01em;color:var(--text);margin-bottom:14px;font-weight:700}
 .panel .panel-sub{font-size:12px;color:var(--muted);margin-top:-8px;margin-bottom:14px}
 .chart-box{position:relative}
 
@@ -166,10 +166,10 @@ body{
 
 /* Milestones */
 .milestones{display:flex;flex-direction:column;gap:8px}
-.mile{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--panel);border-radius:12px;border-left:3px solid var(--gold);box-shadow:var(--shadow-sm)}
+.mile{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--panel);border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow-sm)}
 .mile .amt{font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums;font-size:14px}
 .mile .when{font-size:11px;color:var(--dim)}
-.mile.future{opacity:0.7;border-left-color:var(--purple)}
+.mile.future{opacity:0.7;border-style:dashed;border-color:var(--border2)}
 .mile.future .amt{color:var(--purple)}
 
 /* Heatmap */
@@ -283,7 +283,7 @@ body{
   -webkit-user-select:none;user-select:none;transition:background .15s;
 }
 .cpanel-head:hover{background:var(--accent-glow)}
-.cpanel-head h3{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);margin:0;font-weight:600}
+.cpanel-head h3{font-size:15px;letter-spacing:-0.01em;color:var(--text);margin:0;font-weight:700}
 .cpanel-summary{font-size:14px;color:var(--text);margin-top:5px;font-weight:600;font-variant-numeric:tabular-nums}
 .cpanel-chevron{
   color:var(--muted);font-size:18px;transition:transform .25s;flex-shrink:0;margin-left:12px;
@@ -376,7 +376,7 @@ body{
   text-decoration:none;
 }
 .tabbar-item:hover{color:var(--text)}
-.tabbar-item.active{color:var(--accent);background:var(--accent-dim)}
+.tabbar-item.active{color:var(--gold);background:var(--accent-dim)}
 .tabbar-item svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
 /* Theme toggle button */
@@ -394,6 +394,21 @@ body{
 .narrative.tab-summary .em{color:var(--text);font-weight:600}
 .narrative.tab-summary .up{color:var(--green);font-weight:700}
 .narrative.tab-summary .dn{color:var(--red);font-weight:700}
+
+/* === Accessibility: visible focus + reduced motion === */
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.cpanel-head:focus-visible,.sidebar-item:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+
+/* Deep Dive empty state */
+.empty-state{text-align:center;padding:48px 24px;border:1.5px dashed var(--border2);border-radius:20px;background:var(--panel);box-shadow:var(--shadow-sm)}
+.empty-state .es-icon{font-size:34px;margin-bottom:12px;opacity:.7}
+.empty-state h4{font-size:16px;color:var(--text);font-weight:700;margin-bottom:8px}
+.empty-state p{font-size:13px;color:var(--dim);max-width:60ch;margin:0 auto;line-height:1.7}
+.empty-state code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel3);padding:2px 6px;border-radius:6px;color:var(--text)}
 </style>
 </head>
 <body>
@@ -747,6 +762,12 @@ body{
         <div class="pacing-wrap" id="pacingWrap"></div>
       </div>
     </div>
+
+    <div class="empty-state" id="deepEmpty" style="display:none">
+      <div class="es-icon" aria-hidden="true">🔍</div>
+      <h4>Deep Dive unlocks with a few extra tabs</h4>
+      <p>Add any of these sheets to your workbook and reload: <code>Sheet1</code> (growth attribution), <code>Amortization</code> (plan tracking + 401k deposits), or <code>Pension &amp; SS</code> (retirement income).</p>
+    </div>
   </div>
 
   <div class="footer">Parsed live from your spreadsheet · nothing leaves your browser · past performance ≠ future results</div>
@@ -758,7 +779,10 @@ body{
 /* ===== COLLAPSIBLE PANELS ===== */
 function togglePanel(id){
   const el = document.getElementById(id);
-  if(el) el.classList.toggle('open');
+  if(!el) return;
+  const open = el.classList.toggle('open');
+  const head = el.querySelector('.cpanel-head');
+  if(head) head.setAttribute('aria-expanded', open ? 'true' : 'false');
 }
 
 /* ===== TAB NAV (sidebar + mobile tabbar) ===== */
@@ -767,7 +791,9 @@ function switchTab(tabName){
     s.classList.toggle('active', s.dataset.tab === tabName);
   });
   document.querySelectorAll('.sidebar-item[data-tab], .tabbar-item[data-tab]').forEach(i=>{
-    i.classList.toggle('active', i.dataset.tab === tabName);
+    const on = i.dataset.tab === tabName;
+    i.classList.toggle('active', on);
+    if(on) i.setAttribute('aria-current','page'); else i.removeAttribute('aria-current');
   });
   window.scrollTo(0,0);
   Object.values(charts).forEach(c=>{try{c.resize()}catch(e){}});
@@ -786,6 +812,33 @@ function switchTab(tabName){
       document.getElementById('reloadBtn').click();
     });
   }
+
+  /* A11y: make icon nav + collapsible headers keyboard-operable */
+  const onActivateKey = el => e => {
+    if(e.key==='Enter' || e.key===' ' || e.key==='Spacebar'){ e.preventDefault(); el.click(); }
+  };
+  document.querySelectorAll('.sidebar-item').forEach(el=>{
+    el.setAttribute('tabindex','0');
+    el.setAttribute('role','button');
+    const lbl = el.querySelector('.sidebar-label');
+    if(lbl && !el.getAttribute('aria-label')) el.setAttribute('aria-label', lbl.textContent.trim());
+    el.addEventListener('keydown', onActivateKey(el));
+  });
+  document.querySelectorAll('.cpanel-head').forEach(el=>{
+    el.setAttribute('tabindex','0');
+    el.setAttribute('role','button');
+    const panel = el.closest('.cpanel');
+    el.setAttribute('aria-expanded', panel && panel.classList.contains('open') ? 'true' : 'false');
+    const h = el.querySelector('h3');
+    if(h && !el.getAttribute('aria-label')) el.setAttribute('aria-label', h.textContent.trim()+', expand or collapse section');
+    el.addEventListener('keydown', onActivateKey(el));
+  });
+  document.querySelectorAll('canvas').forEach(cv=>{
+    const ctx = cv.closest('.cpanel, .panel, .tab-section');
+    const h = ctx && ctx.querySelector('h3');
+    cv.setAttribute('role','img');
+    if(h && !cv.getAttribute('aria-label')) cv.setAttribute('aria-label', h.textContent.trim()+' chart');
+  });
 })();
 
 /* ===== THEME (light / dark) ===== */
@@ -1113,6 +1166,7 @@ function buildDashboard(DATA, wb){
     titleColor:C_TEXT, bodyColor:C_DIM, padding:10, cornerRadius:8, displayColors:false
   };
   Chart.defaults.color = C_DIM;
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){ Chart.defaults.animation = false; }
   Chart.defaults.borderColor = C_BORDER;
   Chart.defaults.font.family="'Inter',sans-serif";
   const labels=DATA.map(d=>d.date.toISOString().slice(0,10));
@@ -2105,6 +2159,10 @@ function buildDashboard(DATA, wb){
     } else {
       $('narrative_deepdive').innerHTML = `<span class="sparkle">✦</span> Deep Dive sections show when the spreadsheet includes Sheet1 (attribution), Amortization (plan tracking), or 401(k) deposit history.`;
     }
+    // Show an empty-state card when none of the optional Deep Dive panels are present
+    const _deepIds = ['cp_attribution','cp_avp','cp_retincome','cp_pacing'];
+    const _anyDeep = _deepIds.some(id => { const el = $(id); return el && el.style.display !== 'none'; });
+    if($('deepEmpty')) $('deepEmpty').style.display = _anyDeep ? 'none' : '';
   }
 
   window.scrollTo({top:0,behavior:'smooth'});
