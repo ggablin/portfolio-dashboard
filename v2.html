@@ -1,0 +1,2595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian · Portfolio Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%97%86%3C/text%3E%3C/svg%3E">
+<script>(function(){var t;try{t=localStorage.getItem('pp2-theme')}catch(e){}
+if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+document.documentElement.dataset.theme=t;})();</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
+<style>
+/* ============ 1. TOKENS — warm paper + indigo ============ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f9f9f7; --card:#fcfcfb; --card2:#f3f2ee;
+  --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7;
+  --border:rgba(11,11,11,.10);
+  --accent:#2a78d6; --accent-rgb:42,120,214;
+  --good:#006300; --good-mark:#0ca30c; --good-rgb:12,163,12;
+  --warn:#fab219; --bad:#d03b3b; --bad-rgb:208,59,59;
+  --s-retire:#2a78d6; --s-broker:#1baf7a; --s-cash:#eda100; --s-crypto:#4a3aa7;
+  --shadow:0 1px 2px rgba(0,0,0,.04);
+  --shadow-lg:0 8px 28px rgba(0,0,0,.10);
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#0d0d0d; --card:#1a1a19; --card2:#232322;
+  --ink:#ffffff; --ink2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --axis:#383835;
+  --border:rgba(255,255,255,.10);
+  --accent:#3987e5; --accent-rgb:57,135,229;
+  --good:#0ca30c; --good-mark:#0ca30c;
+  --warn:#fab219; --bad:#e66767; --bad-rgb:230,103,103;
+  --s-retire:#3987e5; --s-broker:#199e70; --s-cash:#c98500; --s-crypto:#9085e9;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+  --shadow-lg:0 8px 28px rgba(0,0,0,.55);
+  color-scheme:dark;
+}
+
+/* ============ 2. BASE ============ */
+html{scroll-behavior:smooth}
+body{
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg); color:var(--ink);
+  transition:background-color .3s ease,color .3s ease;
+  min-height:100vh; -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input{font:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+b,strong{font-weight:650}
+.num{font-variant-numeric:tabular-nums}
+.up{color:var(--good)} .dn{color:var(--bad)} .flat{color:var(--muted)}
+[hidden]{display:none!important}
+
+/* ============ 3. UPLOAD VIEW ============ */
+.upload-wrap{max-width:640px;margin:0 auto;padding:9vh 24px 64px;text-align:center}
+.upload-brand{font-size:15px;font-weight:700;letter-spacing:.4px;color:var(--accent);margin-bottom:36px}
+.upload-brand .diamond{display:inline-block;margin-right:6px}
+.upload-wrap h1{font-size:clamp(30px,5vw,44px);font-weight:800;letter-spacing:-1px;line-height:1.12;margin-bottom:14px}
+.upload-sub{color:var(--ink2);font-size:15px;line-height:1.6;margin-bottom:36px}
+.dropzone{
+  border:2px dashed var(--axis);border-radius:20px;background:var(--card);
+  padding:52px 24px;cursor:pointer;box-shadow:var(--shadow);
+  transition:border-color .2s,background .2s,transform .2s,box-shadow .2s;
+}
+.dropzone:hover,.dropzone:focus-visible{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.dropzone.drag{border-color:var(--accent);background:rgba(var(--accent-rgb),.06)}
+.dz-icon{width:44px;height:44px;margin:0 auto 14px;color:var(--accent)}
+.dz-main{font-size:16px;font-weight:650}
+.dz-sub{font-size:13px;color:var(--muted);margin-top:6px}
+.upload-error{margin-top:18px;color:var(--bad);font-size:13.5px;font-weight:550}
+.demo-row{margin-top:30px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-primary{
+  background:var(--accent);color:#fff;font-weight:650;font-size:14px;
+  padding:11px 22px;border-radius:12px;transition:transform .15s,filter .15s;
+}
+.btn-primary:hover{transform:translateY(-1px);filter:brightness(1.08)}
+.btn-primary:active{transform:translateY(0)}
+.btn-ghost{
+  color:var(--ink2);font-weight:550;font-size:14px;padding:11px 18px;border-radius:12px;
+  border:1px solid var(--border);transition:background .15s,color .15s;
+}
+.btn-ghost:hover{background:var(--card2);color:var(--ink)}
+.upload-note{margin-top:28px;font-size:12px;color:var(--muted)}
+
+/* ============ 4. TOPBAR ============ */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  padding:12px 28px;background:color-mix(in srgb,var(--bg) 82%,transparent);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  transition:background-color .3s ease;
+}
+.brand{font-size:15px;font-weight:750;letter-spacing:.2px;white-space:nowrap}
+.brand .diamond{color:var(--accent);margin-right:5px}
+.brand-tag{
+  font-size:10px;font-weight:650;letter-spacing:.6px;text-transform:uppercase;
+  color:var(--accent);background:rgba(var(--accent-rgb),.12);
+  border-radius:6px;padding:2px 7px;margin-left:8px;vertical-align:2px;
+}
+.tabs{position:relative;display:flex;gap:2px}
+.tab{
+  position:relative;z-index:1;padding:7px 15px;border-radius:10px;
+  font-size:13.5px;font-weight:550;color:var(--ink2);transition:color .18s;
+}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--ink);font-weight:650}
+.tab-ink{
+  position:absolute;top:0;left:0;height:100%;border-radius:10px;
+  background:var(--card2);border:1px solid var(--border);z-index:0;
+  transition:transform .28s cubic-bezier(.4,0,.2,1),width .28s cubic-bezier(.4,0,.2,1);
+  will-change:transform,width;
+}
+.top-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+.chips{display:flex;gap:2px;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:2px}
+.chips button{
+  font-size:12px;font-weight:600;color:var(--muted);padding:4px 10px;border-radius:8px;
+  transition:color .15s,background .15s;
+}
+.chips button:hover{color:var(--ink)}
+.chips button.active{background:var(--card);color:var(--accent);box-shadow:var(--shadow)}
+.icon-btn{
+  width:34px;height:34px;border-radius:10px;border:1px solid var(--border);
+  display:grid;place-items:center;color:var(--ink2);transition:background .15s,color .15s;
+}
+.icon-btn:hover{background:var(--card2);color:var(--ink)}
+.icon-btn svg{width:17px;height:17px}
+.avatar{
+  width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  background:var(--accent);color:#fff;font-size:12px;font-weight:700;letter-spacing:.5px;
+}
+
+/* ============ 5. LAYOUT ============ */
+main{max-width:1240px;margin:0 auto;padding:26px 28px 80px}
+.view{display:none}
+.view.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:20px}
+/* let tracks shrink below canvas content so charts can resize down */
+.grid>*,.duo>*,.tiles>*,.mini-grid>*{min-width:0}
+.span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-7{grid-column:span 7}
+.span-6{grid-column:span 6}.span-5{grid-column:span 5}.span-4{grid-column:span 4}.span-3{grid-column:span 3}
+
+/* ============ 6. CARDS & COMPONENTS ============ */
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  box-shadow:var(--shadow);padding:22px;
+  transition:background-color .3s ease,border-color .3s ease;
+}
+.card-head{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+.card-title{font-size:14.5px;font-weight:650}
+.card-sub{font-size:12.5px;color:var(--muted);margin-bottom:14px}
+.card-actions{margin-left:auto;display:flex;gap:6px;align-self:center}
+.tbtn{
+  font-size:11px;font-weight:600;color:var(--muted);padding:4px 10px;
+  border:1px solid var(--border);border-radius:8px;transition:all .15s;
+}
+.tbtn:hover{color:var(--ink)}
+.tbtn[aria-pressed="true"]{background:var(--card2);color:var(--accent);border-color:rgba(var(--accent-rgb),.4)}
+.seg{display:inline-flex;gap:2px;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:2px}
+.seg button{font-size:11.5px;font-weight:600;color:var(--muted);padding:3px 11px;border-radius:7px;transition:all .15s}
+.seg button.active{background:var(--card);color:var(--accent);box-shadow:var(--shadow)}
+.chart{width:100%}
+.h-main{height:400px}.h-mid{height:300px}.h-sm{height:240px}.h-stack{height:340px}.h-mini{height:104px}
+
+/* hero */
+.hero-card{display:flex;align-items:center;gap:36px;flex-wrap:wrap;padding:26px 28px}
+.hero-label{font-size:12.5px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.hero-value{font-size:56px;font-weight:800;letter-spacing:-1.5px;line-height:1.05}
+.hero-asof{font-size:12.5px;color:var(--muted);margin-top:8px}
+.hero-deltas{display:flex;gap:12px;flex-wrap:wrap}
+.delta-chip{
+  border:1px solid var(--border);border-radius:14px;padding:12px 18px;min-width:150px;
+  background:var(--card2);transition:background-color .3s ease;
+}
+.delta-chip .dl{font-size:11.5px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.delta-chip .dv{font-size:19px;font-weight:700}
+.delta-chip .ds{font-size:12px;color:var(--ink2);margin-top:2px}
+
+/* stat tiles */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;grid-column:span 12}
+.tile{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  box-shadow:var(--shadow);padding:18px 20px 12px;
+  transition:background-color .3s ease,transform .2s ease,box-shadow .2s ease;
+}
+.tile:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.tile-label{font-size:12px;font-weight:600;color:var(--muted)}
+.tile-value{font-size:28px;font-weight:650;letter-spacing:-.5px;margin-top:5px}
+.tile-delta{font-size:12.5px;font-weight:600;margin-top:2px}
+.tile-spark{height:38px;margin-top:6px}
+
+/* milestones */
+.mile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.mile{
+  border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--card2);
+}
+.mile .m-amt{font-size:16px;font-weight:700}
+.mile .m-date{font-size:12px;color:var(--ink2);margin-top:2px}
+.mile .m-gap{font-size:11.5px;color:var(--muted);margin-top:2px}
+.mile.next{border-style:dashed;border-color:rgba(var(--accent-rgb),.5);background:rgba(var(--accent-rgb),.05)}
+.mile.next .m-amt{color:var(--accent)}
+
+/* drift rows */
+.drift-row{display:grid;grid-template-columns:110px 1fr 130px;gap:14px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.drift-row:last-child{border-bottom:none}
+.drift-name{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.swatch{width:10px;height:10px;border-radius:3px;flex:none}
+.drift-track{position:relative;height:26px}
+.drift-line{position:absolute;top:12px;left:0;right:0;height:2px;background:var(--grid);border-radius:1px}
+.drift-seg{position:absolute;top:12px;height:2px;border-radius:1px}
+.drift-dot{position:absolute;top:7px;width:12px;height:12px;border-radius:50%;border:2px solid var(--card);transform:translateX(-6px);transition:left .5s cubic-bezier(.4,0,.2,1)}
+.drift-dot.past{opacity:.35}
+.drift-delta{font-size:12.5px;font-weight:600;text-align:right}
+.drift-vals{font-size:11.5px;color:var(--muted);text-align:right}
+
+/* mini account grid */
+.mini-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.mini{
+  border:1px solid var(--border);border-radius:14px;padding:12px 14px 8px;background:var(--card);
+  cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s,opacity .3s;
+}
+.mini:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.mini.dim{opacity:.32}
+.mini.sel{border-color:rgba(var(--accent-rgb),.55)}
+.mini-name{font-size:12px;font-weight:650;display:flex;align-items:center;gap:6px}
+.mini-val{font-size:16px;font-weight:700;margin-top:3px}
+.mini-delta{font-size:11px;font-weight:600}
+
+/* sliders */
+.sliders{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin:6px 0 18px}
+.slider-block label{font-size:12px;font-weight:600;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:8px}
+.slider-block label output{color:var(--accent);font-weight:700;font-size:13px}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;
+  background:linear-gradient(to right,var(--accent) var(--fill,50%),var(--grid) var(--fill,50%));
+  outline-offset:6px;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);
+  border:3px solid var(--card);box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:grab;
+  transition:transform .15s;
+}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.18)}
+input[type=range]:active::-webkit-slider-thumb{transform:scale(1.28);cursor:grabbing}
+input[type=range]::-moz-range-thumb{
+  width:18px;height:18px;border-radius:50%;background:var(--accent);
+  border:3px solid var(--card);box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:grab;
+}
+input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:var(--grid)}
+input[type=range]::-moz-range-progress{height:4px;border-radius:2px;background:var(--accent)}
+.ref-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.ref-chips button{
+  font-size:11.5px;font-weight:600;color:var(--ink2);border:1px solid var(--border);
+  border-radius:999px;padding:4px 12px;transition:all .15s;
+}
+.ref-chips button:hover{border-color:var(--accent);color:var(--accent)}
+.ref-chips button.active{border-color:var(--accent);color:var(--accent);background:rgba(var(--accent-rgb),.08)}
+
+/* result tiles (calculators) */
+.res-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.res{border:1px solid var(--border);border-radius:12px;padding:13px 16px;background:var(--card2);transition:background-color .3s ease}
+.res .r-label{font-size:11.5px;font-weight:600;color:var(--muted)}
+.res .r-value{font-size:21px;font-weight:700;margin-top:3px;letter-spacing:-.3px}
+.res .r-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+.narrative{
+  font-size:13px;line-height:1.7;color:var(--ink2);border-top:1px solid var(--border);
+  margin-top:16px;padding-top:14px;
+}
+.narrative .em{color:var(--ink);font-weight:650}
+
+/* number inputs & checks */
+.inp{
+  width:100%;background:var(--card2);border:1px solid var(--border);border-radius:10px;
+  padding:8px 12px;font-size:13.5px;font-weight:600;color:var(--ink);
+}
+.inp:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:550;color:var(--ink2);cursor:pointer}
+.check input{width:16px;height:16px;accent-color:var(--accent)}
+.field-label{font-size:12px;font-weight:600;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:7px}
+.field-label output{color:var(--accent);font-weight:700}
+
+/* meter */
+.meter{height:10px;border-radius:5px;background:rgba(var(--accent-rgb),.15);overflow:hidden}
+.meter-fill{height:100%;border-radius:5px;background:var(--accent);width:0;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.meter.good-track{background:rgba(var(--good-rgb),.15)} .meter-fill.good{background:var(--good-mark)}
+.meter-fill.warn{background:var(--warn)}
+.status-chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:650;border-radius:999px;padding:3px 10px}
+.status-chip.ok{color:var(--good);background:rgba(var(--good-rgb),.12)}
+.status-chip.warn{color:#8a5f00;background:rgba(250,178,25,.16)}
+:root[data-theme="dark"] .status-chip.warn{color:var(--warn)}
+.status-chip.behind{color:var(--bad);background:rgba(var(--bad-rgb),.10)}
+
+/* data tables */
+.tbl-wrap{overflow-x:auto}
+.dtable{width:100%;border-collapse:collapse;font-size:12.5px}
+.dtable th{
+  text-align:right;font-weight:600;color:var(--muted);font-size:11.5px;
+  padding:7px 10px;border-bottom:1px solid var(--grid);white-space:nowrap;
+}
+.dtable th:first-child,.dtable td:first-child{text-align:left}
+.dtable td{text-align:right;padding:7px 10px;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums;color:var(--ink2)}
+.dtable td:first-child{color:var(--ink);font-weight:550}
+.dtable tr:last-child td{border-bottom:none}
+
+/* two-col insides */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+.attr-note{font-size:13px;color:var(--ink2);line-height:1.65;margin-top:12px}
+
+/* footer */
+footer{max-width:1240px;margin:0 auto;padding:0 28px 40px;font-size:12px;color:var(--muted);text-align:center}
+
+/* ============ 7. ANIMATIONS ============ */
+@keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.enter{animation:cardIn .38s cubic-bezier(.25,.6,.3,1) both;animation-delay:calc(var(--i,0)*46ms)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.fade-in{animation:fadeIn .3s ease both}
+
+/* ============ 8. REDUCED MOTION ============ */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important}
+  html{scroll-behavior:auto}
+}
+
+/* ============ 9. RESPONSIVE ============ */
+@media (max-width:1020px){
+  .mini-grid{grid-template-columns:repeat(3,1fr)}
+  .sliders{grid-template-columns:repeat(2,1fr)}
+  .tiles{grid-template-columns:repeat(2,1fr)}
+  .res-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:900px){
+  .grid{grid-template-columns:1fr}
+  .span-12,.span-8,.span-7,.span-6,.span-5,.span-4,.span-3,.tiles{grid-column:span 1}
+  .duo{grid-template-columns:1fr}
+  main{padding:18px 16px 70px}
+  .topbar{padding:10px 16px;gap:10px}
+  .top-actions{width:100%;margin-left:0}
+  .hero-card{gap:20px}
+  .hero-value{font-size:42px}
+  .tabs{order:2;width:100%;overflow-x:auto}
+}
+@media (max-width:560px){
+  .mini-grid{grid-template-columns:repeat(2,1fr)}
+  .tiles{grid-template-columns:1fr 1fr}
+  .drift-row{grid-template-columns:90px 1fr 110px;gap:8px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ UPLOAD ============ -->
+<div id="uploadView" class="upload-wrap">
+  <div class="upload-brand"><span class="diamond">◆</span>MERIDIAN</div>
+  <h1>Your whole portfolio,<br>one clear picture.</h1>
+  <p class="upload-sub">Drop your <b>greg_numbers.xlsx</b> below. Everything is parsed right here in your
+  browser — <b>nothing is ever uploaded</b>.</p>
+
+  <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Upload spreadsheet — drag and drop or click to browse">
+    <svg class="dz-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+    </svg>
+    <div class="dz-main">Drag &amp; drop your spreadsheet</div>
+    <div class="dz-sub">or click to browse · .xlsx</div>
+    <input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
+  </div>
+  <div id="uploadError" class="upload-error" hidden></div>
+
+  <div class="demo-row">
+    <button id="demoBtn" class="btn-primary">Explore with demo data</button>
+    <button id="demoSparseBtn" class="btn-ghost">Short sparse demo</button>
+    <button id="backBtn" class="btn-ghost" hidden>← Back to dashboard</button>
+  </div>
+  <div class="upload-note">Demo data is synthetic — a stand-in so you can explore every view before loading your own numbers.</div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="appView" hidden>
+
+<header class="topbar">
+  <div class="brand"><span class="diamond">◆</span>Meridian<span class="brand-tag" id="srcTag" hidden>demo</span></div>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Dashboard sections">
+    <span class="tab-ink" id="tabInk" aria-hidden="true"></span>
+    <button class="tab active" role="tab" aria-selected="true" data-view="pulse">Pulse</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="accounts">Accounts</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="plan">Plan</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="lab">Lab</button>
+  </nav>
+  <div class="top-actions">
+    <div class="chips" id="rangeChips" role="group" aria-label="Time range">
+      <button data-range="1Y">1Y</button>
+      <button data-range="3Y">3Y</button>
+      <button data-range="5Y">5Y</button>
+      <button data-range="YTD">YTD</button>
+      <button data-range="ALL" class="active">All</button>
+    </div>
+    <button id="themeBtn" class="icon-btn" aria-label="Toggle light or dark theme">
+      <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+    <button id="newFileBtn" class="icon-btn" aria-label="Load a different spreadsheet">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    </button>
+    <div class="avatar" aria-hidden="true">GG</div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ VIEW: PULSE ============ -->
+<section class="view active" id="view-pulse" role="tabpanel" aria-label="Pulse">
+  <div class="grid">
+
+    <div class="card hero-card span-12" data-card>
+      <div>
+        <div class="hero-label">Net worth</div>
+        <div class="hero-value" id="heroValue">$0</div>
+        <div class="hero-asof" id="heroAsOf"></div>
+      </div>
+      <div class="hero-deltas">
+        <div class="delta-chip">
+          <div class="dl">This week</div>
+          <div class="dv" id="heroWk">—</div>
+          <div class="ds" id="heroWkSub"></div>
+        </div>
+        <div class="delta-chip">
+          <div class="dl" id="heroRangeLabel">Selected range</div>
+          <div class="dv" id="heroRange">—</div>
+          <div class="ds" id="heroRangeSub"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tiles" data-card>
+      <div class="tile"><div class="tile-label">4-week change</div><div class="tile-value" id="t4v">—</div><div class="tile-delta" id="t4d"></div><div class="tile-spark chart" id="spark4"></div></div>
+      <div class="tile"><div class="tile-label">52-week change</div><div class="tile-value" id="t52v">—</div><div class="tile-delta" id="t52d"></div><div class="tile-spark chart" id="spark52"></div></div>
+      <div class="tile"><div class="tile-label">Off all-time high</div><div class="tile-value" id="tddv">—</div><div class="tile-delta" id="tddd"></div><div class="tile-spark chart" id="sparkdd"></div></div>
+      <div class="tile"><div class="tile-label">Trailing growth rate</div><div class="tile-value" id="tcgv">—</div><div class="tile-delta" id="tcgd"></div><div class="tile-spark chart" id="sparkcg"></div></div>
+    </div>
+
+    <div class="card span-12" data-card>
+      <div class="card-head">
+        <div class="card-title">Net worth over time</div>
+        <div class="card-actions">
+          <button class="tbtn" data-tbl="c-main" aria-pressed="false">Table</button>
+        </div>
+      </div>
+      <div class="card-sub" id="mainSub">Scroll or drag to zoom — the numbers above follow the window. Dots mark each $100k crossed.</div>
+      <div class="chart h-main" id="c-main" role="img" aria-label="Net worth over time line chart"></div>
+      <div class="tbl-wrap" id="tbl-c-main" hidden></div>
+    </div>
+
+    <div class="card span-6" data-card>
+      <div class="card-head">
+        <div class="card-title">Weekly change</div>
+        <div class="card-actions"><button class="tbtn" data-tbl="c-weekly" aria-pressed="false">Table</button></div>
+      </div>
+      <div class="card-sub">Week-over-week dollar moves · crosshair is linked to the main chart</div>
+      <div class="chart h-sm" id="c-weekly" role="img" aria-label="Weekly change bar chart"></div>
+      <div class="tbl-wrap" id="tbl-c-weekly" hidden></div>
+    </div>
+
+    <div class="card span-6" data-card>
+      <div class="card-head">
+        <div class="card-title">Drawdown from peak</div>
+        <div class="card-actions"><button class="tbtn" data-tbl="c-dd" aria-pressed="false">Table</button></div>
+      </div>
+      <div class="card-sub" id="ddSub">How far below the running all-time high</div>
+      <div class="chart h-sm" id="c-dd" role="img" aria-label="Drawdown from peak area chart"></div>
+      <div class="tbl-wrap" id="tbl-c-dd" hidden></div>
+    </div>
+
+    <div class="card span-12" data-card>
+      <div class="card-head"><div class="card-title">Milestones</div></div>
+      <div class="card-sub" id="mileSub">Every $100k crossed, and the pace to the next one</div>
+      <div class="mile-grid" id="mileGrid"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ VIEW: ACCOUNTS ============ -->
+<section class="view" id="view-accounts" role="tabpanel" aria-label="Accounts">
+  <div class="grid">
+
+    <div class="card span-5" data-card>
+      <div class="card-head"><div class="card-title">Allocation today</div></div>
+      <div class="card-sub">Click a slice to focus that group everywhere · click again to clear</div>
+      <div class="chart h-mid" id="c-donut" role="img" aria-label="Current allocation donut chart"></div>
+    </div>
+
+    <div class="card span-7" data-card>
+      <div class="card-head"><div class="card-title">Allocation drift</div></div>
+      <div class="card-sub" id="driftSub">Share of portfolio — a year ago (faded) vs today</div>
+      <div id="driftRows"></div>
+    </div>
+
+    <div class="card span-12" data-card>
+      <div class="card-head">
+        <div class="card-title">Composition over time</div>
+        <div class="card-actions">
+          <div class="seg" id="stackSeg" role="group" aria-label="Dollars or percent">
+            <button data-mode="$" class="active">$</button>
+            <button data-mode="%">%</button>
+          </div>
+          <button class="tbtn" data-tbl="c-stack" aria-pressed="false">Table</button>
+        </div>
+      </div>
+      <div class="card-sub">The four account groups stacked — switch to % to see the mix shift</div>
+      <div class="chart h-stack" id="c-stack" role="img" aria-label="Account composition stacked area chart"></div>
+      <div class="tbl-wrap" id="tbl-c-stack" hidden></div>
+    </div>
+
+    <div class="card span-12" data-card>
+      <div class="card-head"><div class="card-title">Every account</div></div>
+      <div class="card-sub">Click one for the full story</div>
+      <div class="mini-grid" id="miniGrid"></div>
+    </div>
+
+    <div class="card span-12" id="acctDetail" hidden>
+      <div class="card-head">
+        <div class="card-title" id="adTitle">Account</div>
+        <div class="card-actions"><button class="tbtn" id="adClose">Close</button></div>
+      </div>
+      <div class="card-sub" id="adSub"></div>
+      <div class="chart h-mid" id="c-acct" role="img" aria-label="Selected account balance over time"></div>
+    </div>
+
+    <div class="card span-12" id="card-attr" hidden data-card>
+      <div class="card-head"><div class="card-title">Where this year's growth came from</div></div>
+      <div class="card-sub">Contributions vs dividends vs market, from your attribution sheet</div>
+      <div class="duo">
+        <div class="chart h-mid" id="c-waterfall" role="img" aria-label="Growth attribution waterfall chart"></div>
+        <div class="chart h-mid" id="c-attr" role="img" aria-label="Growth attribution by account stacked bar chart"></div>
+      </div>
+      <div class="attr-note" id="attrNote"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ VIEW: PLAN ============ -->
+<section class="view" id="view-plan" role="tabpanel" aria-label="Plan">
+  <div class="grid">
+
+    <div class="card span-12" data-card>
+      <div class="card-head"><div class="card-title">Retirement projector</div></div>
+      <div class="card-sub">Drag the sliders — everything below recalculates live</div>
+      <div class="sliders">
+        <div class="slider-block">
+          <label>Annual return <output id="retRateVal">7.0%</output></label>
+          <input type="range" id="retRate" min="3" max="12" step="0.1" value="7" aria-label="Annual return percent">
+        </div>
+        <div class="slider-block">
+          <label>Years to retirement <output id="retYearsVal">22</output></label>
+          <input type="range" id="retYears" min="5" max="40" step="0.5" value="22" aria-label="Years to retirement">
+        </div>
+        <div class="slider-block">
+          <label>Monthly contribution <output id="retContribVal">$3,596</output></label>
+          <input type="range" id="retContrib" min="0" max="8000" step="50" value="3596" aria-label="Monthly contribution dollars">
+        </div>
+        <div class="slider-block">
+          <label>Inflation <output id="retInflVal">2.5%</output></label>
+          <input type="range" id="retInfl" min="0" max="6" step="0.1" value="2.5" aria-label="Inflation percent">
+        </div>
+      </div>
+      <div class="ref-chips" id="retRefs" role="group" aria-label="Return presets"></div>
+      <div class="res-grid">
+        <div class="res"><div class="r-label">Projected value</div><div class="r-value" id="retNom">—</div><div class="r-sub" id="retNomSub"></div></div>
+        <div class="res"><div class="r-label">In today's dollars</div><div class="r-value" id="retReal">—</div><div class="r-sub" id="retRealSub"></div></div>
+        <div class="res"><div class="r-label">4% rule income</div><div class="r-value" id="retInc">—</div><div class="r-sub" id="retIncSub"></div></div>
+        <div class="res"><div class="r-label">Nest egg runway</div><div class="r-value" id="retRun">—</div><div class="r-sub">4% withdrawals · 5% return in retirement</div></div>
+      </div>
+      <div class="chart h-mid" id="c-ret" role="img" aria-label="Retirement projection chart, nominal and inflation adjusted"></div>
+      <div class="narrative" id="retStory"></div>
+    </div>
+
+    <div class="card span-6" id="card-pension" hidden data-card>
+      <div class="card-head"><div class="card-title">Retirement income</div></div>
+      <div class="card-sub">Portfolio income (today's dollars) plus your ANG pension, across return scenarios</div>
+      <div class="res-grid" style="grid-template-columns:1fr 1fr 1fr" id="pensionCards"></div>
+      <div class="chart h-sm" id="c-income" role="img" aria-label="Retirement income by scenario stacked bar chart"></div>
+    </div>
+
+    <div class="card span-6" id="card-avp" hidden data-card>
+      <div class="card-head"><div class="card-title">Actual vs plan</div></div>
+      <div class="card-sub" id="avpSub">Your year-end balances against the 7.5% baseline</div>
+      <div class="chart h-sm" id="c-avp" role="img" aria-label="Actual versus planned balance line chart"></div>
+      <div class="tbl-wrap" style="margin-top:14px"><table class="dtable" id="avpTable"></table></div>
+    </div>
+
+    <div class="card span-12" id="card-pacing" hidden data-card>
+      <div class="card-head"><div class="card-title">401(k) contribution pacing</div></div>
+      <div class="card-sub" id="pacingSub"></div>
+      <div class="duo">
+        <div id="pacingMeter"></div>
+        <div class="chart h-sm" id="c-pacing" role="img" aria-label="Cumulative 401k deferrals versus pace to max line chart"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ VIEW: LAB ============ -->
+<section class="view" id="view-lab" role="tabpanel" aria-label="Lab">
+  <div class="grid">
+
+    <div class="card span-12" data-card>
+      <div class="card-head"><div class="card-title">Contribution what-if</div></div>
+      <div class="card-sub">What changing your monthly contribution does to the finish line · uses the Plan tab's return, horizon &amp; inflation</div>
+      <div class="sliders" style="grid-template-columns:1fr">
+        <div class="slider-block">
+          <label>Extra per month <output id="wiExtraVal">+$500</output></label>
+          <input type="range" id="wiExtra" min="-1000" max="3000" step="50" value="500" aria-label="Extra monthly contribution dollars">
+        </div>
+      </div>
+      <div class="res-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="res"><div class="r-label">Change at retirement</div><div class="r-value" id="wiDelta">—</div><div class="r-sub" id="wiDeltaSub"></div></div>
+        <div class="res"><div class="r-label">In today's dollars</div><div class="r-value" id="wiReal">—</div><div class="r-sub">inflation-adjusted</div></div>
+        <div class="res"><div class="r-label">Rule of thumb</div><div class="r-value" id="wiPer100">—</div><div class="r-sub">per extra $100/month</div></div>
+      </div>
+      <div class="chart h-mid" id="c-whatif" role="img" aria-label="Baseline versus adjusted contribution projection chart"></div>
+    </div>
+
+    <div class="card span-6" data-card>
+      <div class="card-head"><div class="card-title">Milestone ETA</div></div>
+      <div class="card-sub">Two honest estimates: compound growth vs your recent linear pace</div>
+      <div class="ref-chips" id="etaChips" role="group" aria-label="Milestone targets"></div>
+      <div style="margin-bottom:16px">
+        <div class="field-label"><span>Custom target</span></div>
+        <input type="number" class="inp" id="etaCustom" min="0" step="50000" placeholder="e.g. 1250000" aria-label="Custom milestone target dollars">
+      </div>
+      <div class="res-grid" style="grid-template-columns:1fr 1fr">
+        <div class="res"><div class="r-label">Compounding</div><div class="r-value" id="etaComp">—</div><div class="r-sub" id="etaCompSub"></div></div>
+        <div class="res"><div class="r-label">Linear pace</div><div class="r-value" id="etaLin">—</div><div class="r-sub" id="etaLinSub"></div></div>
+      </div>
+      <div class="chart h-sm" id="c-eta" role="img" aria-label="Projected paths to milestone chart"></div>
+    </div>
+
+    <div class="card span-6" data-card>
+      <div class="card-head"><div class="card-title">FIRE explorer</div></div>
+      <div class="card-sub">The nest egg that funds your spending — and when you get there</div>
+      <div class="sliders" style="grid-template-columns:1fr 1fr">
+        <div class="slider-block">
+          <label>Monthly spend (today's $) <output id="fireSpendVal">$6,000</output></label>
+          <input type="range" id="fireSpend" min="2000" max="20000" step="100" value="6000" aria-label="Desired monthly spending in today's dollars">
+        </div>
+        <div class="slider-block">
+          <label>Withdrawal rate <output id="fireSwrVal">4.0%</output></label>
+          <input type="range" id="fireSwr" min="2.5" max="5" step="0.1" value="4" aria-label="Safe withdrawal rate percent">
+        </div>
+      </div>
+      <label class="check" id="firePensionWrap" hidden style="margin:-6px 0 16px">
+        <input type="checkbox" id="firePension" checked> Count the ANG pension against spending
+      </label>
+      <div class="res-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="res"><div class="r-label">FIRE number</div><div class="r-value" id="fireNum">—</div><div class="r-sub">in today's dollars</div></div>
+        <div class="res"><div class="r-label">You'd reach it</div><div class="r-value" id="fireEta">—</div><div class="r-sub" id="fireEtaSub"></div></div>
+        <div class="res"><div class="r-label">Coast number</div><div class="r-value" id="fireCoast">—</div><div class="r-sub" id="fireCoastSub"></div></div>
+      </div>
+      <div class="field-label"><span>Progress to FIRE</span><output id="fireMeterLabel">0%</output></div>
+      <div class="meter"><div class="meter-fill" id="fireMeter"></div></div>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<footer>Meridian parses your spreadsheet entirely in this browser tab — no data ever leaves your machine.</footer>
+
+</div><!-- /appView -->
+
+<script>
+'use strict';
+(function(){
+
+/* ============ CORE: constants, formatters, theme, motion ============ */
+const $ = id => document.getElementById(id);
+const FONT = 'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+const MOTION = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const GROUPS = [
+  {key:'retire', label:'Retirement'},
+  {key:'broker', label:'Brokerage'},
+  {key:'cash',   label:'Cash'},
+  {key:'crypto', label:'Crypto'},
+];
+const ACCOUNTS = [
+  {key:'savings',     label:'Savings',     group:'cash'},
+  {key:'stocks',      label:'Stocks',      group:'broker'},
+  {key:'ups',         label:'UPS',         group:'broker'},
+  {key:'utma',        label:'UTMA',        group:'broker'},
+  {key:'inheritance', label:'Inheritance', group:'broker'},
+  {key:'ira',         label:'IRA',         group:'retire'},
+  {key:'tsp',         label:'TSP',         group:'retire'},
+  {key:'k401',        label:'401K',        group:'retire'},
+  {key:'b403',        label:'403B',        group:'retire'},
+  {key:'crypto',      label:'Crypto',      group:'crypto'},
+];
+const ACCT_KEYS = ACCOUNTS.map(a=>a.key);
+const DEFAULT_CONTRIB = 3596;
+const DEFAULT_YEARS = 22;
+const IRS_LIMIT_EMPLOYEE = 23500;
+const PAY_PERIODS = 26;
+
+/* Theme token mirrors (kept in sync with the CSS custom properties) */
+const THEMES = {
+  light: {
+    bg:'#f9f9f7', card:'#fcfcfb', card2:'#f3f2ee',
+    ink:'#0b0b0b', ink2:'#52514e', muted:'#898781',
+    grid:'#e1e0d9', axis:'#c3c2b7',
+    accent:'#2a78d6', accentRGB:'42,120,214',
+    good:'#0ca30c', bad:'#d03b3b', warn:'#fab219',
+    series:{retire:'#2a78d6', broker:'#1baf7a', cash:'#eda100', crypto:'#4a3aa7'},
+  },
+  dark: {
+    bg:'#0d0d0d', card:'#1a1a19', card2:'#232322',
+    ink:'#ffffff', ink2:'#c3c2b7', muted:'#898781',
+    grid:'#2c2c2a', axis:'#383835',
+    accent:'#3987e5', accentRGB:'57,135,229',
+    good:'#0ca30c', bad:'#e66767', warn:'#fab219',
+    series:{retire:'#3987e5', broker:'#199e70', cash:'#c98500', crypto:'#9085e9'},
+  },
+};
+const T = () => THEMES[document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'];
+const rgba = (hex, a) => {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`;
+};
+const groupColor = (t, key) => t.series[key];
+
+const Fmt = {
+  usd(v){
+    const neg = v < 0 ? '−' : '';
+    return neg + '$' + Math.round(Math.abs(v)).toLocaleString('en-US');
+  },
+  k(v){
+    const a = Math.abs(v), neg = v < 0 ? '−' : '';
+    if (a >= 1e6) return neg + '$' + (a/1e6).toFixed(a >= 10e6 ? 1 : 2) + 'M';
+    if (a >= 1e4) return neg + '$' + Math.round(a/1e3) + 'k';
+    if (a >= 1e3) return neg + '$' + (a/1e3).toFixed(1).replace(/\.0$/, '') + 'k';
+    return neg + '$' + Math.round(a);
+  },
+  signed(v, f){ return (v >= 0 ? '+' : '') + (f || Fmt.usd)(v); },
+  pct(v, dp=1){ return (v*100).toFixed(dp) + '%'; },
+  signedPct(v, dp=1){ return (v >= 0 ? '+' : '') + (v*100).toFixed(dp) + '%'; },
+  date(d){ return d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}); },
+  month(d){ return d.toLocaleDateString('en-US', {month:'short', year:'numeric'}); },
+};
+const dirClass = v => v > 0 ? 'up' : v < 0 ? 'dn' : 'flat';
+
+/* Count-up number animation — animates from the previously shown value */
+function countUp(el, to, fmtFn, dur=700){
+  const from = (typeof el._cur === 'number') ? el._cur : 0;
+  el._cur = to;
+  if (!MOTION || Math.abs(to - from) < 1e-9){ el.textContent = fmtFn(to); return; }
+  const t0 = performance.now();
+  cancelAnimationFrame(el._raf);
+  const step = now => {
+    const p = Math.min(1, (now - t0) / dur);
+    const e = 1 - Math.pow(1 - p, 3);
+    el.textContent = fmtFn(from + (to - from) * e);
+    if (p < 1) el._raf = requestAnimationFrame(step);
+  };
+  el._raf = requestAnimationFrame(step);
+}
+
+/* Staggered card entrance for a view section */
+function stagger(section){
+  const cards = section.querySelectorAll('[data-card]');
+  cards.forEach((c, i) => {
+    c.classList.remove('enter');
+    void c.offsetWidth;
+    c.style.setProperty('--i', i);
+    c.classList.add('enter');
+  });
+}
+
+function debounce(fn, ms){
+  let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+}
+
+/* Range slider fill + output binding */
+function bindSlider(input, output, fmtFn, onInput){
+  const paint = () => {
+    const p = (input.value - input.min) / (input.max - input.min) * 100;
+    input.style.setProperty('--fill', p + '%');
+    output.textContent = fmtFn(parseFloat(input.value));
+  };
+  input.addEventListener('input', () => { paint(); onInput && onInput(); });
+  paint();
+  return paint;
+}
+
+/* DOM builder (spreadsheet-derived strings only ever pass through textContent) */
+function elx(tag, cls, text){
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+/* ============ STATE ============ */
+const state = {
+  data: null,        // {rows, attr, avp, pacing, pension, source, fileName}
+  view: 'pulse',
+  range: 'ALL',
+  group: null,       // selected account-group filter (Accounts view)
+  acct: null,        // selected account for detail panel
+  stackMode: '$',
+  etaTarget: null,
+  rendered: {},      // view -> bool (lazily rendered once, then on demand)
+};
+
+function rowsInRange(rows, range){
+  if (range === 'ALL' || rows.length < 2) return rows;
+  const end = rows[rows.length-1].date;
+  let start;
+  if (range === 'YTD') start = new Date(end.getFullYear(), 0, 1);
+  else {
+    const yrs = {'1Y':1, '3Y':3, '5Y':5}[range] || 100;
+    start = new Date(end); start.setFullYear(end.getFullYear() - yrs);
+  }
+  const out = rows.filter(r => r.date >= start);
+  return out.length >= 2 ? out : rows.slice(-2);
+}
+
+/* ============ PARSE — same workbook contract as the original dashboard ============ */
+const Parse = (() => {
+
+  const cell = (ws, r, c) => {
+    if (!ws) return null;
+    const x = ws[XLSX.utils.encode_cell({r, c})];
+    return x ? x.v : null;
+  };
+  const num = (ws, r, c) => { const v = cell(ws, r, c); return typeof v === 'number' ? v : 0; };
+
+  /* Accounts that drop to 0 for <=8 weeks then come back are data-entry gaps,
+     not real zeroes — carry the previous balance forward and rebuild the total. */
+  function forwardFill(rows){
+    for (let i = 1; i < rows.length; i++){
+      let patched = false;
+      for (const k of ACCT_KEYS){
+        if (rows[i][k] === 0 && rows[i-1][k] > 0){
+          let comesBack = false;
+          for (let j = i+1; j < Math.min(i+8, rows.length); j++){
+            if (rows[j][k] > 0){ comesBack = true; break; }
+          }
+          if (comesBack){ rows[i][k] = rows[i-1][k]; patched = true; }
+        }
+      }
+      if (patched) rows[i].total = ACCT_KEYS.reduce((s,k) => s + rows[i][k], 0);
+    }
+    return rows;
+  }
+
+  function weeklyBalances(ws){
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    const rows = [], today = new Date();
+    for (let r = 7; r <= range.e.r; r++){
+      const dateCell = ws[XLSX.utils.encode_cell({r, c:0})];
+      const totalCell = ws[XLSX.utils.encode_cell({r, c:12})];
+      if (!dateCell || !totalCell) continue;
+      let date = dateCell.v;
+      if (typeof date === 'number') date = XLSX.SSF.parse_date_code(date);
+      if (date instanceof Date){ /* ok */ }
+      else if (typeof date === 'string') date = new Date(date);
+      else if (date && date.y) date = new Date(date.y, date.m-1, date.d);
+      else continue;
+      if (isNaN(date.getTime()) || date > today) continue;
+      const total = typeof totalCell.v === 'number' ? totalCell.v : parseFloat(totalCell.v);
+      if (!total || total <= 0) continue;
+      const gv = c => { const x = ws[XLSX.utils.encode_cell({r, c})]; return x && typeof x.v === 'number' ? x.v : 0; };
+      rows.push({date, savings:gv(1), stocks:gv(2), ups:gv(3), utma:gv(4), inheritance:gv(5),
+                 ira:gv(6), tsp:gv(7), k401:gv(8), b403:gv(9), crypto:gv(10), total});
+    }
+    rows.sort((a,b) => a.date - b.date);
+    return forwardFill(rows);
+  }
+
+  function attribution(ws){
+    if (!ws) return null;
+    const items = [];
+    for (let r = 2; r <= 10; r++){
+      const name = cell(ws, r, 0);
+      if (!name) continue;
+      items.push({name: String(name), begin:num(ws,r,1), contribs:num(ws,r,2),
+                  divs:num(ws,r,3), fees:num(ws,r,4), growth:num(ws,r,5), ending:num(ws,r,6)});
+    }
+    if (!items.length) return null;
+    const totals = {begin:num(ws,12,1), contribs:num(ws,12,2), divs:num(ws,12,3),
+                    fees:num(ws,12,4), growth:num(ws,12,5), ending:num(ws,12,6)};
+    return {items, totals};
+  }
+
+  function actualVsPlan(ws){
+    if (!ws) return null;
+    const rows = [];
+    for (let r = 3; r <= 30; r++){
+      const year = num(ws, r, 0);
+      if (year < 2020 || year > 2050) continue;
+      const estEnd = num(ws, r, 4), actEnd = num(ws, r, 9);
+      if (!estEnd && !actEnd) continue;
+      const actReturn = cell(ws, r, 11);
+      rows.push({year, begin:num(ws,r,1), estContribs:num(ws,r,2), estReturn:num(ws,r,3),
+                 estEnd, estGrowth:num(ws,r,5), actContribs:num(ws,r,8), actEnd,
+                 actGrowth:num(ws,r,10), actReturn: typeof actReturn === 'number' ? actReturn : null});
+    }
+    return rows.length ? rows : null;
+  }
+
+  function pacing(ws){
+    if (!ws) return null;
+    const deposits = [];
+    for (let r = 33; r <= 60; r++){
+      const dateVal = cell(ws, r, 0);
+      const totalVal = num(ws, r, 4);
+      if (!dateVal || typeof dateVal === 'string' || totalVal <= 0) continue;
+      deposits.push({date: dateVal, employee: num(ws,r,2), safeHarbor: num(ws,r,3), total: totalVal});
+    }
+    return deposits.length ? deposits : null;
+  }
+
+  function pension(ws){
+    if (!ws) return null;
+    const p = {
+      currentMonthly: num(ws, 19, 1),  // B20
+      estMonthly:     num(ws, 19, 2),  // C20
+      currentPoints:  num(ws, 5, 2),   // C6
+      estTotalPts:    num(ws, 7, 2),   // C8
+    };
+    return p.estMonthly > 0 ? p : null;
+  }
+
+  function workbook(wb, fileName){
+    const wbal = wb.Sheets['Weekly Balances'];
+    if (!wbal) throw new Error('Could not find a "Weekly Balances" sheet in this workbook.');
+    const rows = weeklyBalances(wbal);
+    if (rows.length < 2) throw new Error('The "Weekly Balances" sheet has fewer than two usable rows.');
+    const soft = (fn, ws, label) => { try { return fn(ws); } catch(e){ console.warn(label + ' parse error:', e); return null; } };
+    return {
+      rows,
+      attr:    soft(attribution, wb.Sheets['Sheet1'], 'Attribution'),
+      avp:     soft(actualVsPlan, wb.Sheets['Amortization'], 'Actual-vs-plan'),
+      pacing:  soft(pacing, wb.Sheets['Amortization'], '401k pacing'),
+      pension: soft(pension, wb.Sheets['Pension & SS'], 'Pension'),
+      source: 'file', fileName,
+    };
+  }
+
+  return {workbook, forwardFill};
+})();
+
+/* ============ DEMO — deterministic synthetic data, same shape as Parse ============ */
+const Demo = (() => {
+
+  function mulberry32(a){
+    return function(){
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      let t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  function build(sparse){
+    const rand = mulberry32(20260711);
+    const gauss = () => (rand() + rand() + rand() + rand() - 2) / 2; // ~N(0, 0.29)
+
+    const start = new Date(2017, 0, 6);
+    const today = new Date();
+    const weeks = Math.floor((today - start) / (7*864e5));
+
+    // starting balances and weekly contributions per account
+    const bal = {savings:18000, stocks:32000, ups:8000, utma:5000, inheritance:0,
+                 ira:42000, tsp:21000, k401:55000, b403:6000, crypto:2000};
+    const weeklyAdd = {savings:60, stocks:150, ups:0, utma:25, inheritance:0,
+                       ira:130, tsp:90, k401:450, b403:50, crypto:20};
+    const beta = {savings:0, stocks:1.05, ups:0.9, utma:0.95, inheritance:0.6,
+                  ira:0.95, tsp:0.85, k401:1.0, b403:0.9, crypto:3.2};
+
+    const rows = [];
+    for (let w = 0; w <= weeks; w++){
+      const date = new Date(start.getTime() + w*7*864e5);
+      const y = date.getFullYear(), m = date.getMonth();
+
+      // market regime: steady drift, a sharp 2020 crash + recovery, a long 2022 bear
+      let drift = 0.0016;
+      if (y === 2020 && (m === 1 || m === 2)) drift = -0.055;
+      else if (y === 2020 && m >= 3 && m <= 6) drift = 0.016;
+      else if (y === 2022) drift = -0.0075;
+      else if (y === 2023 && m <= 5) drift = 0.004;
+      const market = drift + gauss() * 0.012;
+
+      for (const k of ACCT_KEYS){
+        if (bal[k] <= 0 && k !== 'inheritance') continue;
+        bal[k] = Math.max(0, bal[k] * (1 + market * beta[k]) + weeklyAdd[k]);
+      }
+      if (bal.savings > 42000) bal.savings = 42000;              // parked emergency fund
+      if (y === 2021 && m === 5 && bal.inheritance === 0) bal.inheritance = 65000;
+
+      const row = {date};
+      for (const k of ACCT_KEYS) row[k] = Math.round(bal[k]);
+      // a short data-entry gap, so the forward-fill path gets exercised
+      if (w >= 200 && w <= 202) row.ups = 0;
+      row.total = ACCT_KEYS.reduce((s,k) => s + row[k], 0);
+      rows.push(row);
+    }
+    Parse.forwardFill(rows);
+
+    if (sparse){
+      return {rows: rows.slice(-30), attr:null, avp:null, pacing:null, pension:null,
+              source:'demo', fileName:'Sparse demo'};
+    }
+
+    // ---- attribution (last full year, per account group-ish items) ----
+    const last = rows[rows.length-1];
+    const attrItems = ACCOUNTS.filter(a => last[a.key] > 0).map(a => {
+      const ending = last[a.key];
+      const begin = Math.round(ending / (1.09 + rand()*0.06));
+      const contribs = Math.round(weeklyAdd[a.key] * 52);
+      const divs = Math.round(begin * (0.004 + rand()*0.012));
+      const fees = -Math.round(begin * (0.0004 + rand()*0.0011));
+      const growth = ending - begin - contribs - divs - fees;
+      return {name: a.label, begin, contribs, divs, fees, growth, ending};
+    });
+    const attrTotals = attrItems.reduce((t,a) => {
+      for (const k of ['begin','contribs','divs','fees','growth','ending']) t[k] += a[k];
+      return t;
+    }, {begin:0, contribs:0, divs:0, fees:0, growth:0, ending:0});
+
+    // ---- actual vs plan (7.5% baseline from 2020) ----
+    const realized = {2020:0.14, 2021:0.18, 2022:-0.12, 2023:0.16, 2024:0.20, 2025:0.09};
+    const avp = [];
+    let estBal = 240000, actBal = 240000;
+    for (let year = 2020; year <= 2042; year++){
+      const contribs = 43000;
+      const begin = estBal;
+      const estEnd = Math.round(estBal * 1.075 + contribs);
+      let actEnd = 0, actReturn = null;
+      if (realized[year] !== undefined){
+        actReturn = realized[year];
+        actEnd = Math.round(actBal * (1 + actReturn) + contribs);
+        actBal = actEnd;
+      }
+      avp.push({year, begin, estContribs:contribs, estReturn:0.075, estEnd,
+                estGrowth: estEnd - begin - contribs, actContribs: actEnd ? contribs : 0,
+                actEnd, actGrowth: actEnd ? actEnd - begin - contribs : 0, actReturn});
+      estBal = estEnd;
+    }
+
+    // ---- 401k pacing (biweekly deposits this year) ----
+    const yearStart = new Date(today.getFullYear(), 0, 9);
+    const deposits = [];
+    for (let i = 0; i < PAY_PERIODS; i++){
+      const d = new Date(yearStart.getTime() + i*14*864e5);
+      if (d > today) break;
+      const employee = 880 + Math.round(gauss()*30);
+      const safeHarbor = 265;
+      deposits.push({date: d, employee, safeHarbor, total: employee + safeHarbor});
+    }
+
+    const pension = {currentMonthly:610, estMonthly:2050, currentPoints:2870, estTotalPts:4300};
+
+    return {rows, attr:{items:attrItems, totals:attrTotals}, avp,
+            pacing: deposits.length ? deposits : null, pension,
+            source:'demo', fileName: 'Demo data'};
+  }
+
+  return {build};
+})();
+
+/* ============ COMPUTE — pure derivations, no DOM ============ */
+const Compute = (() => {
+
+  /* Core stats for a slice of weekly rows */
+  function stats(rows){
+    const first = rows[0], last = rows[rows.length-1];
+    const years = Math.max((last.date - first.date) / (365.25*864e5), 1e-6);
+
+    const totalSeries = rows.map(r => [r.date.getTime(), r.total]);
+
+    const weekly = [];
+    for (let i = 1; i < rows.length; i++)
+      weekly.push([rows[i].date.getTime(), rows[i].total - rows[i-1].total]);
+
+    let peak = -Infinity, ath = {v:0, date:first.date};
+    const ddSeries = rows.map(r => {
+      if (r.total > peak){ peak = r.total; ath = {v:r.total, date:r.date}; }
+      return [r.date.getTime(), (r.total/peak - 1) * 100];
+    });
+    const ddNow = last.total / ath.v - 1;
+
+    const at = n => rows.length > n ? rows[rows.length-1-n] : null;
+    const delta = base => base ? {delta: last.total - base.total, pct: last.total/base.total - 1} : null;
+    const d1 = delta(at(1)), d4 = delta(at(4)), d52 = delta(at(52));
+
+    const cagrAll = Math.pow(last.total/first.total, 1/years) - 1;
+    const r52 = at(52);
+    const cagr52 = r52 ? last.total/r52.total - 1 : cagrAll;
+
+    const avgWeekly52 = (() => {
+      const w = weekly.slice(-52);
+      return w.length ? w.reduce((s,x) => s + x[1], 0) / w.length : 0;
+    })();
+
+    return {first, last, years, totalSeries, weekly, ddSeries, ddNow, ath,
+            d1, d4, d52, cagrAll, cagr52, avgWeekly52};
+  }
+
+  /* Every $100k threshold crossed, with time between crossings */
+  function milestones(rows){
+    const last = rows[rows.length-1];
+    const out = [];
+    let prevDate = rows[0].date;
+    for (let t = 100000; t <= last.total; t += 100000){
+      const hit = rows.find(r => r.total >= t);
+      if (!hit) continue;
+      const days = Math.round((hit.date - prevDate) / 864e5);
+      out.push({amount: t, date: hit.date, days: out.length ? days : null});
+      prevDate = hit.date;
+    }
+    const next = (Math.floor(last.total/100000) + 1) * 100000;
+    return {crossed: out, next};
+  }
+
+  /* Two ETAs to a target: compounding with contributions, and linear recent pace */
+  function milestoneETA(rows, target, annualRate, monthlyContrib){
+    const s = stats(rows);
+    const B = s.last.total;
+    if (target <= B) return {reached: true};
+    const out = {reached: false, compound: null, linear: null};
+
+    if (annualRate > 0 || monthlyContrib > 0){
+      const mr = Math.pow(1 + Math.max(annualRate, 0.0001), 1/12) - 1;
+      const months = Math.log((target + monthlyContrib/mr) / (B + monthlyContrib/mr)) / Math.log(1 + mr);
+      if (isFinite(months) && months > 0 && months < 12*80)
+        out.compound = {months, date: new Date(s.last.date.getTime() + months*30.44*864e5)};
+    }
+    if (s.avgWeekly52 > 0){
+      const wks = (target - B) / s.avgWeekly52;
+      if (wks < 52*80)
+        out.linear = {weeks: wks, date: new Date(s.last.date.getTime() + wks*7*864e5)};
+    }
+    return out;
+  }
+
+  /* Retirement projection — same model as the original dashboard:
+     monthly compounding + contributions; real = deflated by inflation;
+     runway simulates 4% initial withdrawals growing with inflation at a 5% return. */
+  function retirement(p){
+    const monthlyRate = Math.pow(1 + p.rate, 1/12) - 1;
+    const labels = ['Now'], nominal = [p.start], real = [p.start];
+    let bal = p.start;
+    const months = Math.round(p.years * 12);
+    for (let m = 1; m <= months; m++){
+      bal = bal * (1 + monthlyRate) + p.contrib;
+      if (m % 12 === 0 || m === months){
+        const yr = m / 12;
+        labels.push('Y' + Math.ceil(yr));
+        nominal.push(bal);
+        real.push(bal / Math.pow(1 + p.infl, yr));
+      }
+    }
+    const finalNominal = bal;
+    const finalReal = bal / Math.pow(1 + p.infl, p.years);
+    const income4 = finalNominal * 0.04 / 12;
+    const income4Real = finalReal * 0.04 / 12;
+
+    let runwayBal = finalNominal, withdrawal = finalNominal * 0.04, runwayYears = 0;
+    while (runwayBal > 0 && runwayYears < 80){
+      runwayBal = runwayBal * 1.05 - withdrawal;
+      withdrawal *= (1 + p.infl);
+      runwayYears++;
+    }
+    return {labels, nominal, real, finalNominal, finalReal, income4, income4Real, runwayYears};
+  }
+
+  /* Contribution-stripped CAGR — the "your estimate" reference rate */
+  function realizedRate(rows){
+    const first = rows[0], last = rows[rows.length-1];
+    const years = Math.max((last.date - first.date) / (365.25*864e5), 1e-6);
+    const estContribs = DEFAULT_CONTRIB * 12 * years;
+    const growth = last.total - first.total - estContribs;
+    if (years <= 0 || growth <= 0 || first.total <= 0) return 0.07;
+    return Math.pow((first.total + growth) / first.total, 1/years) - 1;
+  }
+
+  /* FIRE: nest egg that funds spending at the withdrawal rate, and when you hit it.
+     The today's-dollar target inflates while the balance compounds, so iterate. */
+  function fire(p){
+    const annualNeed = Math.max(0, p.monthlySpend * 12 - (p.pensionMonthly || 0) * 12);
+    const fireNumber = p.swr > 0 ? annualNeed / p.swr : Infinity;
+    const mr = Math.pow(1 + p.rate, 1/12) - 1;
+    let bal = p.start, months = null;
+    if (bal >= fireNumber) months = 0;
+    else {
+      for (let m = 1; m <= 80*12; m++){
+        bal = bal * (1 + mr) + p.contrib;
+        const target = fireNumber * Math.pow(1 + p.infl, m/12);
+        if (bal >= target){ months = m; break; }
+      }
+    }
+    // Coast: what you'd need today to reach the (inflated) target with zero contributions
+    const yrs = months != null ? months/12 : p.horizonYears;
+    const coast = fireNumber * Math.pow(1 + p.infl, yrs) / Math.pow(1 + p.rate, yrs);
+    return {annualNeed, fireNumber, months, coast, progress: fireNumber > 0 ? p.start / fireNumber : 1};
+  }
+
+  /* Group series + allocation */
+  function groupTotals(row){
+    const out = {};
+    for (const g of GROUPS) out[g.key] = 0;
+    for (const a of ACCOUNTS) out[a.group] += row[a.key];
+    return out;
+  }
+  function groupSeries(rows){
+    return rows.map(r => ({ts: r.date.getTime(), ...groupTotals(r)}));
+  }
+  function drift(rows){
+    const now = groupTotals(rows[rows.length-1]);
+    const past = groupTotals(rows.length > 52 ? rows[rows.length-53] : rows[0]);
+    const sumNow = GROUPS.reduce((s,g) => s + now[g.key], 0) || 1;
+    const sumPast = GROUPS.reduce((s,g) => s + past[g.key], 0) || 1;
+    return GROUPS.map(g => ({
+      key: g.key, label: g.label,
+      now: now[g.key]/sumNow, past: past[g.key]/sumPast,
+      nowAbs: now[g.key],
+    }));
+  }
+
+  return {stats, milestones, milestoneETA, retirement, realizedRate, fire,
+          groupTotals, groupSeries, drift};
+})();
+
+/* ============ CHARTS — instance manager + shared grammar ============ */
+const Charts = (() => {
+  const inst = new Map();
+
+  function mount(id, option, opts = {}){
+    const node = $(id);
+    if (!node) return null;
+    let c = inst.get(id);
+    if (!c){
+      c = echarts.init(node);
+      inst.set(id, c);
+      if (opts.group) c.group = opts.group;
+    }
+    c.setOption(option, {notMerge: true});
+    if (opts.onZoom && !c._zoomBound){ c.on('datazoom', opts.onZoom); c._zoomBound = true; }
+    if (opts.onClick && !c._clickBound){ c.on('click', opts.onClick); c._clickBound = true; }
+    return c;
+  }
+
+  window.addEventListener('resize', debounce(() => {
+    inst.forEach(c => { if (c.getDom().offsetWidth) c.resize(); });
+  }, 120));
+
+  function resizeIn(section){
+    inst.forEach(c => { if (section.contains(c.getDom()) && c.getDom().offsetWidth) c.resize(); });
+  }
+  function disposeAll(){ inst.forEach(c => c.dispose()); inst.clear(); }
+  function get(id){ return inst.get(id); }
+
+  return {mount, resizeIn, disposeAll, get};
+})();
+
+function baseOption(t){
+  return {
+    animation: MOTION,
+    animationDuration: 600,
+    animationEasing: 'cubicOut',
+    animationDurationUpdate: 350,
+    textStyle: {fontFamily: FONT, color: t.ink2},
+  };
+}
+function tip(t, extra){
+  return Object.assign({
+    trigger: 'axis',
+    axisPointer: {
+      type: 'cross',
+      lineStyle: {color: t.axis},
+      crossStyle: {color: t.axis},
+      label: {backgroundColor: t.card2, color: t.ink, borderColor: t.grid, borderWidth: 1,
+              fontFamily: FONT, fontSize: 11},
+    },
+    backgroundColor: t.card,
+    borderColor: t.grid,
+    borderWidth: 1,
+    padding: [8, 12],
+    textStyle: {color: t.ink, fontSize: 12, fontFamily: FONT},
+    extraCssText: 'box-shadow:0 8px 28px rgba(0,0,0,.14);border-radius:10px;',
+  }, extra || {});
+}
+function timeAxis(t){
+  return {
+    type: 'time',
+    axisLine: {lineStyle: {color: t.axis}},
+    axisTick: {show: false},
+    splitLine: {show: false},
+    axisLabel: {color: t.muted, fontSize: 11, hideOverlap: true},
+    axisPointer: {label: {formatter: p => Fmt.date(new Date(p.value))}},
+  };
+}
+function valAxis(t, fmtFn){
+  return {
+    type: 'value',
+    scale: true,
+    axisLine: {show: false},
+    axisTick: {show: false},
+    splitLine: {lineStyle: {color: t.grid, width: 1}},
+    axisLabel: {color: t.muted, fontSize: 11, formatter: fmtFn || (v => Fmt.k(v))},
+    axisPointer: {label: {formatter: p => (fmtFn || Fmt.k)(p.value)}},
+  };
+}
+function sparkOption(t, pairs){
+  if (!pairs || pairs.length < 2) return {animation: false, series: []};
+  const lastP = pairs[pairs.length-1];
+  return {
+    animation: MOTION, animationDuration: 500,
+    grid: {left: 2, right: 6, top: 4, bottom: 2},
+    xAxis: {type: 'time', show: false},
+    yAxis: {type: 'value', show: false, scale: true},
+    series: [
+      {type: 'line', data: pairs, showSymbol: false, silent: true,
+       lineStyle: {width: 1.5, color: t.muted}},
+      {type: 'scatter', data: [lastP], symbolSize: 6, silent: true,
+       itemStyle: {color: t.accent, borderColor: t.card, borderWidth: 2}},
+    ],
+  };
+}
+
+/* ============ TABLE VIEWS — the no-hover twin of every chart ============ */
+const Tables = new Map();  // chartBoxId -> {cols:[..], rows:[[..]]}
+
+function renderTable(boxId){
+  const spec = Tables.get(boxId);
+  const wrap = $('tbl-' + boxId);
+  if (!spec || !wrap) return;
+  wrap.textContent = '';
+  const table = elx('table', 'dtable');
+  const thead = elx('thead'), trh = elx('tr');
+  spec.cols.forEach(c => trh.appendChild(elx('th', null, c)));
+  thead.appendChild(trh);
+  const tbody = elx('tbody');
+  spec.rows.forEach(r => {
+    const tr = elx('tr');
+    r.forEach(v => tr.appendChild(elx('td', null, v)));
+    tbody.appendChild(tr);
+  });
+  table.appendChild(thead); table.appendChild(tbody);
+  wrap.appendChild(table);
+}
+
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.tbtn[data-tbl]');
+  if (!btn) return;
+  const boxId = btn.dataset.tbl;
+  const box = $(boxId), wrap = $('tbl-' + boxId);
+  const on = btn.getAttribute('aria-pressed') === 'true';
+  if (on){
+    btn.setAttribute('aria-pressed', 'false');
+    wrap.hidden = true; box.style.display = '';
+    const c = Charts.get(boxId); if (c) c.resize();
+  } else {
+    btn.setAttribute('aria-pressed', 'true');
+    renderTable(boxId);
+    box.style.display = 'none'; wrap.hidden = false;
+    wrap.classList.remove('fade-in'); void wrap.offsetWidth; wrap.classList.add('fade-in');
+  }
+});
+
+/* ============ VIEWS ============ */
+const Views = {};
+
+/* ---------------- PULSE ---------------- */
+let zoomRaf = null;
+
+function renderHeroAndTiles(rows, zoomed){
+  const s = Compute.stats(rows);
+  const t = T();
+
+  countUp($('heroValue'), s.last.total, Fmt.usd, 800);
+  $('heroAsOf').textContent = zoomed
+    ? `Window: ${Fmt.date(s.first.date)} – ${Fmt.date(s.last.date)} · ${rows.length} weeks`
+    : `As of ${Fmt.date(s.last.date)} · ${rows.length} weeks in view`;
+
+  const wk = $('heroWk');
+  if (s.d1){
+    wk.textContent = Fmt.signed(s.d1.delta);
+    wk.className = 'dv ' + dirClass(s.d1.delta);
+    $('heroWkSub').textContent = Fmt.signedPct(s.d1.pct, 2) + ' vs last week';
+  }
+  $('heroRangeLabel').textContent = 'Since ' + Fmt.month(s.first.date);
+  const hr = $('heroRange');
+  const rangeDelta = s.last.total - s.first.total;
+  hr.textContent = Fmt.signed(rangeDelta);
+  hr.className = 'dv ' + dirClass(rangeDelta);
+  $('heroRangeSub').textContent = Fmt.signedPct(s.last.total/s.first.total - 1) +
+    (zoomed ? ' in window' : '');
+
+  // -- tiles --
+  const setTile = (vId, dId, value, valueCls, sub, subCls) => {
+    const v = $(vId); v.textContent = value; v.className = 'tile-value ' + (valueCls||'');
+    const d = $(dId); d.textContent = sub; d.className = 'tile-delta ' + (subCls||'');
+  };
+  if (s.d4) setTile('t4v','t4d', Fmt.signed(s.d4.delta, Fmt.k), dirClass(s.d4.delta),
+                    Fmt.signedPct(s.d4.pct) + ' over 4 weeks', dirClass(s.d4.delta));
+  else setTile('t4v','t4d','—','', 'not enough history','flat');
+  if (s.d52) setTile('t52v','t52d', Fmt.signed(s.d52.delta, Fmt.k), dirClass(s.d52.delta),
+                     Fmt.signedPct(s.d52.pct) + ' over 52 weeks', dirClass(s.d52.delta));
+  else setTile('t52v','t52d','—','', 'needs a year of data','flat');
+  setTile('tddv','tddd',
+          s.ddNow < -0.0005 ? Fmt.pct(s.ddNow).replace('-','−') : 'At high',
+          s.ddNow < -0.0005 ? 'dn' : 'up',
+          'peak ' + Fmt.k(s.ath.v) + ' · ' + Fmt.month(s.ath.date), 'flat');
+  setTile('tcgv','tcgd', Fmt.signedPct(s.cagr52), dirClass(s.cagr52),
+          'trailing 52w · ' + Fmt.signedPct(s.cagrAll) + '/yr all-time', 'flat');
+
+  // -- sparklines --
+  const sample = (arr, n=12) => {
+    if (arr.length <= n) return arr;
+    const out = [];
+    for (let i = 0; i < n; i++) out.push(arr[Math.round(i*(arr.length-1)/(n-1))]);
+    return out;
+  };
+  Charts.mount('spark4',  sparkOption(t, s.totalSeries.slice(-13)));
+  Charts.mount('spark52', sparkOption(t, sample(s.totalSeries.slice(-53))));
+  Charts.mount('sparkdd', sparkOption(t, sample(s.ddSeries.slice(-53))));
+  const roll = [];
+  for (let i = Math.max(52, rows.length-53); i < rows.length; i++)
+    roll.push([rows[i].date.getTime(), rows[i].total/rows[i-52].total - 1]);
+  Charts.mount('sparkcg', sparkOption(t, sample(roll)));
+}
+
+Views.pulse = function(){
+  const t = T();
+  const rows = rowsInRange(state.data.rows, state.range);
+  state.pulseRows = rows;
+  const s = Compute.stats(rows);
+  const miles = Compute.milestones(state.data.rows);
+
+  renderHeroAndTiles(rows, false);
+
+  // preserve the zoom window across theme/re-renders
+  let dzStart = 0, dzEnd = 100;
+  const prev = Charts.get('c-main');
+  if (prev){
+    const pdz = (prev.getOption().dataZoom || [])[0];
+    if (pdz){ dzStart = pdz.start ?? 0; dzEnd = pdz.end ?? 100; }
+  }
+
+  const sliceMiles = miles.crossed.filter(m =>
+    m.date >= rows[0].date && m.date <= s.last.date);
+
+  Charts.mount('c-main', {
+    ...baseOption(t),
+    tooltip: tip(t, {valueFormatter: v => Fmt.usd(v)}),
+    grid: {left: 6, right: 16, top: 30, bottom: 62, containLabel: true},
+    xAxis: timeAxis(t),
+    yAxis: valAxis(t),
+    dataZoom: [
+      {type: 'inside', start: dzStart, end: dzEnd},
+      {type: 'slider', start: dzStart, end: dzEnd, height: 34, bottom: 8,
+       borderColor: t.grid, backgroundColor: 'transparent',
+       fillerColor: rgba(t.accent, .10),
+       dataBackground: {lineStyle: {color: t.axis}, areaStyle: {color: rgba(t.accent, .06)}},
+       selectedDataBackground: {lineStyle: {color: t.accent}, areaStyle: {color: rgba(t.accent, .12)}},
+       handleStyle: {color: t.accent, borderColor: t.card},
+       moveHandleStyle: {color: t.axis},
+       emphasis: {handleStyle: {color: t.accent}},
+       textStyle: {color: t.muted, fontSize: 10}},
+    ],
+    series: [{
+      name: 'Net worth', type: 'line', data: s.totalSeries,
+      showSymbol: false, symbolSize: 8,
+      lineStyle: {width: 2, color: t.accent},
+      itemStyle: {color: t.accent, borderColor: t.card, borderWidth: 2},
+      areaStyle: {color: rgba(t.accent, .10)},
+      emphasis: {disabled: true},
+      markPoint: {
+        symbol: 'circle', symbolSize: 9,
+        itemStyle: {color: t.accent, borderColor: t.card, borderWidth: 2},
+        label: {show: true, position: 'top', color: t.ink2, fontSize: 10, fontWeight: 600,
+                formatter: p => p.name},
+        data: sliceMiles.map(m => ({name: Fmt.k(m.amount), coord: [m.date.getTime(), m.amount]})),
+        animation: MOTION,
+      },
+      markLine: {
+        symbol: 'none', silent: true,
+        lineStyle: {type: 'dashed', color: t.muted, width: 1},
+        label: {formatter: 'ATH ' + Fmt.k(s.ath.v), position: 'insideStartTop',
+                color: t.muted, fontSize: 10},
+        data: [{yAxis: s.ath.v}],
+      },
+    }],
+  }, {
+    group: 'pulse',
+    onZoom: () => {
+      if (zoomRaf) return;
+      zoomRaf = requestAnimationFrame(() => {
+        zoomRaf = null;
+        const c = Charts.get('c-main');
+        if (!c) return;
+        const dz = (c.getOption().dataZoom || [])[0];
+        if (!dz) return;
+        const base = state.pulseRows;
+        let lo = dz.startValue, hi = dz.endValue;
+        if (lo == null || hi == null){
+          const t0 = base[0].date.getTime(), t1 = base[base.length-1].date.getTime();
+          lo = t0 + (dz.start ?? 0)/100 * (t1 - t0);
+          hi = t0 + (dz.end ?? 100)/100 * (t1 - t0);
+        }
+        const win = base.filter(r => r.date.getTime() >= lo && r.date.getTime() <= hi);
+        const full = win.length >= base.length;
+        if (win.length >= 2) renderHeroAndTiles(win, !full);
+      });
+    },
+  });
+
+  Tables.set('c-main', {
+    cols: ['Week', 'Net worth'],
+    rows: rows.slice(-104).reverse().map(r => [Fmt.date(r.date), Fmt.usd(r.total)]),
+  });
+
+  // -- weekly change bars, crosshair-linked --
+  const weeklyData = s.weekly.map(w => ({
+    value: w,
+    itemStyle: {color: w[1] >= 0 ? t.good : t.bad,
+                borderRadius: w[1] >= 0 ? [2,2,0,0] : [0,0,2,2]},
+  }));
+  Charts.mount('c-weekly', {
+    ...baseOption(t),
+    tooltip: tip(t, {valueFormatter: v => Fmt.signed(v)}),
+    grid: {left: 6, right: 12, top: 26, bottom: 6, containLabel: true},
+    xAxis: timeAxis(t),
+    yAxis: valAxis(t),
+    dataZoom: [{type: 'inside', start: dzStart, end: dzEnd}],
+    series: [{name: 'Weekly change', type: 'bar', data: weeklyData, barMaxWidth: 24, large: true}],
+  }, {group: 'pulse'});
+  Tables.set('c-weekly', {
+    cols: ['Week', 'Change'],
+    rows: s.weekly.slice(-104).reverse().map(w => [Fmt.date(new Date(w[0])), Fmt.signed(w[1])]),
+  });
+
+  // -- drawdown underwater chart, crosshair-linked --
+  const worst = s.ddSeries.reduce((a,b) => b[1] < a[1] ? b : a, [0, 0]);
+  $('ddSub').textContent = worst[1] < -0.05
+    ? `How far below the running peak · worst ${worst[1].toFixed(1).replace('-','−')}% in ${Fmt.month(new Date(worst[0]))}`
+    : 'How far below the running all-time high';
+  Charts.mount('c-dd', {
+    ...baseOption(t),
+    tooltip: tip(t, {valueFormatter: v => Number(v).toFixed(1) + '%'}),
+    grid: {left: 6, right: 12, top: 26, bottom: 6, containLabel: true},
+    xAxis: timeAxis(t),
+    yAxis: {...valAxis(t, v => v + '%'), max: 0, scale: false},
+    dataZoom: [{type: 'inside', start: dzStart, end: dzEnd}],
+    series: [{
+      name: 'Drawdown', type: 'line', data: s.ddSeries,
+      showSymbol: false, lineStyle: {width: 2, color: t.bad},
+      areaStyle: {color: rgba(t.bad, .10)}, emphasis: {disabled: true},
+    }],
+  }, {group: 'pulse'});
+  Tables.set('c-dd', {
+    cols: ['Week', 'Below peak'],
+    rows: s.ddSeries.slice(-104).reverse().map(d => [Fmt.date(new Date(d[0])), d[1].toFixed(1) + '%']),
+  });
+
+  echarts.connect('pulse');
+
+  // -- milestones --
+  const grid = $('mileGrid');
+  grid.textContent = '';
+  miles.crossed.forEach(m => {
+    const div = elx('div', 'mile');
+    div.appendChild(elx('div', 'm-amt num', Fmt.k(m.amount)));
+    div.appendChild(elx('div', 'm-date', Fmt.date(m.date)));
+    div.appendChild(elx('div', 'm-gap', m.days != null ? `+${m.days.toLocaleString()} days after the last` : 'first milestone tracked'));
+    grid.appendChild(div);
+  });
+  const eta = Compute.milestoneETA(state.data.rows, miles.next,
+                                   Compute.realizedRate(state.data.rows), DEFAULT_CONTRIB);
+  const nextDiv = elx('div', 'mile next');
+  nextDiv.appendChild(elx('div', 'm-amt num', Fmt.k(miles.next)));
+  const lastTotal = state.data.rows[state.data.rows.length-1].total;
+  nextDiv.appendChild(elx('div', 'm-date', Fmt.k(miles.next - lastTotal) + ' to go'));
+  nextDiv.appendChild(elx('div', 'm-gap', eta.compound ? '≈ ' + Fmt.month(eta.compound.date) + ' at your pace' : 'pace unclear'));
+  grid.appendChild(nextDiv);
+  $('mileSub').textContent = `${miles.crossed.length} crossed · next ${Fmt.k(miles.next)}` +
+    (eta.compound ? ` around ${Fmt.month(eta.compound.date)}` : '');
+};
+
+/* ---------------- ACCOUNTS ---------------- */
+Views.accounts = function(){
+  const t = T();
+  const rows = rowsInRange(state.data.rows, state.range);
+  const last = rows[rows.length-1];
+  const groupNow = Compute.groupTotals(last);
+  const totalNow = GROUPS.reduce((s,g) => s + groupNow[g.key], 0) || 1;
+
+  // -- donut: allocation today, click a slice to focus a group --
+  const donutData = GROUPS.filter(g => groupNow[g.key] > 0).map(g => ({
+    name: g.label,
+    value: Math.round(groupNow[g.key]),
+    groupKey: g.key,
+    selected: state.group === g.key,
+    itemStyle: {color: groupColor(t, g.key)},
+  }));
+  Charts.mount('c-donut', {
+    ...baseOption(t),
+    tooltip: tip(t, {
+      trigger: 'item', axisPointer: {type: 'none'},
+      formatter: p => `${p.marker} ${p.name}  <b>${Fmt.usd(p.value)}</b>  ·  ${p.percent}%`,
+    }),
+    legend: {bottom: 0, icon: 'circle', itemWidth: 9, itemHeight: 9,
+             textStyle: {color: t.ink2, fontSize: 12}},
+    title: {
+      text: Fmt.k(totalNow), subtext: state.group
+        ? GROUPS.find(g => g.key === state.group).label + ' focused'
+        : 'Total', left: 'center', top: '38%',
+      textStyle: {color: t.ink, fontSize: 22, fontWeight: 700, fontFamily: FONT},
+      subtextStyle: {color: t.muted, fontSize: 11, fontFamily: FONT},
+    },
+    series: [{
+      type: 'pie', radius: ['54%', '74%'], center: ['50%', '46%'],
+      selectedMode: 'single', selectedOffset: 8,
+      itemStyle: {borderColor: t.card, borderWidth: 2, borderRadius: 5},
+      label: {color: t.ink2, fontSize: 11.5, fontWeight: 600, lineHeight: 15,
+              overflow: 'none',
+              formatter: p => `${p.name}\n${p.percent.toFixed(0)}%`},
+      labelLine: {length: 12, length2: 6, lineStyle: {color: t.axis}},
+      emphasis: {scale: true, scaleSize: 4},
+      data: donutData,
+    }],
+  }, {
+    onClick: p => {
+      if (p.componentType !== 'series') return;
+      const key = (p.data && p.data.groupKey) || null;
+      state.group = state.group === key ? null : key;
+      Views.accounts();
+    },
+  });
+
+  // -- allocation drift: share a year ago vs now --
+  const drift = Compute.drift(rows);
+  const dr = $('driftRows');
+  dr.textContent = '';
+  const maxShare = Math.max(...drift.map(d => Math.max(d.now, d.past)), 0.01);
+  drift.forEach(d => {
+    const color = groupColor(t, d.key);
+    const row = elx('div', 'drift-row');
+    const name = elx('div', 'drift-name');
+    const sw = elx('span', 'swatch'); sw.style.background = color;
+    name.appendChild(sw); name.appendChild(document.createTextNode(d.label));
+    const track = elx('div', 'drift-track');
+    track.appendChild(elx('div', 'drift-line'));
+    const x = v => (v / maxShare * 92).toFixed(1) + '%';
+    const seg = elx('div', 'drift-seg');
+    seg.style.left = x(Math.min(d.past, d.now));
+    seg.style.width = (Math.abs(d.now - d.past) / maxShare * 92).toFixed(1) + '%';
+    seg.style.background = color; seg.style.opacity = .45;
+    track.appendChild(seg);
+    const dotPast = elx('div', 'drift-dot past'); dotPast.style.background = color; dotPast.style.left = x(d.past);
+    const dotNow = elx('div', 'drift-dot'); dotNow.style.background = color; dotNow.style.left = x(d.now);
+    track.appendChild(dotPast); track.appendChild(dotNow);
+    const right = elx('div');
+    const delta = (d.now - d.past) * 100;
+    const dEl = elx('div', 'drift-delta ' + (Math.abs(delta) < .05 ? 'flat' : delta > 0 ? 'up' : 'dn'),
+      (delta >= 0 ? '+' : '−') + Math.abs(delta).toFixed(1) + ' pts');
+    right.appendChild(dEl);
+    right.appendChild(elx('div', 'drift-vals',
+      `${(d.past*100).toFixed(1)}% → ${(d.now*100).toFixed(1)}% · ${Fmt.k(d.nowAbs)}`));
+    row.appendChild(name); row.appendChild(track); row.appendChild(right);
+    dr.appendChild(row);
+  });
+  $('driftSub').textContent = rows.length > 52
+    ? 'Share of portfolio — a year ago (faded dot) vs today'
+    : 'Share of portfolio — start of range (faded dot) vs today';
+
+  // -- composition over time (stacked area, $ or %) --
+  const gs = Compute.groupSeries(rows);
+  const pctMode = state.stackMode === '%';
+  const stackSeries = GROUPS.map(g => {
+    const color = groupColor(t, g.key);
+    const dimmed = state.group && state.group !== g.key;
+    return {
+      name: g.label, type: 'line', stack: 'alloc',
+      data: gs.map(r => {
+        const denom = pctMode ? (GROUPS.reduce((s,x) => s + r[x.key], 0) || 1) : 1;
+        return [r.ts, pctMode ? r[g.key]/denom*100 : r[g.key]];
+      }),
+      showSymbol: false, emphasis: {focus: 'series'},
+      lineStyle: {width: 2, color: t.card},           // 2px surface gap between bands
+      areaStyle: {color, opacity: dimmed ? .12 : .6},
+      itemStyle: {color},
+    };
+  });
+  Charts.mount('c-stack', {
+    ...baseOption(t),
+    tooltip: tip(t, {valueFormatter: v => pctMode ? Number(v).toFixed(1) + '%' : Fmt.usd(v)}),
+    legend: {top: 0, icon: 'roundRect', itemWidth: 12, itemHeight: 9,
+             textStyle: {color: t.ink2, fontSize: 12}},
+    grid: {left: 6, right: 16, top: 34, bottom: 6, containLabel: true},
+    xAxis: timeAxis(t),
+    yAxis: pctMode
+      ? {...valAxis(t, v => v + '%'), max: 100, min: 0, scale: false}
+      : valAxis(t),
+    series: stackSeries,
+  });
+  Tables.set('c-stack', {
+    cols: ['Week', ...GROUPS.map(g => g.label), 'Total'],
+    rows: gs.slice(-52).reverse().map(r => {
+      const tot = GROUPS.reduce((s,g) => s + r[g.key], 0);
+      return [Fmt.date(new Date(r.ts)), ...GROUPS.map(g => Fmt.usd(r[g.key])), Fmt.usd(tot)];
+    }),
+  });
+
+  // -- every account: small multiples --
+  const mg = $('miniGrid');
+  mg.textContent = '';
+  const live = ACCOUNTS.filter(a => rows.some(r => r[a.key] > 0));
+  live.forEach(a => {
+    const cur = last[a.key];
+    const base = rows.length > 52 ? rows[rows.length-53][a.key] : rows[0][a.key];
+    const chg = base > 0 ? cur/base - 1 : null;
+    const color = groupColor(t, a.group);
+    const card = elx('div', 'mini');
+    if (state.group && state.group !== a.group) card.classList.add('dim');
+    if (state.acct === a.key) card.classList.add('sel');
+    card.tabIndex = 0; card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', a.label + ', ' + Fmt.usd(cur));
+    const name = elx('div', 'mini-name');
+    const sw = elx('span', 'swatch'); sw.style.background = color;
+    name.appendChild(sw); name.appendChild(document.createTextNode(a.label));
+    card.appendChild(name);
+    card.appendChild(elx('div', 'mini-val num', Fmt.k(cur)));
+    card.appendChild(elx('div', 'mini-delta ' + (chg == null ? 'flat' : dirClass(chg)),
+      chg == null ? 'new' : Fmt.signedPct(chg) + ' / 52w'));
+    const box = elx('div', 'chart h-mini');
+    box.id = 'mini-' + a.key;
+    card.appendChild(box);
+    const open = () => { state.acct = a.key; renderAcctDetail(); };
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(); } });
+    mg.appendChild(card);
+  });
+  live.forEach(a => {
+    Charts.mount('mini-' + a.key, {
+      animation: MOTION, animationDuration: 500,
+      grid: {left: 2, right: 2, top: 4, bottom: 2},
+      xAxis: {type: 'time', show: false},
+      yAxis: {type: 'value', show: false, scale: true},
+      tooltip: tip(t, {valueFormatter: v => Fmt.usd(v),
+                       axisPointer: {type: 'line', lineStyle: {color: t.axis}}}),
+      series: [{
+        name: a.label, type: 'line',
+        data: rows.map(r => [r.date.getTime(), r[a.key]]),
+        showSymbol: false, lineStyle: {width: 2, color: groupColor(t, a.group)},
+        areaStyle: {color: rgba(groupColor(t, a.group), .10)},
+      }],
+    });
+  });
+
+  if (state.acct) renderAcctDetail(); else $('acctDetail').hidden = true;
+  renderAttribution();
+};
+
+function renderAcctDetail(){
+  const t = T();
+  const a = ACCOUNTS.find(x => x.key === state.acct);
+  if (!a){ $('acctDetail').hidden = true; return; }
+  const rows = rowsInRange(state.data.rows, state.range);
+  const last = rows[rows.length-1];
+  const color = groupColor(t, a.group);
+  const cur = last[a.key];
+  const startVal = rows.find(r => r[a.key] > 0);
+  const share = cur / (last.total || 1);
+  const base52 = rows.length > 52 ? rows[rows.length-53][a.key] : rows[0][a.key];
+
+  const panel = $('acctDetail');
+  panel.hidden = false;
+  $('adTitle').textContent = a.label;
+  $('adSub').textContent =
+    `${Fmt.usd(cur)} today · ${Fmt.pct(share)} of the portfolio · ` +
+    (base52 > 0 ? `${Fmt.signedPct(cur/base52 - 1)} over the last 52 weeks · ` : '') +
+    `${GROUPS.find(g => g.key === a.group).label} group`;
+
+  Charts.mount('c-acct', {
+    ...baseOption(t),
+    tooltip: tip(t, {valueFormatter: v => Fmt.usd(v)}),
+    grid: {left: 6, right: 16, top: 26, bottom: 6, containLabel: true},
+    xAxis: timeAxis(t),
+    yAxis: valAxis(t),
+    series: [{
+      name: a.label, type: 'line',
+      data: rows.map(r => [r.date.getTime(), r[a.key]]),
+      showSymbol: false, lineStyle: {width: 2, color},
+      areaStyle: {color: rgba(color, .10)},
+      markLine: startVal && startVal !== rows[0] ? {
+        symbol: 'none', silent: true,
+        lineStyle: {type: 'dashed', color: t.muted, width: 1},
+        label: {formatter: 'opened', color: t.muted, fontSize: 10},
+        data: [{xAxis: startVal.date.getTime()}],
+      } : undefined,
+    }],
+  });
+  panel.scrollIntoView({behavior: MOTION ? 'smooth' : 'auto', block: 'nearest'});
+}
+
+function renderAttribution(){
+  const t = T();
+  const attr = state.data.attr;
+  const card = $('card-attr');
+  if (!attr){ card.hidden = true; return; }
+  card.hidden = false;
+  const tot = attr.totals;
+
+  // waterfall: Begin → +Contribs → +Dividends → +Market → −Fees → Ending
+  const steps = [
+    {label: 'Begin',         v: tot.begin,    color: t.axis,  total: true},
+    {label: 'Contributions', v: tot.contribs, color: t.series.retire},
+    {label: 'Dividends',     v: tot.divs,     color: t.series.broker},
+    {label: 'Market',        v: tot.growth,   color: t.series.crypto},
+    {label: 'Fees',          v: tot.fees,     color: t.bad},
+    {label: 'Ending',        v: tot.ending,   color: t.axis,  total: true},
+  ];
+  let run = 0;
+  const bases = [], bars = [];
+  steps.forEach(s => {
+    if (s.total){
+      bases.push(0);
+      bars.push({value: s.v, itemStyle: {color: s.color, borderRadius: [4,4,0,0], opacity: .55}});
+      run = s.label === 'Begin' ? s.v : run;
+    } else {
+      bases.push(Math.min(run, run + s.v));
+      bars.push({value: Math.abs(s.v), itemStyle: {color: s.color, borderRadius: [4,4,0,0]},
+                 realValue: s.v});
+      run += s.v;
+    }
+  });
+  Charts.mount('c-waterfall', {
+    ...baseOption(t),
+    tooltip: tip(t, {
+      axisPointer: {type: 'shadow', shadowStyle: {color: rgba(t.accent, .05)}},
+      formatter: params => {
+        const p = params.find(x => x.seriesIndex === 1);
+        if (!p) return '';
+        const step = steps[p.dataIndex];
+        return `${step.label}: <b>${step.total ? Fmt.usd(step.v) : Fmt.signed(step.v)}</b>`;
+      },
+    }),
+    grid: {left: 6, right: 12, top: 26, bottom: 6, containLabel: true},
+    xAxis: {type: 'category', data: steps.map(s => s.label),
+            axisLine: {lineStyle: {color: t.axis}}, axisTick: {show: false},
+            axisLabel: {color: t.muted, fontSize: 11, interval: 0}},
+    yAxis: valAxis(t),
+    series: [
+      {type: 'bar', stack: 'wf', data: bases, itemStyle: {color: 'transparent'},
+       emphasis: {disabled: true}, silent: true, barMaxWidth: 42},
+      {type: 'bar', stack: 'wf', data: bars, barMaxWidth: 42,
+       label: {show: true, position: 'top', color: t.ink2, fontSize: 10.5, fontWeight: 600,
+               formatter: p => {
+                 const s = steps[p.dataIndex];
+                 return s.total ? Fmt.k(s.v) : Fmt.signed(s.v, Fmt.k);
+               }},
+      },
+    ],
+  });
+
+  // per-account stacked bars
+  const comp = [
+    {key: 'contribs', label: 'Contributions', color: t.series.retire},
+    {key: 'divs',     label: 'Dividends',     color: t.series.broker},
+    {key: 'growth',   label: 'Market',        color: t.series.crypto},
+    {key: 'fees',     label: 'Fees',          color: t.bad},
+  ];
+  Charts.mount('c-attr', {
+    ...baseOption(t),
+    tooltip: tip(t, {axisPointer: {type: 'shadow', shadowStyle: {color: rgba(t.accent, .05)}},
+                     valueFormatter: v => Fmt.signed(v)}),
+    legend: {top: 0, icon: 'roundRect', itemWidth: 12, itemHeight: 9,
+             textStyle: {color: t.ink2, fontSize: 11.5}},
+    grid: {left: 6, right: 12, top: 30, bottom: 6, containLabel: true},
+    xAxis: {type: 'category', data: attr.items.map(a => a.name),
+            axisLine: {lineStyle: {color: t.axis}}, axisTick: {show: false},
+            axisLabel: {color: t.muted, fontSize: 10.5, interval: 0, rotate: attr.items.length > 6 ? 32 : 0}},
+    yAxis: valAxis(t),
+    series: comp.map(c => ({
+      name: c.label, type: 'bar', stack: 'attr', barMaxWidth: 24,
+      data: attr.items.map(a => a[c.key]),
+      itemStyle: {color: c.color, borderColor: t.card, borderWidth: 1},
+    })),
+  });
+
+  const gain = tot.ending - tot.begin;
+  const note = $('attrNote');
+  note.textContent = '';
+  if (gain > 0){
+    const fromNew = tot.contribs / gain;
+    const fromMkt = (tot.growth + tot.divs + tot.fees) / gain;
+    const b1 = elx('b', null, Fmt.pct(fromNew, 0)); const b2 = elx('b', null, Fmt.pct(fromMkt, 0));
+    note.appendChild(b1);
+    note.appendChild(document.createTextNode(' of this year’s gain was new money you put in; '));
+    note.appendChild(b2);
+    note.appendChild(document.createTextNode(' came from markets and dividends (net of ' + Fmt.usd(Math.abs(tot.fees)) + ' in fees).'));
+  }
+}
+
+/* ---------------- PLAN ---------------- */
+function readCalcParams(){
+  return {
+    rate:    parseFloat($('retRate').value) / 100,
+    years:   parseFloat($('retYears').value),
+    contrib: parseFloat($('retContrib').value),
+    infl:    parseFloat($('retInfl').value) / 100,
+  };
+}
+
+function recomputePlan(){
+  if (!state.data) return;
+  const t = T();
+  const p = readCalcParams();
+  const rows = state.data.rows;
+  const last = rows[rows.length-1];
+  const r = Compute.retirement({...p, start: last.total});
+
+  countUp($('retNom'), r.finalNominal, Fmt.k, 550);
+  $('retNomSub').textContent = `at ${Fmt.pct(p.rate)} + ${Fmt.usd(p.contrib)}/mo over ${p.years} yrs`;
+  countUp($('retReal'), r.finalReal, Fmt.k, 550);
+  $('retRealSub').textContent = `after ${Fmt.pct(p.infl)} annual inflation`;
+  countUp($('retInc'), r.income4, v => Fmt.k(v) + '/mo', 550);
+  $('retIncSub').textContent = Fmt.k(r.income4Real) + '/mo in today’s dollars';
+  $('retRun').textContent = r.runwayYears >= 80 ? '80+ yrs' : r.runwayYears + ' yrs';
+
+  Charts.mount('c-ret', {
+    ...baseOption(t),
+    tooltip: tip(t, {valueFormatter: v => Fmt.k(v)}),
+    legend: {top: 0, icon: 'plain', itemWidth: 16,
+             textStyle: {color: t.ink2, fontSize: 12},
+             data: [{name: 'Nominal'}, {name: 'Today’s dollars', lineStyle: {type: 'dashed'}}]},
+    grid: {left: 6, right: 16, top: 34, bottom: 6, containLabel: true},
+    xAxis: {type: 'category', boundaryGap: false, data: r.labels,
+            axisLine: {lineStyle: {color: t.axis}}, axisTick: {show: false},
+            axisLabel: {color: t.muted, fontSize: 11, hideOverlap: true}},
+    yAxis: valAxis(t),
+    series: [
+      {name: 'Nominal', type: 'line', data: r.nominal.map(v => Math.round(v)),
+       showSymbol: false, smooth: .25, lineStyle: {width: 2, color: t.accent},
+       areaStyle: {color: rgba(t.accent, .10)}, itemStyle: {color: t.accent}},
+      {name: 'Today’s dollars', type: 'line', data: r.real.map(v => Math.round(v)),
+       showSymbol: false, smooth: .25,
+       lineStyle: {width: 2, color: t.ink2, type: 'dashed'}, itemStyle: {color: t.ink2}},
+    ],
+  });
+
+  // narrative sentence
+  const story = $('retStory');
+  story.textContent = '';
+  const realReturn = (1 + p.rate) / (1 + p.infl) - 1;
+  const frag = (txt, em) => story.appendChild(elx('span', em ? 'em' : null, txt));
+  frag('Keep contributing ');
+  frag(Fmt.usd(p.contrib) + '/mo', true);
+  frag(' at a ');
+  frag(Fmt.pct(p.rate), true);
+  frag(` return and in ${p.years} years this lands at `);
+  frag(Fmt.usd(Math.round(r.finalNominal)), true);
+  frag(' — worth ');
+  frag(Fmt.usd(Math.round(r.finalReal)), true);
+  frag(` in today’s dollars (real return ${Fmt.signedPct(realReturn)} after inflation). Under the 4% rule that’s `);
+  frag(Fmt.usd(Math.round(r.income4Real)) + '/mo', true);
+  frag(' of spending power, and the nest egg lasts ');
+  frag(r.runwayYears >= 80 ? '80+ years' : r.runwayYears + ' years', true);
+  frag('.');
+
+  renderPension(p);
+  if (state.view === 'lab') recomputeLab();
+}
+
+function renderPension(p){
+  const t = T();
+  const pen = state.data.pension;
+  const card = $('card-pension');
+  if (!pen){ card.hidden = true; return; }
+  card.hidden = false;
+
+  const rows = state.data.rows;
+  const last = rows[rows.length-1];
+  const grow = rate => {
+    let b = last.total;
+    const mr = Math.pow(1 + rate, 1/12) - 1;
+    for (let m = 1; m <= Math.round(p.years*12); m++) b = b*(1+mr) + p.contrib;
+    return (b * 0.04 / 12) / Math.pow(1 + p.infl, p.years);   // real monthly income
+  };
+  const mine = grow(p.rate);
+  const combined = mine + pen.estMonthly;
+
+  const cards = $('pensionCards');
+  cards.textContent = '';
+  const mk = (label, val, sub, cls) => {
+    const d = elx('div', 'res');
+    d.appendChild(elx('div', 'r-label', label));
+    const v = elx('div', 'r-value num', val); if (cls) v.classList.add(cls);
+    d.appendChild(v);
+    d.appendChild(elx('div', 'r-sub', sub));
+    cards.appendChild(d);
+  };
+  mk('Portfolio (4% rule)', Fmt.k(mine) + '/mo', 'today’s dollars, at your sliders');
+  mk('ANG pension', Fmt.k(pen.estMonthly) + '/mo',
+     pen.estTotalPts ? pen.estTotalPts.toLocaleString() + ' est. points · starts at 60' : 'starts at age 60');
+  mk('Combined', Fmt.k(combined) + '/mo', Fmt.k(combined*12) + '/yr in today’s dollars', 'up');
+
+  const realized = Compute.realizedRate(rows);
+  const scenarios = [
+    {label: '6%',  rate: .06},
+    {label: '8%',  rate: .08},
+    {label: '10%', rate: .10},
+    {label: 'Yours ' + (realized*100).toFixed(1) + '%', rate: realized},
+  ];
+  Charts.mount('c-income', {
+    ...baseOption(t),
+    tooltip: tip(t, {axisPointer: {type: 'shadow', shadowStyle: {color: rgba(t.accent, .05)}},
+                     valueFormatter: v => Fmt.usd(v) + '/mo'}),
+    legend: {top: 0, icon: 'roundRect', itemWidth: 12, itemHeight: 9,
+             textStyle: {color: t.ink2, fontSize: 11.5}},
+    grid: {left: 6, right: 12, top: 32, bottom: 6, containLabel: true},
+    xAxis: {type: 'category', data: scenarios.map(s => s.label),
+            axisLine: {lineStyle: {color: t.axis}}, axisTick: {show: false},
+            axisLabel: {color: t.muted, fontSize: 11}},
+    yAxis: {...valAxis(t, v => Fmt.k(v)), scale: false, min: 0},
+    series: [
+      {name: 'Portfolio (4%)', type: 'bar', stack: 'inc', barMaxWidth: 24,
+       data: scenarios.map(s => Math.round(grow(s.rate))),
+       itemStyle: {color: t.series.retire, borderColor: t.card, borderWidth: 1, borderRadius: [0,0,0,0]}},
+      {name: 'ANG pension', type: 'bar', stack: 'inc', barMaxWidth: 24,
+       data: scenarios.map(() => Math.round(pen.estMonthly)),
+       itemStyle: {color: t.series.broker, borderColor: t.card, borderWidth: 1, borderRadius: [4,4,0,0]}},
+    ],
+  });
+}
+
+function renderAVP(){
+  const t = T();
+  const avp = state.data.avp;
+  const card = $('card-avp');
+  if (!avp){ card.hidden = true; return; }
+  card.hidden = false;
+
+  const shown = avp.filter(r => r.year <= 2035);
+  const actuals = avp.filter(r => r.actEnd > 0);
+  if (actuals.length){
+    const latest = actuals[actuals.length-1];
+    const d = latest.actEnd - latest.estEnd;
+    $('avpSub').textContent =
+      `${Fmt.signed(d)} vs the 7.5% plan in ${latest.year} · ${actuals.length} years of actuals`;
+  }
+
+  Charts.mount('c-avp', {
+    ...baseOption(t),
+    tooltip: tip(t, {valueFormatter: v => v != null ? Fmt.usd(v) : '—'}),
+    legend: {top: 0, textStyle: {color: t.ink2, fontSize: 11.5}},
+    grid: {left: 6, right: 12, top: 32, bottom: 6, containLabel: true},
+    xAxis: {type: 'category', data: shown.map(r => String(r.year)),
+            axisLine: {lineStyle: {color: t.axis}}, axisTick: {show: false},
+            axisLabel: {color: t.muted, fontSize: 11}},
+    yAxis: valAxis(t),
+    series: [
+      {name: 'Plan (7.5%)', type: 'line', data: shown.map(r => r.estEnd || null),
+       lineStyle: {width: 2, type: 'dashed', color: t.muted}, itemStyle: {color: t.muted},
+       symbol: 'circle', symbolSize: 6},
+      {name: 'Actual', type: 'line', data: shown.map(r => r.actEnd || null),
+       lineStyle: {width: 2, color: t.accent},
+       itemStyle: {color: t.accent, borderColor: t.card, borderWidth: 2},
+       symbol: 'circle', symbolSize: 8},
+    ],
+  });
+
+  const table = $('avpTable');
+  table.textContent = '';
+  const thead = elx('thead'), trh = elx('tr');
+  ['Year', 'Plan', 'Actual', 'Return', 'vs plan'].forEach(h => trh.appendChild(elx('th', null, h)));
+  thead.appendChild(trh); table.appendChild(thead);
+  const tbody = elx('tbody');
+  actuals.forEach(r => {
+    const tr = elx('tr');
+    tr.appendChild(elx('td', null, String(r.year)));
+    tr.appendChild(elx('td', null, Fmt.usd(r.estEnd)));
+    tr.appendChild(elx('td', null, Fmt.usd(r.actEnd)));
+    tr.appendChild(elx('td', null, r.actReturn != null ? Fmt.pct(r.actReturn) : '—'));
+    const td = elx('td');
+    const d = r.actEnd - r.estEnd;
+    const chip = elx('span', 'status-chip ' + (d >= 0 ? 'ok' : 'behind'),
+                     (d >= 0 ? '▲ ' : '▼ ') + Fmt.signed(d, Fmt.k));
+    td.appendChild(chip);
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+}
+
+function renderPacing(){
+  const t = T();
+  const deposits = state.data.pacing;
+  const card = $('card-pacing');
+  if (!deposits){ card.hidden = true; return; }
+  card.hidden = false;
+
+  const ytd = deposits.reduce((s,d) => s + d.employee, 0);
+  const n = deposits.length;
+  const avg = ytd / n;
+  const projected = ytd + (PAY_PERIODS - n) * avg;
+  const onTrack = projected >= IRS_LIMIT_EMPLOYEE * 0.95;
+  const pctDone = Math.min(ytd / IRS_LIMIT_EMPLOYEE * 100, 100);
+
+  $('pacingSub').textContent =
+    `${Fmt.usd(ytd)} of the ${Fmt.usd(IRS_LIMIT_EMPLOYEE)} employee limit through ${n} of ${PAY_PERIODS} pay periods`;
+
+  const m = $('pacingMeter');
+  m.textContent = '';
+  m.appendChild(elx('div', 'tile-label', 'Employee deferrals YTD'));
+  const big = elx('div', null, ''); big.style.cssText = 'font-size:34px;font-weight:800;letter-spacing:-.5px;margin:6px 0 2px';
+  m.appendChild(big);
+  countUp(big, ytd, Fmt.usd, 700);
+  m.appendChild(elx('div', 'r-sub', 'of ' + Fmt.usd(IRS_LIMIT_EMPLOYEE) + ' IRS limit (' + pctDone.toFixed(1) + '%)'));
+  const meter = elx('div', 'meter'); meter.style.margin = '14px 0 10px';
+  if (onTrack) meter.classList.add('good-track');
+  const fill = elx('div', 'meter-fill ' + (onTrack ? 'good' : 'warn'));
+  meter.appendChild(fill); m.appendChild(meter);
+  requestAnimationFrame(() => { fill.style.width = pctDone + '%'; });
+  const chip = elx('span', 'status-chip ' + (onTrack ? 'ok' : 'warn'),
+    (onTrack ? '✓ on pace to max' : '⚠ may fall short') + ' — projected ' + Fmt.k(projected));
+  m.appendChild(chip);
+
+  let run = 0;
+  const cum = deposits.map(d => { run += d.employee; return Math.round(run); });
+  const pace = Array.from({length: PAY_PERIODS}, (_, i) => Math.round(IRS_LIMIT_EMPLOYEE/PAY_PERIODS*(i+1)));
+  Charts.mount('c-pacing', {
+    ...baseOption(t),
+    tooltip: tip(t, {valueFormatter: v => v != null ? Fmt.usd(v) : '—'}),
+    legend: {top: 0, textStyle: {color: t.ink2, fontSize: 11.5}},
+    grid: {left: 6, right: 12, top: 32, bottom: 6, containLabel: true},
+    xAxis: {type: 'category', data: pace.map((_, i) => '#' + (i+1)),
+            axisLine: {lineStyle: {color: t.axis}}, axisTick: {show: false},
+            axisLabel: {color: t.muted, fontSize: 10.5}},
+    yAxis: {...valAxis(t), max: Math.ceil(IRS_LIMIT_EMPLOYEE*1.08/1000)*1000, scale: false},
+    series: [
+      {name: 'Your deferrals', type: 'line', data: cum,
+       lineStyle: {width: 2, color: t.accent},
+       itemStyle: {color: t.accent, borderColor: t.card, borderWidth: 2},
+       symbol: 'circle', symbolSize: 5},
+      {name: 'Pace to max', type: 'line', data: pace,
+       lineStyle: {width: 1.5, type: 'dashed', color: t.muted},
+       itemStyle: {color: t.muted}, symbol: 'none'},
+      {name: 'IRS limit', type: 'line', data: pace.map(() => IRS_LIMIT_EMPLOYEE),
+       lineStyle: {width: 1, type: 'dashed', color: t.bad},
+       itemStyle: {color: t.bad}, symbol: 'none'},
+    ],
+  });
+}
+
+Views.plan = function(){
+  recomputePlan();
+  renderAVP();
+  renderPacing();
+};
+
+/* ---------------- LAB ---------------- */
+function recomputeLab(){
+  if (!state.data) return;
+  const t = T();
+  const p = readCalcParams();
+  const rows = state.data.rows;
+  const start = rows[rows.length-1].total;
+  const extra = parseFloat($('wiExtra').value);
+
+  const base = Compute.retirement({...p, start});
+  const adj  = Compute.retirement({...p, contrib: Math.max(0, p.contrib + extra), start});
+
+  const dNom = adj.finalNominal - base.finalNominal;
+  const dReal = adj.finalReal - base.finalReal;
+  const mr = Math.pow(1 + p.rate, 1/12) - 1;
+  const n = Math.round(p.years * 12);
+  const per100 = mr > 0 ? 100 * (Math.pow(1 + mr, n) - 1) / mr : 100 * n;
+
+  const dEl = $('wiDelta');
+  countUp(dEl, dNom, v => Fmt.signed(v, Fmt.k), 550);
+  dEl.classList.toggle('up', dNom > 0); dEl.classList.toggle('dn', dNom < 0);
+  $('wiDeltaSub').textContent = `${Fmt.signed(extra)}/mo for ${p.years} years`;
+  countUp($('wiReal'), dReal, v => Fmt.signed(v, Fmt.k), 550);
+  countUp($('wiPer100'), per100, v => '+' + Fmt.k(v), 550);
+
+  const lower = base.nominal.map((v, i) => Math.round(Math.min(v, adj.nominal[i])));
+  const diff  = base.nominal.map((v, i) => Math.round(Math.abs(adj.nominal[i] - v)));
+  const gapColor = extra >= 0 ? t.good : t.bad;
+  Charts.mount('c-whatif', {
+    ...baseOption(t),
+    tooltip: tip(t, {
+      formatter: params => {
+        const keep = params.filter(x => x.seriesName === 'Current plan' || x.seriesName === 'Adjusted');
+        if (!keep.length) return '';
+        let html = `<div style="margin-bottom:4px;color:${t.muted};font-size:11px">${keep[0].name}</div>`;
+        keep.forEach(x => {
+          html += `<div>${x.marker} ${x.seriesName}: <b>${Fmt.usd(x.value)}</b></div>`;
+        });
+        if (keep.length === 2)
+          html += `<div style="margin-top:4px;color:${t.muted}">gap: ${Fmt.signed(keep.find(x=>x.seriesName==='Adjusted').value - keep.find(x=>x.seriesName==='Current plan').value)}</div>`;
+        return html;
+      },
+    }),
+    legend: {top: 0, textStyle: {color: t.ink2, fontSize: 11.5},
+             data: ['Current plan', 'Adjusted']},
+    grid: {left: 6, right: 16, top: 34, bottom: 6, containLabel: true},
+    xAxis: {type: 'category', boundaryGap: false, data: base.labels,
+            axisLine: {lineStyle: {color: t.axis}}, axisTick: {show: false},
+            axisLabel: {color: t.muted, fontSize: 11, hideOverlap: true}},
+    yAxis: valAxis(t),
+    series: [
+      {name: '_lo', type: 'line', stack: 'gap', data: lower, silent: true,
+       showSymbol: false, lineStyle: {width: 0, opacity: 0}, areaStyle: {opacity: 0}},
+      {name: '_gap', type: 'line', stack: 'gap', data: diff, silent: true,
+       showSymbol: false, lineStyle: {width: 0, opacity: 0},
+       areaStyle: {color: rgba(gapColor, .13)}},
+      {name: 'Current plan', type: 'line', data: base.nominal.map(v => Math.round(v)),
+       showSymbol: false, smooth: .25,
+       lineStyle: {width: 2, type: 'dashed', color: t.muted}, itemStyle: {color: t.muted}},
+      {name: 'Adjusted', type: 'line', data: adj.nominal.map(v => Math.round(v)),
+       showSymbol: false, smooth: .25,
+       lineStyle: {width: 2, color: t.accent}, itemStyle: {color: t.accent}},
+    ],
+  });
+}
+
+function recomputeETA(){
+  if (!state.data) return;
+  const t = T();
+  const p = readCalcParams();
+  const rows = state.data.rows;
+  const s = Compute.stats(rows);
+  const miles = Compute.milestones(rows);
+  const target = state.etaTarget || miles.next;
+
+  document.querySelectorAll('#etaChips button').forEach(b =>
+    b.classList.toggle('active', parseFloat(b.dataset.target) === target));
+
+  const eta = Compute.milestoneETA(rows, target, p.rate, p.contrib);
+  if (eta.reached){
+    $('etaComp').textContent = 'Done ✓';
+    $('etaCompSub').textContent = 'already past this target';
+    $('etaLin').textContent = 'Done ✓';
+    $('etaLinSub').textContent = '';
+  } else {
+    if (eta.compound){
+      $('etaComp').textContent = Fmt.month(eta.compound.date);
+      $('etaCompSub').textContent = `${(eta.compound.months/12).toFixed(1)} yrs at ${Fmt.pct(p.rate)} + ${Fmt.k(p.contrib)}/mo`;
+    } else { $('etaComp').textContent = '—'; $('etaCompSub').textContent = 'not reachable at these settings'; }
+    if (eta.linear){
+      $('etaLin').textContent = Fmt.month(eta.linear.date);
+      $('etaLinSub').textContent = `${(eta.linear.weeks/52).toFixed(1)} yrs at ${Fmt.k(s.avgWeekly52)}/week recent pace`;
+    } else { $('etaLin').textContent = '—'; $('etaLinSub').textContent = 'recent pace is flat or negative'; }
+  }
+
+  // history + both projected paths
+  const hist = s.totalSeries.slice(-104);
+  const lastTs = s.last.date.getTime(), lastV = s.last.total;
+  const compPath = [[lastTs, lastV]];
+  if (!eta.reached && eta.compound){
+    const mr = Math.pow(1 + Math.max(p.rate, .0001), 1/12) - 1;
+    let bal = lastV;
+    const months = Math.ceil(eta.compound.months);
+    for (let m = 1; m <= Math.min(months, 480); m++){
+      bal = bal * (1 + mr) + p.contrib;
+      compPath.push([lastTs + m*30.44*864e5, Math.round(bal)]);
+      if (bal >= target) break;
+    }
+  }
+  const linPath = [[lastTs, lastV]];
+  if (!eta.reached && eta.linear){
+    const wks = Math.ceil(eta.linear.weeks);
+    for (let w = 4; w <= Math.min(wks + 4, 4160); w += 4)
+      linPath.push([lastTs + w*7*864e5, Math.round(lastV + s.avgWeekly52*w)]);
+  }
+  Charts.mount('c-eta', {
+    ...baseOption(t),
+    tooltip: tip(t, {valueFormatter: v => Fmt.usd(v)}),
+    legend: {top: 0, textStyle: {color: t.ink2, fontSize: 11.5}},
+    grid: {left: 6, right: 16, top: 32, bottom: 6, containLabel: true},
+    xAxis: timeAxis(t),
+    yAxis: valAxis(t),
+    series: [
+      {name: 'History', type: 'line', data: hist, showSymbol: false,
+       lineStyle: {width: 2, color: t.accent}, itemStyle: {color: t.accent},
+       areaStyle: {color: rgba(t.accent, .08)},
+       markLine: {
+         symbol: 'none', silent: true,
+         lineStyle: {type: 'dashed', color: t.ink2, width: 1},
+         label: {formatter: 'target ' + Fmt.k(target), position: 'insideEndTop',
+                 color: t.ink2, fontSize: 10},
+         data: [{yAxis: target}],
+       }},
+      {name: 'Compounding', type: 'line', data: compPath, showSymbol: false,
+       lineStyle: {width: 2, type: 'dashed', color: t.series.crypto},
+       itemStyle: {color: t.series.crypto}},
+      {name: 'Linear pace', type: 'line', data: linPath, showSymbol: false,
+       lineStyle: {width: 2, type: 'dotted', color: t.muted}, itemStyle: {color: t.muted}},
+    ],
+  });
+}
+
+function recomputeFire(){
+  if (!state.data) return;
+  const p = readCalcParams();
+  const rows = state.data.rows;
+  const start = rows[rows.length-1].total;
+  const spend = parseFloat($('fireSpend').value);
+  const swr = parseFloat($('fireSwr').value) / 100;
+  const usePension = state.data.pension && $('firePension').checked;
+
+  const f = Compute.fire({
+    monthlySpend: spend, swr,
+    pensionMonthly: usePension ? state.data.pension.estMonthly : 0,
+    rate: p.rate, infl: p.infl, contrib: p.contrib,
+    start, horizonYears: p.years,
+  });
+
+  countUp($('fireNum'), f.fireNumber, Fmt.k, 550);
+  if (f.months === 0){
+    $('fireEta').textContent = 'Now ✓';
+    $('fireEtaSub').textContent = 'your portfolio already covers it';
+  } else if (f.months != null){
+    const d = new Date(rows[rows.length-1].date.getTime() + f.months*30.44*864e5);
+    $('fireEta').textContent = Fmt.month(d);
+    $('fireEtaSub').textContent = (f.months/12).toFixed(1) + ' years away';
+  } else {
+    $('fireEta').textContent = '80+ yrs';
+    $('fireEtaSub').textContent = 'not reachable at these settings';
+  }
+  countUp($('fireCoast'), f.coast, Fmt.k, 550);
+  $('fireCoastSub').textContent = 'have this today → coast with $0 added';
+
+  const prog = Math.min(1, f.progress);
+  $('fireMeterLabel').textContent = Fmt.pct(prog, 0) + (f.progress > 1 ? ' — past it' : '');
+  const fill = $('fireMeter');
+  fill.classList.toggle('good', prog >= 1);
+  requestAnimationFrame(() => { fill.style.width = (prog*100).toFixed(1) + '%'; });
+}
+
+Views.lab = function(){
+  recomputeLab();
+  recomputeETA();
+  recomputeFire();
+};
+
+/* ---------------- CALCS: input wiring ---------------- */
+const Calcs = (() => {
+  let wired = false;
+  const paints = [];
+
+  function wire(){
+    if (wired) return;
+    wired = true;
+    paints.push(bindSlider($('retRate'), $('retRateVal'), v => v.toFixed(1) + '%', recomputePlan));
+    paints.push(bindSlider($('retYears'), $('retYearsVal'), v => v % 1 ? v.toFixed(1) : String(v), recomputePlan));
+    paints.push(bindSlider($('retContrib'), $('retContribVal'), v => Fmt.usd(v), recomputePlan));
+    paints.push(bindSlider($('retInfl'), $('retInflVal'), v => v.toFixed(1) + '%', recomputePlan));
+    paints.push(bindSlider($('wiExtra'), $('wiExtraVal'), v => Fmt.signed(v), recomputeLab));
+    paints.push(bindSlider($('fireSpend'), $('fireSpendVal'), v => Fmt.usd(v), recomputeFire));
+    paints.push(bindSlider($('fireSwr'), $('fireSwrVal'), v => v.toFixed(1) + '%', recomputeFire));
+    $('firePension').addEventListener('change', recomputeFire);
+    $('etaCustom').addEventListener('input', debounce(() => {
+      const v = parseFloat($('etaCustom').value);
+      state.etaTarget = (v && v > 0) ? v : null;
+      recomputeETA();
+    }, 250));
+  }
+
+  function defaults(){
+    const rows = state.data.rows;
+    const rr = Compute.realizedRate(rows);
+    $('retRate').value = Math.min(12, Math.max(3, Math.round(rr*1000)/10));
+    $('retYears').value = DEFAULT_YEARS;
+    $('retContrib').value = DEFAULT_CONTRIB;
+    $('retInfl').value = 2.5;
+    $('wiExtra').value = 500;
+    const cur4 = rows[rows.length-1].total * 0.04 / 12;
+    $('fireSpend').value = Math.min(20000, Math.max(6000, Math.round(cur4/100)*100));
+    $('fireSwr').value = 4;
+    $('firePensionWrap').hidden = !state.data.pension;
+    $('etaCustom').value = '';
+    state.etaTarget = null;
+
+    // return presets
+    const refs = $('retRefs');
+    refs.textContent = '';
+    [
+      {label: 'Conservative', rate: 6},
+      {label: 'S&P 500 avg', rate: 10},
+      {label: 'Your realized', rate: Math.min(12, Math.max(3, Math.round(rr*1000)/10))},
+    ].forEach(r => {
+      const b = elx('button', null, `${r.label}: ${r.rate}%`);
+      b.type = 'button';
+      b.addEventListener('click', () => {
+        $('retRate').value = r.rate;
+        paints.forEach(f => f());
+        recomputePlan();
+      });
+      refs.appendChild(b);
+    });
+
+    // milestone target chips
+    const chips = $('etaChips');
+    chips.textContent = '';
+    const miles = Compute.milestones(rows);
+    const targets = [{label: 'Next ' + Fmt.k(miles.next), v: miles.next}];
+    for (const v of [1000000, 2000000])
+      if (v > rows[rows.length-1].total && v !== miles.next) targets.push({label: Fmt.k(v), v});
+    targets.forEach(x => {
+      const b = elx('button', null, x.label);
+      b.type = 'button'; b.dataset.target = x.v;
+      b.addEventListener('click', () => {
+        state.etaTarget = x.v;
+        $('etaCustom').value = '';
+        recomputeETA();
+      });
+      chips.appendChild(b);
+    });
+
+    paints.forEach(f => f());
+  }
+
+  return {wire, defaults};
+})();
+
+/* ============ MAIN — boot, nav, theme, file handling ============ */
+
+function positionInk(){
+  const active = document.querySelector('#tabs .tab.active');
+  const ink = $('tabInk');
+  if (!active || !ink) return;
+  ink.style.width = active.offsetWidth + 'px';
+  ink.style.transform = `translateX(${active.offsetLeft}px)`;
+}
+
+function switchView(view){
+  state.view = view;
+  document.querySelectorAll('#tabs .tab').forEach(b => {
+    const on = b.dataset.view === view;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-selected', on);
+  });
+  positionInk();
+  document.querySelectorAll('.view').forEach(sec =>
+    sec.classList.toggle('active', sec.id === 'view-' + view));
+  const section = $('view-' + view);
+  Views[view]();
+  Charts.resizeIn(section);
+  stagger(section);
+}
+
+function renderActive(){ Views[state.view](); }
+
+function updateThemeIcon(){
+  const dark = document.documentElement.dataset.theme === 'dark';
+  $('iconSun').hidden = !dark;   // in dark mode, offer the sun
+  $('iconMoon').hidden = dark;   // in light mode, offer the moon
+}
+
+function toggleTheme(){
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem('pp2-theme', next); } catch(e){}
+  updateThemeIcon();
+  if (state.data) renderActive();
+}
+
+function showUploadError(msg){
+  const el = $('uploadError');
+  el.textContent = msg;
+  el.hidden = false;
+}
+
+function handleFile(file){
+  if (!file) return;
+  $('uploadError').hidden = true;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
+      loadData(Parse.workbook(wb, file.name));
+    } catch(err){
+      console.error(err);
+      showUploadError(err.message || 'Could not read that file.');
+    }
+  };
+  reader.onerror = () => showUploadError('Could not read that file.');
+  reader.readAsArrayBuffer(file);
+}
+
+function loadData(data){
+  state.data = data;
+  state.range = 'ALL';
+  state.group = null;
+  state.acct = null;
+  state.etaTarget = null;
+  Charts.disposeAll();
+  Tables.clear();
+
+  const tag = $('srcTag');
+  tag.hidden = false;
+  tag.textContent = data.source === 'demo' ? data.fileName : (data.fileName || 'file');
+
+  document.querySelectorAll('#rangeChips button').forEach(b =>
+    b.classList.toggle('active', b.dataset.range === 'ALL'));
+
+  Calcs.wire();
+  Calcs.defaults();
+
+  $('uploadView').hidden = true;
+  $('appView').hidden = false;
+  switchView('pulse');
+}
+
+/* ---- boot ---- */
+(function boot(){
+  updateThemeIcon();
+
+  // upload interactions
+  const dz = $('dropzone'), fi = $('fileInput');
+  dz.addEventListener('click', () => fi.click());
+  dz.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); fi.click(); }
+  });
+  fi.addEventListener('change', () => { handleFile(fi.files[0]); fi.value = ''; });
+  ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => {
+    e.preventDefault(); dz.classList.add('drag');
+  }));
+  ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => {
+    e.preventDefault(); dz.classList.remove('drag');
+  }));
+  dz.addEventListener('drop', e => handleFile(e.dataTransfer.files[0]));
+
+  $('demoBtn').addEventListener('click', () => loadData(Demo.build(false)));
+  $('demoSparseBtn').addEventListener('click', () => loadData(Demo.build(true)));
+  $('backBtn').addEventListener('click', () => {
+    $('uploadView').hidden = true;
+    $('appView').hidden = false;
+    switchView(state.view);
+  });
+
+  // topbar
+  $('tabs').addEventListener('click', e => {
+    const b = e.target.closest('.tab');
+    if (b && b.dataset.view !== state.view) switchView(b.dataset.view);
+  });
+  $('rangeChips').addEventListener('click', e => {
+    const b = e.target.closest('button[data-range]');
+    if (!b || b.dataset.range === state.range) return;
+    state.range = b.dataset.range;
+    document.querySelectorAll('#rangeChips button').forEach(x =>
+      x.classList.toggle('active', x === b));
+    if (state.view === 'pulse' || state.view === 'accounts') renderActive();
+  });
+  $('themeBtn').addEventListener('click', toggleTheme);
+  $('newFileBtn').addEventListener('click', () => {
+    $('appView').hidden = true;
+    $('uploadView').hidden = false;
+    $('uploadError').hidden = true;
+    $('backBtn').hidden = !state.data;
+  });
+
+  // accounts controls
+  $('stackSeg').addEventListener('click', e => {
+    const b = e.target.closest('button[data-mode]');
+    if (!b || b.dataset.mode === state.stackMode) return;
+    state.stackMode = b.dataset.mode;
+    document.querySelectorAll('#stackSeg button').forEach(x =>
+      x.classList.toggle('active', x === b));
+    Views.accounts();
+  });
+  $('adClose').addEventListener('click', () => {
+    state.acct = null;
+    $('acctDetail').hidden = true;
+    document.querySelectorAll('.mini.sel').forEach(m => m.classList.remove('sel'));
+  });
+
+  window.addEventListener('resize', debounce(positionInk, 120));
+})();
+
+})();
+</script>
+</body>
+</html>
