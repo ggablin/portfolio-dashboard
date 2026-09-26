@@ -443,6 +443,41 @@ select.inp{appearance:auto;-webkit-appearance:auto}
 .hint code{font:11.5px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--card);border:1px solid var(--border);border-radius:5px;padding:0 5px;color:var(--ink2)}
 .hint b{color:var(--ink2)}
 
+/* "your numbers" dialog */
+.dlg{
+  margin:auto;   /* the global reset removes the browser's centering */
+  border:1px solid var(--border);border-radius:18px;padding:0;background:var(--card);color:var(--ink);
+  width:min(640px, calc(100vw - 24px));max-height:calc(100vh - 32px);box-shadow:var(--shadow-lg);
+}
+.dlg::backdrop{background:rgba(0,0,0,.45)}
+.dlg form{display:flex;flex-direction:column;max-height:calc(100vh - 34px)}
+.dlg-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:20px 22px 10px}
+.dlg-title{font-size:17px;font-weight:750;margin-bottom:4px}
+.dlg-body{overflow:auto;padding:0 22px 8px}
+.dlg-group{border:none;margin:0;padding:0}
+.dlg-group legend{font-size:11px;font-weight:650;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:14px 0 4px}
+.dlg-row{display:grid;grid-template-columns:170px 1fr;gap:4px 14px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.dlg-row label{font-size:13px;font-weight:600}
+.dlg-field{position:relative}
+.dlg-field .pre{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13.5px;font-weight:600;pointer-events:none}
+.dlg-field .inp.money{padding-left:24px}
+.dlg-hint{grid-column:2;font-size:11.5px;color:var(--muted);line-height:1.5}
+.dlg-hint a{color:var(--accent);font-weight:600}
+.dlg-row.err .inp{outline:2px solid var(--bad);outline-offset:0}
+.dlg-foot{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:14px 22px 18px;border-top:1px solid var(--border)}
+.dlg-note{flex:1 1 100%;font-size:12px;color:var(--ink2);line-height:1.5}
+.dlg-note:empty{display:none}
+.dlg-actions{margin-left:auto;display:flex;gap:10px}
+.dlg textarea{width:100%;min-height:90px;font:12px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--card2);color:var(--ink);border:1px solid var(--border);border-radius:8px;padding:8px;margin-top:6px}
+.bs-name .link-btn,.kv .link-btn{font-size:11.5px;align-self:flex-start;margin-top:1px}
+.card-sub .link-btn{font-size:12.5px}
+
+/* where each paycheck goes */
+.split{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--card2);margin:4px 0 10px}
+.split span{height:100%}
+.split span + span{border-left:2px solid var(--card)}
+#paySplit{margin:2px 0 16px}
+
 /* small inline legend for HTML-drawn marks */
 .mini-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink2);margin-bottom:10px}
 .mini-legend span{display:inline-flex;align-items:center;gap:6px}
@@ -488,6 +523,8 @@ select.inp{appearance:auto;-webkit-appearance:auto}
   .top-actions{flex-wrap:wrap;gap:8px}
   .tab{padding:7px 6px;font-size:12.5px;white-space:nowrap}
   .src-pill{max-width:none;flex:1 1 160px}
+  .dlg-row{grid-template-columns:1fr}
+  .dlg-hint{grid-column:1}
   .avatar{display:none}
   .hero-value{font-size:36px}
 }
@@ -569,6 +606,9 @@ select.inp{appearance:auto;-webkit-appearance:auto}
       <button data-range="YTD">YTD</button>
       <button data-range="ALL" class="active">All</button>
     </div>
+    <button id="editBtn" class="icon-btn" type="button" aria-label="Your numbers: enter values the workbook doesn't have" title="Your numbers">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+    </button>
     <button id="themeBtn" class="icon-btn" aria-label="Toggle light or dark theme">
       <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -885,6 +925,7 @@ select.inp{appearance:auto;-webkit-appearance:auto}
       </div>
       <div class="card-sub" id="paySub"></div>
       <div class="res-grid" id="payKpis"></div>
+      <div id="paySplit" hidden></div>
       <div class="chart h-mid" id="c-pay" role="img" aria-label="Gross pay per paycheck with the 401(k) deferral and employer match"></div>
       <div class="tbl-wrap" id="tbl-c-pay" hidden></div>
       <div class="duo" style="margin-top:16px">
@@ -1056,6 +1097,30 @@ select.inp{appearance:auto;-webkit-appearance:auto}
 <footer>Meridian works out everything in this browser tab. Your spreadsheet comes straight from OneDrive (or your device) and is never sent to this website.</footer>
 
 </div><!-- /appView -->
+
+<!-- ============ YOUR NUMBERS (manual inputs) ============ -->
+<dialog id="inputsDlg" class="dlg" aria-labelledby="dlgTitle">
+  <form id="inputsForm" novalidate>
+    <div class="dlg-head">
+      <div>
+        <div class="dlg-title" id="dlgTitle">Your numbers</div>
+        <div class="card-sub" style="margin:0">Values the workbook doesn't have. They're saved in this browser only and take priority over your workbook.</div>
+      </div>
+      <button type="button" class="icon-btn" id="dlgClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="dlg-body" id="inputsBody"></div>
+    <div class="dlg-foot">
+      <div class="dlg-note" id="dlgNote" role="status" aria-live="polite"></div>
+      <button type="button" class="link-btn" id="dlgCopy">Copy saved numbers for your workbook</button>
+      <div class="dlg-actions">
+        <button type="button" class="btn-ghost" id="dlgCancel">Cancel</button>
+        <button type="submit" class="btn-primary">Save</button>
+      </div>
+    </div>
+  </form>
+</dialog>
 
 <script>
 'use strict';
@@ -1692,12 +1757,12 @@ const Parse = (() => {
     const get = re => rows.find(x => re.test(x.label));
     return {
       rows,
-      num(re){ const x = get(re); return x && typeof x.value === 'number' ? {v: x.value, asOf: x.asOf, label: x.label} : null; },
+      num(re){ const x = get(re); return x && typeof x.value === 'number' ? {v: x.value, asOf: x.asOf, label: x.label, src: x.src || 'sheet'} : null; },
       date(re){ const x = get(re); return x ? toDate(x.value) : null; },
       /* rows about one child: first word matches the kid, rest matches re ("Sam 529 balance") */
       kid(key, re){
         const x = rows.find(y => kidKey(y.label.split(/\s+/)[0]) === key && re.test(y.label));
-        return x ? {v: x.value, asOf: x.asOf, date: toDate(x.value)} : null;
+        return x ? {v: x.value, asOf: x.asOf, date: toDate(x.value), src: x.src || 'sheet'} : null;
       },
     };
   }
@@ -2185,6 +2250,7 @@ const Household = (() => {
 
   /* results are cached per loaded workbook */
   const memo = new WeakMap();
+  const invalidate = d => { memo.delete(d); };
   const cached = (d, key, fn) => {
     let m = memo.get(d);
     if (!m){ m = {}; memo.set(d, m); }
@@ -2287,7 +2353,7 @@ const Household = (() => {
       const origin = tl[0].date;
 
       const hv = I && I.num(/home value|house value|home worth|zillow|redfin/i);
-      const home = hv ? {value: hv.v, asOf: hv.asOf || today, source: 'estimate'}
+      const home = hv ? {value: hv.v, asOf: hv.asOf || today, source: 'estimate', via: hv.src}
                  : t.price ? {value: t.price, asOf: origin, source: 'purchase price'} : null;
 
       return {terms: t, pmt, r, n, anchor, timeline: tl, idx, now: tl[idx], origin,
@@ -2475,15 +2541,20 @@ const Household = (() => {
       const paid = K.byYear[S.year].filter(x => x.date <= today);
       if (!paid.length) return null;
       const gross = sum(paid.map(x => x.gross));
-      const ang = ((d.budget && d.budget.angMonthly) || 0) * S.nDone;
       const I = d.inputs;
+      // Guard pay: your entry wins over the Budget sheet's ANG line
+      const guardIn = I && I.num(/guard pay|military pay|drill pay|\bang\b/i);
+      const guardMonthly = guardIn ? guardIn.v : ((d.budget && d.budget.angMonthly) || 0);
+      const ang = guardMonthly * S.nDone;
+      const np = I && I.num(/net pay|take-?home/i), P = paycheck(d);
       const spouse = I && I.num(/(spouse|partner|wife|husband|second)\b.*(gross|salary|pay|income)/i);
       const spouseYtd = spouse ? spouse.v * S.nDone / 12 : 0;
       const b403 = sum(S.done.flatMap(m => m.items.filter(it => it.key === 'b403').map(it => it.amount)));
       const saved = S.ytd - (spouse ? 0 : b403);
       const income = gross + ang + spouseYtd;
       return {rate: income > 0 ? saved / income : null, saved, income, gross, ang, spouseYtd, household: !!spouse,
-              excluded: spouse ? 0 : b403,
+              excluded: spouse ? 0 : b403, guardSrc: guardIn ? 'input' : guardMonthly ? 'budget' : null,
+              takeHomeMonthly: np && P ? np.v * P.perYear / 12 + guardMonthly : null,
               empRate: sum(paid.map(x => x.employee)) / gross, matchRate: sum(paid.map(x => x.match)) / gross};
     });
   }
@@ -2554,10 +2625,10 @@ const Household = (() => {
       items.push({kind:'asset', key:'portfolio', name:'Investment portfolio', sub:'Weekly Balances sheet',
                   value: last.total, asOf: last.date, fresh:'live'});
       if (m && m.home) items.push({kind:'asset', key:'home', name:'Home',
-        sub: m.home.source === 'estimate' ? 'your value estimate' : 'purchase price (add today’s value to update)',
+        sub: m.home.source === 'estimate' ? 'your estimate · ' + (m.home.via === 'manual' ? 'entered here' : 'Dashboard sheet') : 'purchase price',
         value: m.home.value, asOf: m.home.asOf, fresh: m.home.source === 'estimate' ? 'input' : 'stale'});
       const chk = I && I.num(/checking/i);
-      if (chk) items.push({kind:'asset', key:'cash', name:'Checking', sub:'Dashboard sheet', value: chk.v, asOf: chk.asOf, fresh:'input'});
+      if (chk) items.push({kind:'asset', key:'cash', name:'Checking', sub: chk.src === 'manual' ? 'entered here' : 'Dashboard sheet', value: chk.v, asOf: chk.asOf, fresh:'input'});
       else if (A && A.checking.length) items.push({kind:'asset', key:'cash', name:'Checking',
         sub: A.checking.length + ' accounts · account list', value: sum(A.checking.map(c => c.balance)), asOf: A.asOf, fresh:'stale'});
       if (K && K.length){
@@ -2663,7 +2734,7 @@ const Household = (() => {
 
   function fmtRate(r){ return (Math.round(r * 10000) / 100).toString() + '%'; }
 
-  return {sheetPlan, planRate, planContrib, interp, targetAt, targetPace, mortgage, mortBalanceAt, homeValueAt,
+  return {invalidate, sheetPlan, planRate, planContrib, interp, targetAt, targetPace, mortgage, mortBalanceAt, homeValueAt,
           prepay, debts, balanceOn, contribMonths, contribSummary, k401Year, paycheck, savingsRate, kids,
           netWorth, netWorthSeries, planHistory, fmtRate};
 })();
@@ -3441,41 +3512,39 @@ function renderKids(){
     if (k.fund) bits.push(k.fund);
     box.appendChild(elx('div', 'kid-sub', bits.join(' · ') || '529 plan'));
     const kv = elx('div', 'kv-grid');
-    const add = (label, value, sub) => {
+    const own = d.source !== 'demo';
+    const add = (label, value, sub, action) => {
       const x = elx('div', 'kv');
       x.appendChild(elx('div', 'k', label));
       x.appendChild(elx('div', 'v', value));
       if (sub) x.appendChild(elx('div', 's', sub));
+      if (action && own) x.appendChild(linkBtn(action.text, action.onClick));
       kv.appendChild(x);
     };
     if (k.est != null){
       add(k.estimated ? '529 today (estimated)' : '529 balance', Fmt.usd(k.est),
           k.estimated ? `${Fmt.usd(k.base.v)} on ${Fmt.date(k.base.asOf)}, plus deposits, at ${Fmt.pct(k.rate, 1)}/yr`
-                      : 'as of ' + Fmt.date(k.base.asOf));
+                      : 'as of ' + Fmt.date(k.base.asOf),
+          {text: 'Update balance', onClick: () => Manual.open(`${k.name} 529 balance`)});
     } else add('529 balance', '—', 'not in the account list');
     add('Adding', Fmt.usd(k.monthly) + '/mo', k.ytd ? Fmt.usd(k.ytd) + ' logged this year' : 'nothing logged this year');
     if (k.savings) add('Savings account', Fmt.usd(k.savings.v), k.savings.asOf ? 'as of ' + Fmt.date(k.savings.asOf) : '');
     if (k.at18) add('At 18 (projected)', Fmt.k(k.at18.value), `${Fmt.month(k.at18.date)} · same deposits and return`);
-    else add('At 18', '—', 'add a birth date to project it');
+    else add('At 18', '—', own ? '' : 'needs a birth date', {text: 'Add birth date', onClick: () => Manual.open(`${k.name} birth date`)});
     box.appendChild(kv);
     grid.appendChild(box);
   });
 
-  const est = K.filter(k => k.estimated), noBirth = K.filter(k => !k.at18);
+  const est = K.filter(k => k.estimated);
   $('kidsSub').textContent = '529 plans and savings, kept separate from the portfolio total' +
     (est.length && est[0].base ? ` · estimated forward from ${Fmt.date(est[0].base.asOf)}` : '');
   const hint = $('kidsHint');
   hint.textContent = '';
-  hint.hidden = !(est.length || noBirth.length);
+  hint.hidden = !est.length || d.source === 'demo';
   if (!hint.hidden){
-    const k0 = K[0].name;
-    hint.appendChild(document.createTextNode('For exact balances and an age-18 projection, add rows to a sheet named '));
-    hint.appendChild(elx('b', null, 'Dashboard'));
-    hint.appendChild(document.createTextNode(' (label in A, value in B, as-of date in C), e.g. '));
-    hint.appendChild(elx('code', null, `${k0} 529 balance | [amount] | [date]`));
-    hint.appendChild(document.createTextNode(' and '));
-    hint.appendChild(elx('code', null, `${k0} birth date | [date]`));
-    hint.appendChild(document.createTextNode('.'));
+    hint.appendChild(document.createTextNode('Balances are estimated until you enter current ones: '));
+    hint.appendChild(linkBtn('Update balances', () => Manual.open(`${K[0].name} 529 balance`)));
+    hint.appendChild(document.createTextNode('. They’re saved in this browser; copy them into a Dashboard sheet to use them on every device.'));
   }
 }
 
@@ -3630,14 +3699,23 @@ const FRESH = {
 };
 const assetColor = (t, key) => ({portfolio: t.accent, home: t.series.home, cash: t.series.cash, kids: t.series.kids})[key] || t.muted;
 
+/* a small text button, e.g. "Edit" beside a value */
+function linkBtn(text, onClick){
+  const b = elx('button', 'link-btn', text);
+  b.type = 'button';
+  b.addEventListener('click', onClick);
+  return b;
+}
+
 /* a labelled bar row: name + sub-line, bar, value (used by the balance sheet, debts and destinations) */
-function barRow(name, sub, frac, color, value, chip){
+function barRow(name, sub, frac, color, value, chip, action){
   const row = elx('div', 'bs-row');
   const nm = elx('div', 'bs-name');
   const top = elx('span', null, name);
   if (chip){ top.appendChild(document.createTextNode(' ')); top.appendChild(chip); }
   nm.appendChild(top);
   if (sub) nm.appendChild(elx('small', null, sub));
+  if (action) nm.appendChild(linkBtn(action.text, action.onClick));
   const track = elx('div', 'bs-track');
   const bar = elx('div', 'bs-bar');
   bar.style.background = color;
@@ -3706,8 +3784,10 @@ Views.networth = function(){
     g.appendChild(h);
     items.forEach(i => {
       const f = FRESH[i.fresh] || FRESH.calc;
+      const edit = {home: 'Home value', cash: 'Checking'}[i.key];
       g.appendChild(barRow(i.name, i.sub, i.value / maxV, kind === 'asset' ? assetColor(t, i.key) : t.bad,
-                           i.paidOff ? 'Paid off' : Fmt.usd(i.value), chipEl(f.cls, f.text(i))));
+                           i.paidOff ? 'Paid off' : Fmt.usd(i.value), chipEl(f.cls, f.text(i)),
+                           edit && d.source !== 'demo' ? {text: 'Update', onClick: () => Manual.open(edit)} : null));
     });
     box.appendChild(g);
   });
@@ -3716,12 +3796,23 @@ Views.networth = function(){
   tot.appendChild(elx('span', 'v', Fmt.usd(nw.net)));
   box.appendChild(tot);
 
-  const hints = [];
+  const stale = [];
   const home = nw.items.find(i => i.key === 'home');
-  if (home && home.fresh === 'stale') hints.push('Home value | [today’s estimate] | [date]');
+  if (home && home.fresh === 'stale') stale.push({text: `the home is at its ${home.asOf ? home.asOf.getFullYear() + ' ' : ''}purchase price`, btn: 'Update home value', label: 'Home value'});
   const cash = nw.items.find(i => i.key === 'cash');
-  if (cash && cash.fresh === 'stale') hints.push('Checking | [total balance] | [date]');
-  dashHint($('bsHint'), hints);
+  if (cash && cash.fresh === 'stale') stale.push({text: `checking is from ${Fmt.month(cash.asOf)}`, btn: 'Update checking', label: 'Checking'});
+  const bh = $('bsHint');
+  bh.textContent = '';
+  bh.hidden = !stale.length || d.source === 'demo';
+  if (!bh.hidden){
+    bh.appendChild(document.createTextNode('To sharpen this: '));
+    stale.forEach((x, i) => {
+      if (i) bh.appendChild(document.createTextNode(' · '));
+      bh.appendChild(document.createTextNode(x.text + ' '));
+      bh.appendChild(linkBtn(x.btn, () => Manual.open(x.label)));
+    });
+    bh.appendChild(document.createTextNode('. What you enter is saved in this browser; copy it into a Dashboard sheet to use it on every device.'));
+  }
 
   // ---- debts ----
   const dr = $('debtRows');
@@ -4048,10 +4139,19 @@ function renderRate(R, S){
   requestAnimationFrame(() => { fill.style.width = Math.min(100, R.rate * 200).toFixed(1) + '%'; });   // 50% fills the meter
   const line = (txt, em) => { const p = elx('div', 'r-sub'); p.style.cssText = 'font-size:12.5px;margin-top:4px'; p.textContent = txt; if (em) p.style.color = 'var(--ink2)'; body.appendChild(p); };
   line(`Saved: ${Fmt.usd(R.saved)} (${S.nDone} months)`, true);
-  line(`Pay: ${Fmt.usd(R.gross)} gross from your paychecks` + (R.ang ? ` + ${Fmt.usd(R.ang)} Guard pay` : '') +
+  line(`Pay: ${Fmt.usd(R.gross)} gross from your paychecks` +
+       (R.ang ? ` + ${Fmt.usd(R.ang)} Guard pay${R.guardSrc === 'budget' ? ' (from the Budget sheet)' : ''}` : '') +
        (R.spouseYtd ? ` + ${Fmt.usd(R.spouseYtd)} second income` : ''), true);
   line(`401(k): ${Fmt.pct(R.empRate, 0)} of each check, plus a ${Fmt.pct(R.matchRate, 0)} employer match`);
-  if (!R.household) line('A second paycheck (and its 403(b) deposits) isn’t in the sheet. Add “Spouse gross pay | [yearly amount]” to a Dashboard sheet for a household rate.');
+  if (R.takeHomeMonthly) line(`Take-home: about ${Fmt.usd(R.takeHomeMonthly)}/mo from paychecks and Guard pay`);
+  if (!R.household){
+    line('A second paycheck (and its 403(b) deposits) isn’t included.');
+    if (state.data.source !== 'demo'){
+      const last = body.lastChild;
+      last.appendChild(document.createTextNode(' '));
+      last.appendChild(linkBtn('Add spouse pay', () => Manual.open('Spouse gross pay')));
+    }
+  }
   line('Meter: 50% fills it. Many planners suggest 15–20% for retirement alone.');
 }
 
@@ -4096,21 +4196,65 @@ function renderPaycheck(P){
 
   const k = $('payKpis');
   k.textContent = '';
-  const mk = (label, value, sub, cls) => {
+  const mk = (label, value, sub, cls, action) => {
     const dv = elx('div', 'res');
     dv.appendChild(elx('div', 'r-label', label));
     const v = elx('div', 'r-value', value); if (cls) v.classList.add(cls);
     dv.appendChild(v);
-    dv.appendChild(elx('div', 'r-sub', sub));
+    if (sub) dv.appendChild(elx('div', 'r-sub', sub));
+    if (action) dv.appendChild(linkBtn(action.text, action.onClick));
     k.appendChild(dv);
   };
-  mk('Gross per paycheck', Fmt.cents(L.gross), 'on ' + Fmt.date(L.date));
-  mk('Yearly pay', Fmt.k(P.annual), `${P.perYear} × the latest check`);
+  const I = state.data.inputs, np = I && I.num(/net pay|take-?home/i);
+  const own = state.data.source !== 'demo';
+  mk('Gross per paycheck', Fmt.cents(L.gross), `${Fmt.k(P.annual)} a year · ${P.perYear} checks · ${Fmt.date(L.date)}`);
+  if (np) mk('Take-home per paycheck', Fmt.cents(np.v), `${Fmt.pct(np.v / L.gross, 0)} of gross` + (np.asOf ? ' · as of ' + Fmt.date(np.asOf) : ''),
+             null, own ? {text: 'Update', onClick: () => Manual.open('Net pay per check')} : null);
+  else mk('Take-home per paycheck', '—', own ? '' : 'not in the sheet', null,
+          own ? {text: 'Add your take-home', onClick: () => Manual.open('Net pay per check')} : null);
   mk('To your 401(k)', Fmt.cents(L.employee), `${Fmt.pct(L.employee / L.gross, 0)} + ${Fmt.cents(L.match)} match (${Fmt.pct(L.match / L.gross, 0)})`);
   if (P.yearAgo){
     const ch = L.gross / P.yearAgo.gross - 1;
     mk('Past year', Fmt.signedPct(ch), `from ${Fmt.cents(P.yearAgo.gross)} on ${Fmt.date(P.yearAgo.date)}`, dirClass(ch));
   } else mk('Past year', '—', 'needs a year of paychecks');
+
+  // where each paycheck goes: 401(k), taxes and other deductions, take-home
+  const sp = $('paySplit');
+  sp.textContent = '';
+  sp.hidden = !np;
+  if (np){
+    const other = L.gross - L.employee - np.v;
+    if (other < 0){
+      sp.appendChild(elx('div', 'r-sub', 'Take-home plus the 401(k) comes to more than gross pay, so the take-home figure may be from a different paycheck.'));
+    } else {
+      const parts = [
+        {label: '401(k)', v: L.employee, color: t.series.retire},
+        {label: 'Taxes & other deductions', v: other, color: t.axis},
+        {label: 'Take-home', v: np.v, color: t.series.cash},
+      ];
+      sp.appendChild(elx('div', 'field-label', 'Where each paycheck goes'));
+      const bar = elx('div', 'split');
+      bar.setAttribute('role', 'img');
+      bar.setAttribute('aria-label', 'Each paycheck: ' + parts.map(x => `${x.label} ${Fmt.cents(x.v)}`).join(', '));
+      parts.forEach(x => {
+        const seg = elx('span');
+        seg.style.width = (x.v / L.gross * 100).toFixed(2) + '%';
+        seg.style.background = x.color;
+        seg.title = `${x.label}: ${Fmt.cents(x.v)} (${Fmt.pct(x.v / L.gross, 0)})`;
+        bar.appendChild(seg);
+      });
+      sp.appendChild(bar);
+      const lg = elx('div', 'mini-legend');
+      parts.forEach(x => {
+        const it = elx('span');
+        const sw = elx('span', 'swatch'); sw.style.background = x.color;
+        it.appendChild(sw);
+        it.appendChild(document.createTextNode(`${x.label} ${Fmt.cents(x.v)} · ${Fmt.pct(x.v / L.gross, 0)}`));
+        lg.appendChild(it);
+      });
+      sp.appendChild(lg);
+    }
+  }
 
   const pts = P.all.map(x => x.date.getTime());
   const cut = P.paid.length;
@@ -4162,21 +4306,23 @@ function renderPaycheck(P){
 
   const note = $('payNote');
   note.textContent = '';
-  const B = state.data.budget && state.data.budget.paycheck;
-  if (B && B.net && B.net.now && B.gross && B.gross.now){
-    note.appendChild(document.createTextNode(`Your Budget sheet’s paycheck table shows take-home of `));
-    note.appendChild(elx('b', null, Fmt.cents(B.net.now)));
-    note.appendChild(document.createTextNode(` on ${Fmt.cents(B.gross.now)} gross${B.gross.now < L.gross * 0.95 ? ', which is older than the checks above' : ''}. ` +
-      'To track take-home going forward, add “Net pay per check | [amount] | [date]” to a Dashboard sheet.'));
-  } else {
-    note.textContent = 'Take-home pay isn’t in the sheet. Add “Net pay per check | [amount] | [date]” to a Dashboard sheet to track it.';
-  }
-  const I = state.data.inputs, np = I && I.num(/net pay/i);
+  const R = Household.savingsRate(state.data);
   if (np){
-    note.textContent = '';
-    note.appendChild(document.createTextNode('Take-home per check: '));
-    note.appendChild(elx('b', null, Fmt.cents(np.v)));
-    note.appendChild(document.createTextNode(` (${Fmt.pct(np.v / L.gross, 0)} of gross${np.asOf ? ', as of ' + Fmt.date(np.asOf) : ''}).`));
+    note.appendChild(document.createTextNode('This job brings home about '));
+    note.appendChild(elx('b', null, Fmt.usd(np.v * P.perYear / 12) + '/mo'));
+    if (R && R.takeHomeMonthly && R.guardSrc){
+      note.appendChild(document.createTextNode(', or '));
+      note.appendChild(elx('b', null, Fmt.usd(R.takeHomeMonthly) + '/mo'));
+      note.appendChild(document.createTextNode(' with Guard pay'));
+    }
+    note.appendChild(document.createTextNode('.'));
+  } else {
+    const B = state.data.budget && state.data.budget.paycheck;
+    if (B && B.net && B.net.now && B.gross && B.gross.now){
+      note.appendChild(document.createTextNode('Your Budget sheet’s paycheck table shows take-home of '));
+      note.appendChild(elx('b', null, Fmt.cents(B.net.now)));
+      note.appendChild(document.createTextNode(` on ${Fmt.cents(B.gross.now)} gross${B.gross.now < L.gross * 0.95 ? ', which is older than the checks above' : ''}.`));
+    } else note.textContent = 'Take-home pay isn’t in the sheet.';
   }
 }
 
@@ -4290,8 +4436,12 @@ function renderPension(p){
      pen.estTotalPts ? pen.estTotalPts.toLocaleString() + ' est. points · starts at 60' : 'starts at age 60');
   if (ss) mk('Social Security', Fmt.k(ss) + '/mo', 'your estimate · Dashboard sheet');
   mk('Combined', Fmt.k(combined) + '/mo', Fmt.k(combined*12) + '/yr in today’s dollars', 'up');
-  $('incomeSub').textContent = 'Portfolio income (today’s dollars) plus your ANG pension' + (ss ? ' and Social Security' : '') +
-    ', across return scenarios' + (ss ? '' : ' · add “Social Security | [monthly amount]” (from ssa.gov) to a Dashboard sheet to include it');
+  const isub = $('incomeSub');
+  isub.textContent = 'Portfolio income (today’s dollars) plus your ANG pension' + (ss ? ' and Social Security' : '') + ', across return scenarios';
+  if (!ss && state.data.source !== 'demo'){
+    isub.appendChild(document.createTextNode(' · '));
+    isub.appendChild(linkBtn('Add Social Security', () => Manual.open('Social Security')));
+  }
 
   const realized = Compute.realizedRate(rows);
   const scenarios = [
@@ -5247,6 +5397,206 @@ const Sources = (() => {
           setCached: r => { cachedRec = r; }, markLive};
 })();
 
+/* ============ YOUR NUMBERS — values the workbook doesn't have, typed into the dashboard ============
+   Saved in this browser (localStorage) and merged in front of the workbook's optional Dashboard sheet,
+   so they win. Nothing here is ever sent anywhere. "Copy" produces tab-separated rows that paste
+   straight into a Dashboard sheet, which is how the numbers reach your other devices. */
+const Manual = (() => {
+  const ymd = dt => `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+  const fromYmd = s => {
+    const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return null;
+    const dt = new Date(+m[1], +m[2] - 1, +m[3]);
+    return isNaN(dt.getTime()) ? null : dt;
+  };
+  const us = dt => `${dt.getMonth() + 1}/${dt.getDate()}/${dt.getFullYear()}`;
+  const asDate = v => {
+    if (v instanceof Date) return v;
+    if (typeof v === 'number' && v > 20000 && v < 80000){ const p = XLSX.SSF.parse_date_code(v); return new Date(p.y, p.m - 1, p.d); }
+    return null;
+  };
+
+  /* what's saved, with dates turned back into Date objects */
+  function saved(){
+    const raw = Prefs.get('inputs', []);
+    if (!Array.isArray(raw)) return [];
+    return raw.filter(x => x && x.label && x.value != null && x.value !== '').map(x => {
+      const kind = x.kind === 'date' ? 'date' : 'money';
+      const value = kind === 'date' ? fromYmd(x.value) : Number(x.value);
+      return {label: String(x.label), kind, value, asOf: x.asOf ? fromYmd(x.asOf) : null, src: 'manual'};
+    }).filter(x => x.kind === 'date' ? x.value : isFinite(x.value));
+  }
+
+  /* the fields offered — generic labels, plus one set per child found in the workbook */
+  function fields(d){
+    const out = [
+      {group: 'Home', label: 'Home value', kind: 'money', hint: 'Today’s estimate. A Zillow or Redfin figure is fine; update it every few months.', links: true},
+      {group: 'Home', label: 'Mortgage balance', kind: 'money', hint: 'From a statement. Only needed if you’ve paid extra principal; otherwise it’s calculated.'},
+      {group: 'Cash', label: 'Checking', kind: 'money', hint: 'Total across your checking accounts.'},
+      {group: 'Pay', label: 'Net pay per check', kind: 'money', hint: 'Take-home from each main paycheck.'},
+      {group: 'Pay', label: 'Guard pay', kind: 'money', hint: 'Take-home per month.'},
+      {group: 'Pay', label: 'Spouse gross pay', kind: 'money', hint: 'Per year, before taxes. Makes the savings rate household-wide.'},
+      {group: 'Retirement', label: 'Social Security', kind: 'money', hint: 'Monthly estimate in today’s dollars, from ssa.gov.'},
+    ];
+    const K = d ? (Household.kids(d) || []) : [];
+    K.forEach(k => {
+      out.push({group: 'Kids', label: `${k.name} birth date`, kind: 'date', hint: 'Projects the 529 to age 18.'});
+      out.push({group: 'Kids', label: `${k.name} 529 balance`, kind: 'money', hint: 'From the latest statement.'});
+      out.push({group: 'Kids', label: `${k.name} savings`, kind: 'money', hint: 'Their savings account, if any.'});
+    });
+    return out;
+  }
+
+  /* put the saved numbers in front of the workbook's own Dashboard rows */
+  function apply(d){
+    if (!d || d.source === 'demo') return;
+    if (!d.sheetInputRows) d.sheetInputRows = d.inputs ? d.inputs.rows.map(r => ({...r, src: 'sheet'})) : [];
+    const rows = saved().concat(d.sheetInputRows);
+    d.inputs = rows.length ? Parse.makeInputs(rows) : null;
+    Household.invalidate(d);
+  }
+
+  const note = (text, kind) => {
+    const el = $('dlgNote');
+    el.textContent = text || '';
+    el.style.color = kind === 'err' ? 'var(--bad)' : '';
+  };
+  const fmtVal = (kind, v) => kind === 'date' ? Fmt.date(v) : Fmt.cents(v).replace(/\.00$/, '');
+
+  function open(focus){
+    const d = state.data;
+    if (!d) return;
+    const body = $('inputsBody');
+    body.textContent = '';
+    note(d.source === 'demo' ? 'You’re looking at demo data. Numbers you save here apply when your own workbook is loaded.' : '');
+    const mine = new Map(saved().map(x => [lower(x.label), x]));
+    const sheetRows = d.sheetInputRows || [];
+    const groups = new Map();
+    fields(d).forEach((f, i) => {
+      if (!groups.has(f.group)){
+        const fs = elx('fieldset', 'dlg-group');
+        fs.appendChild(elx('legend', null, f.group));
+        groups.set(f.group, fs);
+        body.appendChild(fs);
+      }
+      const row = elx('div', 'dlg-row');
+      row.dataset.label = f.label;
+      row.dataset.kind = f.kind;
+      const id = 'mi-' + i;
+      const lab = elx('label', null, f.label);
+      lab.htmlFor = id;
+      const wrap = elx('div', 'dlg-field');
+      const inp = elx('input', 'inp' + (f.kind === 'money' ? ' money' : ''));
+      inp.id = id;
+      inp.autocomplete = 'off';
+      if (f.kind === 'date') inp.type = 'date';
+      else { inp.type = 'text'; inp.inputMode = 'decimal'; wrap.appendChild(elx('span', 'pre', '$')); }
+      const cur = mine.get(lower(f.label));
+      if (cur) inp.value = f.kind === 'date' ? ymd(cur.value) : String(cur.value);
+      const sheetRow = sheetRows.find(r => lower(r.label) === lower(f.label));
+      wrap.appendChild(inp);
+      const hint = elx('div', 'dlg-hint', f.hint);
+      if (cur && cur.asOf) hint.appendChild(document.createTextNode(` Saved here ${Fmt.date(cur.asOf)}.`));
+      if (sheetRow){
+        const sv = f.kind === 'date' ? asDate(sheetRow.value) : (typeof sheetRow.value === 'number' ? sheetRow.value : null);
+        if (sv != null) hint.appendChild(document.createTextNode(` Your Dashboard sheet has ${fmtVal(f.kind, sv)}${cur ? '; this entry wins' : ''}.`));
+      }
+      if (f.links){
+        hint.appendChild(document.createTextNode(' Look it up on '));
+        [['Zillow', 'https://www.zillow.com/'], ['Redfin', 'https://www.redfin.com/']].forEach(([n, u], j) => {
+          if (j) hint.appendChild(document.createTextNode(' or '));
+          const a = elx('a', null, n);
+          a.href = u; a.target = '_blank'; a.rel = 'noopener noreferrer';
+          hint.appendChild(a);
+        });
+        hint.appendChild(document.createTextNode('.'));
+      }
+      row.appendChild(lab); row.appendChild(wrap); row.appendChild(hint);
+      groups.get(f.group).appendChild(row);
+    });
+    const dlg = $('inputsDlg');
+    if (!dlg.open) dlg.showModal();
+    const target = focus && [...body.querySelectorAll('.dlg-row')].find(r => lower(r.dataset.label) === lower(focus));
+    const inp = (target || body.querySelector('.dlg-row')).querySelector('input');
+    inp.focus();
+    if (target) target.scrollIntoView({block: 'center'});
+  }
+
+  /* read the form; returns false (and flags the field) if something isn't a valid number or date */
+  function save(){
+    const rows = [...$('inputsBody').querySelectorAll('.dlg-row')];
+    const prev = saved();
+    const prevBy = new Map(prev.map(x => [lower(x.label), x]));
+    const shown = new Set(rows.map(r => lower(r.dataset.label)));
+    const out = prev.filter(x => !shown.has(lower(x.label)))            // keep entries this workbook doesn't show
+                    .map(x => ({label: x.label, kind: x.kind, value: x.kind === 'date' ? ymd(x.value) : x.value, asOf: x.asOf ? ymd(x.asOf) : null}));
+    let bad = null;
+    rows.forEach(r => {
+      r.classList.remove('err');
+      const inp = r.querySelector('input'), raw = inp.value.trim();
+      if (!raw) return;
+      const kind = r.dataset.kind, label = r.dataset.label;
+      let value;
+      if (kind === 'date'){
+        const dt = fromYmd(raw);
+        if (!dt){ r.classList.add('err'); bad = bad || inp; return; }
+        value = raw;
+      } else {
+        const n = parseFloat(raw.replace(/[$,\s]/g, ''));
+        if (!isFinite(n) || n < 0 || !/^[\d$,.\s]+$/.test(raw)){ r.classList.add('err'); bad = bad || inp; return; }
+        value = Math.round(n * 100) / 100;
+      }
+      const p = prevBy.get(lower(label));
+      const same = p && (kind === 'date' ? ymd(p.value) === value : p.value === value);
+      out.push({label, kind, value, asOf: same && p.asOf ? ymd(p.asOf) : ymd(new Date())});
+    });
+    if (bad){
+      bad.focus();
+      note('Check the highlighted field: amounts are plain numbers like 510000 or 510,000.', 'err');
+      return false;
+    }
+    Prefs.set('inputs', out);
+    return true;
+  }
+
+  async function copy(){
+    const rows = saved();
+    if (!rows.length){ note('Nothing is saved yet. Enter some numbers and press Save first.'); return; }
+    const tsv = rows.map(r => [r.label, r.kind === 'date' ? us(r.value) : r.value,
+                               r.kind !== 'date' && r.asOf ? us(r.asOf) : ''].join('\t')).join('\n');
+    const how = `In your workbook, add a sheet named Dashboard, click cell A1 and paste. Then every device gets these ${rows.length} numbers.`;
+    try {
+      await navigator.clipboard.writeText(tsv);
+      note('Copied. ' + how);
+    } catch(e){
+      note('Your browser blocked the clipboard, so select and copy these rows. ' + how);
+      const ta = elx('textarea');
+      ta.value = tsv; ta.readOnly = true;
+      $('dlgNote').appendChild(ta);
+      ta.select();
+    }
+  }
+
+  function wire(){
+    const dlg = $('inputsDlg');
+    $('editBtn').addEventListener('click', () => open());
+    $('dlgClose').addEventListener('click', () => dlg.close());
+    $('dlgCancel').addEventListener('click', () => dlg.close());
+    $('dlgCopy').addEventListener('click', copy);
+    $('inputsForm').addEventListener('submit', e => {
+      e.preventDefault();
+      if (!save()) return;
+      dlg.close();
+      if (state.data){
+        apply(state.data);
+        renderActive();
+      }
+    });
+  }
+
+  return {apply, open, wire, saved};
+})();
+
 /* ============ MAIN — boot, nav, theme, file handling ============ */
 
 function positionInk(){
@@ -5320,6 +5670,7 @@ function handleFile(file){
 
 function loadData(data, opts = {}){
   const keepView = !!(opts.keepView && state.data);
+  Manual.apply(data);
   state.data = data;
   if (!keepView){
     state.range = 'ALL';
@@ -5423,6 +5774,7 @@ function loadData(data, opts = {}){
     document.querySelectorAll('.mini.sel').forEach(m => m.classList.remove('sel'));
   });
   $('heroNwLink').addEventListener('click', () => switchView('networth'));
+  Manual.wire();
 
   window.addEventListener('resize', debounce(positionInk, 120));
 

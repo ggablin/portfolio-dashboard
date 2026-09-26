@@ -29,9 +29,14 @@ How it works:
 - Each visit shows the saved copy instantly, then checks OneDrive for a newer version. It checks again whenever you come back to the tab.
 - Microsoft sometimes asks you to sign in again (for example after a browser restart). The page shows **Sign in to refresh** when that happens.
 
-## v3: optional "Dashboard" sheet
+## v3: numbers the workbook doesn't have
 
-Add a sheet named `Dashboard` to the workbook: label in column A, value in column B, as-of date in column C. v3 fills gaps from these rows when present:
+There are two ways to add values like today's home value, take-home pay or kids' birth dates:
+
+- **In the dashboard:** click the pencil button (**Your numbers**) or any **Update** / **Add** link. Entries are saved in that browser only and take priority over the workbook. **Copy saved numbers for your workbook** copies them as rows you can paste into cell A1 of a `Dashboard` sheet, which is how they reach your other devices.
+- **In the workbook:** add a sheet named `Dashboard` with the label in column A, the value in column B and the as-of date in column C.
+
+Recognized labels:
 
 | Label (column A) | Value (column B) | Used for |
 |---|---|---|
@@ -43,7 +48,8 @@ Add a sheet named `Dashboard` to the workbook: label in column A, value in colum
 | `<child> birth date` | date | Kids' accounts: projection to age 18 |
 | `Spouse gross pay` | yearly amount | Household savings rate |
 | `Social Security` | monthly estimate (today's dollars) | Retirement income |
-| `Net pay per check` | amount | Paycheck: take-home |
+| `Net pay per check` | amount | Paycheck: take-home and where each check goes |
+| `Guard pay` | monthly take-home | Savings rate, take-home (replaces the Budget sheet's ANG line) |
 
 ## Libraries
 
