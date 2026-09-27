@@ -174,6 +174,7 @@ main{max-width:1240px;margin:0 auto;padding:26px 28px 80px}
 .seg button{font-size:11.5px;font-weight:600;color:var(--muted);padding:3px 11px;border-radius:7px;transition:all .15s}
 .seg button.active{background:var(--card);color:var(--accent);box-shadow:var(--shadow)}
 .chart{width:100%}
+.h-wk{height:170px}
 .h-main{height:400px}.h-mid{height:300px}.h-sm{height:240px}.h-stack{height:340px}.h-mini{height:104px}
 
 /* hero */
@@ -482,6 +483,118 @@ select.inp{appearance:auto;-webkit-appearance:auto}
 .mini-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink2);margin-bottom:10px}
 .mini-legend span{display:inline-flex;align-items:center;gap:6px}
 
+/* ============ 6c. REPORT CARD ============ */
+/* grade colors: A green, B blue, C amber, D/F red (the letter is always shown too) */
+.g-a{--g:var(--good-mark);--g-ink:var(--good)}
+.g-b{--g:var(--accent);--g-ink:var(--accent)}
+.g-c{--g:var(--warn);--g-ink:#8a5f00}
+.g-d,.g-f{--g:var(--bad);--g-ink:var(--bad)}
+.g-i{--g:var(--axis);--g-ink:var(--muted)}
+:root[data-theme="dark"] .g-c{--g-ink:var(--warn)}
+
+.rc-hero{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:28px;align-items:center;padding:26px 28px}
+.grade-badge{
+  width:128px;height:128px;border-radius:50%;display:grid;place-items:center;align-content:center;gap:2px;
+  border:7px solid var(--g);background:color-mix(in srgb,var(--g) 9%,var(--card));
+}
+.gb-letter{font-size:52px;font-weight:800;letter-spacing:-1px;line-height:1;color:var(--g-ink)}
+.gb-score{font-size:12px;font-weight:650;color:var(--muted)}
+.rc-verdict{font-size:27px;font-weight:780;letter-spacing:-.5px;line-height:1.15}
+.rc-comment{font-size:13.5px;line-height:1.65;color:var(--ink2);margin-top:10px;max-width:660px}
+.rc-side{display:flex;flex-direction:column;gap:10px}
+.rc-print{align-self:flex-end}
+
+.subj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.subj{border:1px solid var(--border);border-radius:14px;padding:14px 16px 13px;background:var(--card2);display:flex;flex-direction:column;gap:7px}
+.subj-top{display:flex;align-items:center;gap:11px}
+.lg{
+  width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none;
+  font-size:17px;font-weight:800;color:var(--g-ink);
+  background:color-mix(in srgb,var(--g) 15%,transparent);border:1px solid color-mix(in srgb,var(--g) 45%,transparent);
+}
+.subj-name{font-size:13.5px;font-weight:680}
+.subj-w{font-size:11px;color:var(--muted);margin-top:1px}
+.trend{margin-left:auto;font-size:11px;font-weight:700;white-space:nowrap}
+.subj-val{font-size:22px;font-weight:760;letter-spacing:-.3px;line-height:1.2}
+.subj-val small{display:block;font-size:12px;font-weight:550;color:var(--muted);letter-spacing:0;line-height:1.4;margin-top:1px}
+.subj-bar{height:6px;border-radius:3px;background:var(--grid);overflow:hidden}
+.subj-bar i{display:block;height:100%;width:0;border-radius:3px;background:var(--g);transition:width .7s cubic-bezier(.4,0,.2,1)}
+.subj-why{font-size:12px;color:var(--ink2);line-height:1.55}
+.subj-bench{font-size:11.5px;color:var(--muted);line-height:1.5}
+.subj-tip{font-size:12px;line-height:1.5;color:var(--ink2);border-top:1px dashed var(--border);padding-top:8px;margin-top:auto}
+.subj-tip .link-btn{font-size:12px}
+
+.wk-head{font-size:25px;font-weight:760;letter-spacing:-.4px;line-height:1.2}
+.wk-sub{font-size:12.5px;color:var(--muted);margin:4px 0 14px}
+.wk-list{list-style:none;display:grid;gap:9px}
+.wk-list li{display:grid;grid-template-columns:16px 1fr;gap:8px;font-size:13px;line-height:1.5;color:var(--ink2)}
+.wk-list li::before{content:"";width:8px;height:8px;border-radius:50%;margin-top:6px;background:var(--dot,var(--axis))}
+.wk-list li.up{--dot:var(--good-mark)} .wk-list li.dn{--dot:var(--bad)} .wk-list li.hi{--dot:var(--accent)}
+.wk-list li b{color:var(--ink);font-weight:650}
+.mv-row{display:grid;grid-template-columns:minmax(80px,120px) 1fr 84px;gap:12px;align-items:center;padding:5px 0;font-size:12.5px}
+.mv-name{font-weight:600;display:flex;align-items:center;gap:7px;min-width:0}
+.mv-track{position:relative;height:10px;border-radius:5px;background:var(--card2)}
+.mv-track::after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--axis)}
+.mv-bar{position:absolute;top:0;height:100%;width:0;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.mv-val{text-align:right;font-weight:650;font-variant-numeric:tabular-nums}
+
+.peer + .peer{margin-top:14px;padding-top:13px;border-top:1px solid var(--border)}
+.peer-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:7px}
+.peer-name{font-size:13px;font-weight:680}
+.peer-note{font-size:11.5px;font-weight:700;color:var(--good);text-align:right}
+.peer-note.dn{color:var(--bad)}
+.pbar{display:grid;grid-template-columns:minmax(88px,auto) 1fr 62px;gap:10px;align-items:center;font-size:12px;color:var(--ink2);padding:2px 0}
+.pbar .trk{height:8px;border-radius:4px;background:var(--card2);overflow:hidden}
+.pbar .trk i{display:block;height:100%;width:0;border-radius:4px;background:var(--axis);transition:width .7s cubic-bezier(.4,0,.2,1)}
+.pbar.you{color:var(--ink);font-weight:650}
+.pbar.you .trk i{background:var(--accent)}
+.pbar .v{text-align:right;font-variant-numeric:tabular-nums}
+.peer-foot{font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.5}
+.peer-fact{display:grid;grid-template-columns:18px 1fr;gap:8px;font-size:12.5px;line-height:1.5;color:var(--ink2);padding:3px 0}
+.peer-fact .ck{font-weight:800;color:var(--good)}
+.peer-fact .ck.no{color:var(--muted)}
+
+.badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px}
+.medal{border:1px solid var(--border);border-radius:14px;padding:14px 12px 12px;background:var(--card2);text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+.medal-disc{
+  width:64px;height:64px;border-radius:50%;display:grid;place-items:center;padding:0 6px;
+  font-size:15px;font-weight:800;letter-spacing:-.3px;line-height:1.05;
+  color:var(--m-ink,#fff);background:var(--m);box-shadow:inset 0 -4px 0 rgba(0,0,0,.16),0 2px 6px rgba(0,0,0,.10);
+}
+.medal.gold{--m:#eda100;--m-ink:#0b0b0b}
+.medal.blue{--m:var(--accent)}
+.medal.green{--m:#008300}
+.medal-title{font-size:12.5px;font-weight:700;line-height:1.3}
+.medal-desc{font-size:11px;color:var(--muted);line-height:1.45}
+.medal.locked .medal-disc{background:var(--card);color:var(--muted);border:2px dashed var(--axis);box-shadow:none}
+.medal.locked .medal-title{color:var(--ink2)}
+.medal .meter{width:100%;height:6px;margin-top:auto}
+
+.moves{list-style:none;counter-reset:mv;display:grid;gap:12px}
+.moves li{counter-increment:mv;display:grid;grid-template-columns:26px 1fr;gap:10px;font-size:13px;line-height:1.55;color:var(--ink2)}
+.moves li::before{
+  content:counter(mv);width:24px;height:24px;border-radius:50%;display:grid;place-items:center;
+  font-size:12px;font-weight:750;color:var(--accent);background:rgba(var(--accent-rgb),.12);
+}
+.moves li b{color:var(--ink);font-weight:650}
+.moves .link-btn{font-size:12.5px;margin-left:4px}
+
+.hw label{display:grid;grid-template-columns:22px 1fr;gap:8px;align-items:start;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.5;color:var(--ink);cursor:pointer}
+.hw label:last-child{border-bottom:none}
+.hw input{width:16px;height:16px;margin-top:2px;accent-color:var(--accent)}
+.hw small{display:block;font-size:11.5px;color:var(--muted)}
+.hw label.done > span > span{color:var(--muted);text-decoration:line-through}
+
+.rc-method summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+.rc-method summary::-webkit-details-marker{display:none}
+.rc-method summary::before{content:"";width:0;height:0;border-left:6px solid var(--muted);border-top:5px solid transparent;border-bottom:5px solid transparent;transition:transform .2s}
+.rc-method[open] summary::before{transform:rotate(90deg)}
+.rc-method .dtable{margin-top:12px}
+.dtable.text th,.dtable.text td{text-align:left;vertical-align:top}
+.src-list{margin:10px 0 0 18px;font-size:12px;line-height:1.8;color:var(--ink2)}
+.src-list a{color:var(--accent)}
+.method-p{font-size:12.5px;line-height:1.65;color:var(--ink2);margin-top:12px}
+
 /* ============ 7. ANIMATIONS ============ */
 @keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .enter{animation:cardIn .38s cubic-bezier(.25,.6,.3,1) both;animation-delay:calc(var(--i,0)*46ms)}
@@ -511,6 +624,9 @@ select.inp{appearance:auto;-webkit-appearance:auto}
   .hero-card{gap:20px}
   .hero-value{font-size:42px}
   .tabs{order:2;width:100%;overflow-x:auto}
+  .rc-hero{grid-template-columns:auto minmax(0,1fr);gap:20px}
+  .rc-side{grid-column:1 / -1;flex-direction:row;flex-wrap:wrap}
+  .rc-side .delta-chip{flex:1 1 150px}
 }
 @media (max-width:560px){
   .mini-grid{grid-template-columns:repeat(2,1fr)}
@@ -527,7 +643,33 @@ select.inp{appearance:auto;-webkit-appearance:auto}
   .dlg-hint{grid-column:1}
   .avatar{display:none}
   .hero-value{font-size:36px}
+  .rc-hero{grid-template-columns:1fr;justify-items:start;padding:20px 18px}
+  .grade-badge{width:108px;height:108px;border-width:6px}
+  .gb-letter{font-size:44px}
+  .rc-verdict{font-size:23px}
+  .subj-grid{grid-template-columns:1fr}
+  .mv-row{grid-template-columns:minmax(70px,96px) 1fr 76px;gap:8px}
+  .badge-grid{grid-template-columns:repeat(2,1fr)}
+  #c-age{height:380px}
 }
+
+/* ============ 10. PRINT — light colors, no app chrome ============ */
+@media print{
+  :root,:root[data-theme="dark"]{
+    --bg:#fff;--card:#fff;--card2:#f5f5f2;--ink:#000;--ink2:#333;--muted:#666;
+    --grid:#ddd;--axis:#bbb;--border:rgba(0,0,0,.16);--shadow:none;--shadow-lg:none;color-scheme:light;
+  }
+  body{background:#fff}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact;animation:none!important;transition:none!important}
+  .topbar,footer,.rc-print,.card-actions,.link-btn,#uploadView{display:none!important}
+  main{padding:0;max-width:none}
+  .grid{gap:12px}
+  .card,.tile,.subj,.medal,.peer{break-inside:avoid;box-shadow:none}
+  .chart > div,.chart canvas{max-width:100%!important}
+  .chart canvas{height:auto!important}
+}
+/* while the Print button prepares the page: settle every animation at once */
+.printing *{animation:none!important;transition:none!important}
 </style>
 </head>
 <body>
@@ -586,6 +728,7 @@ select.inp{appearance:auto;-webkit-appearance:auto}
   <nav class="tabs" id="tabs" role="tablist" aria-label="Dashboard sections">
     <span class="tab-ink" id="tabInk" aria-hidden="true"></span>
     <button class="tab active" role="tab" aria-selected="true" data-view="pulse">Pulse</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="report">Report card</button>
     <button class="tab" role="tab" aria-selected="false" data-view="accounts">Accounts</button>
     <button class="tab" role="tab" aria-selected="false" data-view="networth">Net worth</button>
     <button class="tab" role="tab" aria-selected="false" data-view="saving">Saving</button>
@@ -713,6 +856,104 @@ select.inp{appearance:auto;-webkit-appearance:auto}
       <div class="card-sub" id="yearSub">Where each year's change came from: your contributions versus the market</div>
       <div class="tbl-wrap"><table class="dtable" id="yearTable"></table></div>
       <div class="attr-note" id="yearNote"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ VIEW: REPORT CARD ============ -->
+<section class="view" id="view-report" role="tabpanel" aria-label="Report card">
+  <div class="grid">
+
+    <div class="card span-12 rc-hero" data-card>
+      <div class="grade-badge g-i" id="rcBadge" role="img" aria-label="Overall grade">
+        <span class="gb-letter" id="rcLetter">–</span>
+        <span class="gb-score" id="rcScore"></span>
+      </div>
+      <div>
+        <div class="hero-label">Financial report card</div>
+        <div class="rc-verdict" id="rcVerdict"></div>
+        <div class="hero-asof" id="rcAsOf"></div>
+        <p class="rc-comment" id="rcComment"></p>
+      </div>
+      <div class="rc-side">
+        <div class="delta-chip">
+          <div class="dl">Grade point average</div>
+          <div class="dv" id="rcGpa">—</div>
+          <div class="ds" id="rcGpaSub"></div>
+        </div>
+        <div class="delta-chip" id="rcSinceChip" hidden>
+          <div class="dl" id="rcSinceLabel">Since last report</div>
+          <div class="dv" id="rcSince">—</div>
+          <div class="ds" id="rcSinceSub"></div>
+        </div>
+        <button class="tbtn rc-print" id="rcPrint" type="button">Print or save as PDF</button>
+      </div>
+    </div>
+
+    <div class="card span-12" data-card>
+      <div class="card-head"><div class="card-title">Subjects</div></div>
+      <div class="card-sub" id="rcSubjSub">Each subject is scored 0–100 against a published rule of thumb, then weighted into the overall grade</div>
+      <div class="subj-grid" id="rcSubjects"></div>
+    </div>
+
+    <div class="card span-7" data-card>
+      <div class="card-head">
+        <div class="card-title">This week</div>
+        <div class="card-actions"><button class="tbtn" data-tbl="c-weeks" aria-pressed="false">Table</button></div>
+      </div>
+      <div class="wk-head" id="rcWeekHead"></div>
+      <div class="wk-sub" id="rcWeekSub"></div>
+      <ul class="wk-list" id="rcWeekList"></ul>
+      <div class="field-label" style="margin-top:16px"><span>Biggest movers this week</span></div>
+      <div id="rcMovers"></div>
+      <div class="field-label" style="margin-top:16px"><span>The last 12 weeks</span></div>
+      <div class="chart h-wk" id="c-weeks" role="img" aria-label="Portfolio change in each of the last 12 weeks, this week highlighted"></div>
+      <div class="tbl-wrap" id="tbl-c-weeks" hidden></div>
+    </div>
+
+    <div class="card span-5" data-card>
+      <div class="card-head"><div class="card-title" id="rcPeerTitle">You vs. people your age</div></div>
+      <div class="card-sub" id="rcPeerSub"></div>
+      <div id="rcPeers"></div>
+    </div>
+
+    <div class="card span-12" id="card-age" hidden data-card>
+      <div class="card-head">
+        <div class="card-title">Net worth by age</div>
+        <div class="card-actions"><button class="tbtn" data-tbl="c-age" aria-pressed="false">Table</button></div>
+      </div>
+      <div class="card-sub" id="rcAgeSub"></div>
+      <div class="chart h-mid" id="c-age" role="img" aria-label="Your net worth by age compared with the typical and average U.S. household"></div>
+      <div class="tbl-wrap" id="tbl-c-age" hidden></div>
+    </div>
+
+    <div class="card span-12" data-card>
+      <div class="card-head"><div class="card-title">Badges</div></div>
+      <div class="card-sub" id="rcBadgeSub"></div>
+      <div class="badge-grid" id="rcBadges"></div>
+    </div>
+
+    <div class="card span-6" data-card>
+      <div class="card-head"><div class="card-title">Next best moves</div></div>
+      <div class="card-sub">The changes that would do the most for your grade or your safety net, most useful first</div>
+      <ol class="moves" id="rcMoves"></ol>
+    </div>
+
+    <div class="card span-6" data-card>
+      <div class="card-head">
+        <div class="card-title">Homework</div>
+        <div class="card-actions"><span class="status-chip" id="rcHwChip"></span></div>
+      </div>
+      <div class="card-sub">Protection your spreadsheet can’t see. Not graded · your ticks are saved in this browser</div>
+      <div class="hw" id="rcHomework"></div>
+    </div>
+
+    <div class="card span-12" data-card>
+      <details class="rc-method" id="rcMethodBox">
+        <summary class="card-title">How the grades work, and sources</summary>
+        <div id="rcMethod"></div>
+      </details>
     </div>
 
   </div>
@@ -1161,6 +1402,36 @@ function irsLimit(year){
   const y = known.filter(k => k <= year).pop() || known[0];
   return {limit: IRS_401K_LIMITS[y], year: y, known: false};
 }
+
+/* Published benchmarks for the Report card (public figures, not personal data). Refresh them when
+   new editions come out; the Fed's 2025 Survey of Consumer Finances results are due in late 2026. */
+const BENCH = {
+  // Federal Reserve, Survey of Consumer Finances 2022 (2022 dollars). nw = family net worth;
+  // ra = retirement accounts (401(k)s, IRAs and the like) among families that have them
+  scf: {year: 2022, url: 'https://www.federalreserve.gov/publications/files/scf23.pdf', bands: [
+    {lo: 18, hi: 34,  label: 'under 35', nwMedian: 39000,  nwMean: 183500,  raMedian: 18880,  raMean: 49130},
+    {lo: 35, hi: 44,  label: '35–44',    nwMedian: 135600, nwMean: 549600,  raMedian: 45000,  raMean: 141520},
+    {lo: 45, hi: 54,  label: '45–54',    nwMedian: 247200, nwMean: 975800,  raMedian: 115000, raMean: 313220},
+    {lo: 55, hi: 64,  label: '55–64',    nwMedian: 364500, nwMean: 1566900, raMedian: 185000, raMean: 537560},
+    {lo: 65, hi: 74,  label: '65–74',    nwMedian: 409900, nwMean: 1794600, raMedian: 200000, raMean: 609230},
+    {lo: 75, hi: 110, label: '75+',      nwMedian: 335600, nwMean: 1624100, raMedian: 130000, raMean: 462410},
+  ]},
+  // Fidelity's savings guideline: retirement savings as a multiple of salary, by age
+  fidelity: {url: 'https://www.fidelity.com/viewpoints/retirement/how-much-do-i-need-to-retire',
+             pts: [[30, 1], [35, 2], [40, 3], [45, 4], [50, 6], [55, 7], [60, 8], [67, 10]]},
+  // College Board, Trends in College Pricing 2025: public four-year, in-state, per year
+  college: {year: '2025–26', tuition: 11950, housing: 13900, growth: 0.04,
+            url: 'https://research.collegeboard.org/trends/college-pricing/highlights'},
+  // Federal Reserve, Economic Well-Being of U.S. Households in 2025 (May 2026)
+  shed: {year: 2025, threeMonths: 0.55, cover400: 0.63,
+         url: 'https://www.federalreserve.gov/publications/2026-economic-well-being-of-us-households-in-2025-savings-investments.htm'},
+  // Vanguard, How America Saves 2025: average total 401(k) contribution rate, employee + employer
+  vanguard: {year: 2025, total: 0.12, url: 'https://corporate.vanguard.com/content/corporatesite/us/en/corp/articles/how-america-saves-2025-key-trends-insights.html'},
+  // U.S. Bureau of Economic Analysis: personal saving as a share of after-tax income
+  bea: {period: 'July 2026', rate: 0.030, url: 'https://www.bea.gov/news/2026/personal-income-and-outlays-july-2026'},
+  // U.S. Census Bureau, Housing Vacancies and Homeownership: householders aged 35–44
+  census: {period: 'Q2 2026', band: '35–44', own: 0.609, url: 'https://www.census.gov/housing/hvs/files/currenthvspress.pdf'},
+};
 
 /* OneDrive: paste the Application (client) ID from your Microsoft app registration here to make it
    the default on every device (it is not a secret). It can also be entered on the load screen. */
@@ -1739,6 +2010,35 @@ const Parse = (() => {
       };
       out.paycheck = {gross: row(/^gross$/i), net: row(/^net$/i), k401: row(/^401k$/i), match: row(/safe harbou?r/i)};
     }
+    // monthly spending, not counting savings: the budget's expense lines outside its savings section
+    const exp = colA(/^expenses$/i), net = colA(/^net income/i);
+    if (exp && net && net.r > exp.r){
+      let skip = false, total = 0, n = 0;
+      for (let r = exp.r + 1; r < net.r; r++){
+        const a = str(ws, r, 0), v = numOrNull(ws, r, 1);
+        if (!a) continue;
+        if (v == null){ if (!/^total/i.test(a)) skip = /saving|invest|retire/i.test(a); continue; }   // a section heading
+        if (skip || /^total/i.test(a) || /saving|529|401|\bira\b|invest/i.test(a)) continue;
+        total += Math.abs(v); n++;
+      }
+      if (n >= 3 && total > 0) out.spendPlan = total;
+    }
+    // a 12-month spending log: "Expenses" in A with month names across, lines until "Total"
+    for (let r = 0, end = Math.min(lastRow(ws), 300); r <= end; r++){
+      if (!/^expenses$/i.test(str(ws, r, 0))) continue;
+      const cols = [];
+      for (let c = 1; c <= 20; c++) if (MONTHS.includes(lower(str(ws, r, c)))) cols.push(c);
+      if (cols.length < 6) continue;
+      let total = 0;
+      for (let rr = r + 1; rr <= Math.min(end, r + 60); rr++){
+        const a = str(ws, rr, 0);
+        if (/^total$/i.test(a)) break;
+        if (!a || /saving|529|401|\bira\b|invest|brokerage/i.test(a)) continue;
+        total += sum(cols.map(c => Math.abs(numOrNull(ws, rr, c) || 0)));
+      }
+      if (total > 0) out.spendLog = {monthly: total / cols.length, months: cols.length};
+      break;
+    }
     return out;
   }
 
@@ -1978,7 +2278,7 @@ const Demo = (() => {
          paymentField: 420 * 12, balance: 14000, opened: new Date(2022, 2, 1)},
       ],
     };
-    const budget = {mortgagePayment: Math.round((pmt + 683) * 100) / 100, angMonthly: 420,
+    const budget = {mortgagePayment: Math.round((pmt + 683) * 100) / 100, angMonthly: 420, spendPlan: 5850,
                     kid529: [{kid: 'Ava', key: 'ava', monthly: 100}, {kid: 'Leo', key: 'leo', monthly: 100}],
                     paycheck: {gross: {was: 4800, now: 5000}, net: {was: 3350, now: 3480}, k401: {was: 672, now: 700}, match: {was: 144, now: 150}}};
     const inputs = Parse.makeInputs([
@@ -2532,6 +2832,15 @@ const Household = (() => {
     });
   }
 
+  /* ---------- pay beyond the paychecks: Guard pay (your entry wins over the Budget sheet's ANG line) and a second income ---------- */
+  function otherPay(d){
+    const I = d.inputs;
+    const guardIn = I && I.num(/guard pay|military pay|drill pay|\bang\b/i);
+    const guardMonthly = guardIn ? guardIn.v : ((d.budget && d.budget.angMonthly) || 0);
+    const spouse = I && I.num(/(spouse|partner|wife|husband|second)\b.*(gross|salary|pay|income)/i);
+    return {guardMonthly, guardSrc: guardIn ? 'input' : guardMonthly ? 'budget' : null, spouseYearly: spouse ? spouse.v : null};
+  }
+
   /* ---------- savings rate: saved ÷ pay (403(b) deposits from a second paycheck are left out unless that pay is in the Dashboard sheet) ---------- */
   function savingsRate(d){
     return cached(d, 'rate', () => {
@@ -2542,18 +2851,16 @@ const Household = (() => {
       if (!paid.length) return null;
       const gross = sum(paid.map(x => x.gross));
       const I = d.inputs;
-      // Guard pay: your entry wins over the Budget sheet's ANG line
-      const guardIn = I && I.num(/guard pay|military pay|drill pay|\bang\b/i);
-      const guardMonthly = guardIn ? guardIn.v : ((d.budget && d.budget.angMonthly) || 0);
+      const O = otherPay(d), guardMonthly = O.guardMonthly;
       const ang = guardMonthly * S.nDone;
       const np = I && I.num(/net pay|take-?home/i), P = paycheck(d);
-      const spouse = I && I.num(/(spouse|partner|wife|husband|second)\b.*(gross|salary|pay|income)/i);
+      const spouse = O.spouseYearly != null ? {v: O.spouseYearly} : null;
       const spouseYtd = spouse ? spouse.v * S.nDone / 12 : 0;
       const b403 = sum(S.done.flatMap(m => m.items.filter(it => it.key === 'b403').map(it => it.amount)));
       const saved = S.ytd - (spouse ? 0 : b403);
       const income = gross + ang + spouseYtd;
       return {rate: income > 0 ? saved / income : null, saved, income, gross, ang, spouseYtd, household: !!spouse,
-              excluded: spouse ? 0 : b403, guardSrc: guardIn ? 'input' : guardMonthly ? 'budget' : null,
+              excluded: spouse ? 0 : b403, guardSrc: O.guardSrc,
               takeHomeMonthly: np && P ? np.v * P.perYear / 12 + guardMonthly : null,
               empRate: sum(paid.map(x => x.employee)) / gross, matchRate: sum(paid.map(x => x.match)) / gross};
     });
@@ -2735,8 +3042,518 @@ const Household = (() => {
   function fmtRate(r){ return (Math.round(r * 10000) / 100).toString() + '%'; }
 
   return {invalidate, sheetPlan, planRate, planContrib, interp, targetAt, targetPace, mortgage, mortBalanceAt, homeValueAt,
-          prepay, debts, balanceOn, contribMonths, contribSummary, k401Year, paycheck, savingsRate, kids,
+          prepay, debts, balanceOn, contribMonths, contribSummary, k401Year, paycheck, otherPay, savingsRate, kids,
           netWorth, netWorthSeries, planHistory, fmtRate};
+})();
+
+/* ============ REPORT CARD — grades against rules of thumb and published benchmarks (pure, no DOM) ============ */
+const joinList = a => a.length <= 1 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' and ' + a[a.length-1];
+const fmtX = v => (Math.round(v * 10) / 10).toString() + '×';
+
+const Report = (() => {
+
+  /* piecewise-linear lookup through [x, score] points */
+  function curve(x, pts){
+    if (x <= pts[0][0]) return pts[0][1];
+    for (let i = 1; i < pts.length; i++){
+      if (x <= pts[i][0]){
+        const [x0, y0] = pts[i-1], [x1, y1] = pts[i];
+        return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
+      }
+    }
+    return pts[pts.length-1][1];
+  }
+
+  /* the usual school scale, applied to the rounded score */
+  const SCALE = [[97,'A+',4.0],[93,'A',4.0],[90,'A−',3.7],[87,'B+',3.3],[83,'B',3.0],[80,'B−',2.7],
+                 [77,'C+',2.3],[73,'C',2.0],[70,'C−',1.7],[67,'D+',1.3],[63,'D',1.0],[60,'D−',0.7],[-Infinity,'F',0]];
+  function grade(exact){
+    const score = Math.round(exact), g = SCALE.find(x => score >= x[0]);
+    return {exact, score, letter: g[1], gpa: g[2], tier: g[1][0].toLowerCase(), cls: 'g-' + g[1][0].toLowerCase()};
+  }
+
+  /* standard normal CDF (Abramowitz & Stegun 7.1.26) */
+  function normCdf(z){
+    const t = 1 / (1 + 0.3275911 * Math.abs(z) / Math.SQRT2);
+    const y = 1 - (((((1.061405429*t - 1.453152027)*t + 1.421413741)*t - 0.284496736)*t + 0.254829592)*t) * Math.exp(-z*z/2);
+    return z >= 0 ? (1 + y) / 2 : (1 - y) / 2;
+  }
+  /* net worth percentile within an age band, from its median and mean (log-normal shape: an estimate) */
+  const sigmaOf = b => Math.sqrt(2 * Math.log(b.nwMean / b.nwMedian));
+  const pctileOf = (b, v) => v > 0 ? normCdf(Math.log(v / b.nwMedian) / sigmaOf(b)) : null;
+  function amountAtPctile(b, p){
+    let lo = Math.log(b.nwMedian) - 8, hi = Math.log(b.nwMedian) + 8;
+    for (let i = 0; i < 60; i++){ const mid = (lo + hi) / 2; if (pctileOf(b, Math.exp(mid)) < p) lo = mid; else hi = mid; }
+    return Math.exp((lo + hi) / 2);
+  }
+  const bandFor = a => BENCH.scf.bands.find(b => a >= b.lo && a <= b.hi) || (a < 18 ? BENCH.scf.bands[0] : BENCH.scf.bands[BENCH.scf.bands.length-1]);
+  const fidelityTarget = a => a >= 67 ? 10 : curve(a, [[22, 0]].concat(BENCH.fidelity.pts));
+
+  /* ---------- the facts the grades share ---------- */
+  function age(d){
+    const I = d.inputs, now = new Date();
+    const bd = I && I.date(/^(your |my )?(birth ?date|date of birth|birthday|dob)$/i);
+    if (bd && bd < now){
+      let a = now.getFullYear() - bd.getFullYear();
+      if (now < new Date(now.getFullYear(), bd.getMonth(), bd.getDate())) a--;
+      return {age: a, birth: bd, src: 'your birth date'};
+    }
+    const rows = d.forecast ? d.forecast.rows.filter(r => r.age > 0 && r.age < 110) : [];
+    if (!rows.length) return null;
+    const y = now.getFullYear();
+    const r = rows.reduce((a, b) => Math.abs(b.year - y) < Math.abs(a.year - y) ? b : a);
+    const a = Math.round(r.age + y - r.year);
+    // the forecast gives one age per calendar year, so put the birthday mid-year
+    return {age: a, birth: new Date(y - a, 6, 1), src: 'the Annual Forecast sheet'};
+  }
+
+  function income(d){
+    const P = Household.paycheck(d), O = Household.otherPay(d);
+    const pay = P ? P.annual : 0, spouse = O.spouseYearly || 0;
+    if (!(pay > 0) && !(spouse > 0)) return null;
+    const guard = O.guardMonthly * 12;
+    return {total: pay + guard + spouse, pay, guard, spouse, household: O.spouseYearly != null};
+  }
+
+  function spending(d){
+    const I = d.inputs, B = d.budget;
+    const m = I && I.num(/^(monthly |household )?(spending|expenses)$/i);
+    if (m && m.v > 0) return {monthly: m.v, src: m.src === 'manual' ? 'your entry' : 'your Dashboard sheet', input: true};
+    if (B && B.spendPlan) return {monthly: B.spendPlan, src: 'your Budget sheet'};
+    if (B && B.spendLog) return {monthly: B.spendLog.monthly, src: `your Budget sheet’s ${B.spendLog.months}-month log`};
+    return null;
+  }
+
+  function holdings(d){
+    const last = d.rows[d.rows.length-1];
+    const of = g => sum(ACCOUNTS.filter(a => a.group === g).map(a => last[a.key] || 0));
+    const cash = of('cash'), kidsHeld = last.utma || 0;     // a UTMA belongs to the child
+    return {last, cash, retire: of('retire'), kidsHeld, invested: last.total - cash - kidsHeld, second: last.b403 || 0};
+  }
+
+  function facts(d){
+    const c = {age: age(d), income: income(d), spend: spending(d), hold: holdings(d), nw: Household.netWorth(d)};
+    c.checking = c.nw.items.find(i => i.key === 'cash') || null;
+    c.liquid = c.hold.cash + (c.checking ? c.checking.value : 0);
+    c.band = c.age ? bandFor(c.age.age) : null;
+    return c;
+  }
+
+  /* ---------- subjects: each scores 0–100 against a rule of thumb ---------- */
+  const needAge = {need: 'your age', needAction: {text: 'Add your birth date', label: 'Your birth date'}};
+  const needPay = {need: 'your pay, from the paycheck rows on the Amortization sheet'};
+  const needSpend = {need: 'your monthly spending', needAction: {text: 'Add monthly spending', label: 'Monthly spending'}};
+
+  function subjSaving(d){
+    const s = {key: 'save', name: 'Savings rate', weight: 20};
+    const R = Household.savingsRate(d), S = Household.contribSummary(d);
+    if (!R || R.rate == null || !S.nDone) return {...s, need: 'this year’s paychecks (Amortization sheet) and deposits (Average Savings sheet)'};
+    const pct = Fmt.pct(R.rate, 0), lastM = MONTH_ABBR[S.done[S.done.length-1].m];
+    const perPoint = R.income / S.nDone / 100;
+    return {...s, raw: R.rate, exact: curve(R.rate, [[0,30],[0.05,55],[0.10,72],[0.15,84],[0.20,90],[0.25,94],[0.30,97],[0.40,100]]),
+      value: pct, unit: 'of your pay saved this year',
+      why: `${Fmt.usd(R.saved)} saved from ${Fmt.usd(R.income)} of ${R.household ? 'household ' : ''}pay, January–${lastM}` +
+           (R.excluded ? '. The second 403(b) is left out, since its paycheck isn’t counted.' : '.'),
+      bench: `Fidelity suggests 15% or more, employer match included. The average 401(k) saver puts in ${Fmt.pct(BENCH.vanguard.total, 0)} (Vanguard).`,
+      tip: R.rate < 0.2 ? {text: `Each extra 1% of pay is about ${Fmt.usd(perPoint)} a month.`} : null,
+      praise: `you save ${pct} of your pay`, improve: `lifting your savings rate from ${pct} toward 20%`};
+  }
+
+  function subjMultiple(d, c){
+    const s = {key: 'mult', name: 'Retirement savings', weight: 15};
+    if (!c.age) return {...s, ...needAge};
+    if (!c.income) return {...s, ...needPay};
+    const target = fidelityTarget(c.age.age);
+    if (target < 0.5) return null;                           // too early in a career for the guideline
+    const counted = c.hold.invested - (c.income.household ? 0 : c.hold.second);
+    const mult = counted / c.income.total, r = mult / target;
+    const left = ['cash', c.hold.kidsHeld > 0 && 'the UTMA', !c.income.household && c.hold.second > 0 && 'the second 403(b)'].filter(Boolean);
+    return {...s, raw: mult, target, exact: curve(r, [[0,30],[0.25,50],[0.5,68],[0.75,80],[1,90],[1.25,95],[1.5,98],[2,100]]),
+      value: fmtX(mult), unit: 'your yearly pay, already invested',
+      why: `${Fmt.k(counted)} invested (everything except ${joinList(left)}) ÷ ${Fmt.k(c.income.total)} a year in pay.`,
+      bench: `Fidelity’s guideline is ${fmtX(target)} your pay by ${c.age.age}` +
+             (d.pension ? '. It assumes no pension, so your pension makes this a stricter test than you need.' : '.'),
+      tip: r < 1 ? {text: `${Fmt.k(target * c.income.total - counted)} more would meet the guideline.`} : null,
+      praise: `your investments equal ${fmtX(mult)} your pay, against Fidelity’s ${fmtX(target)} for age ${c.age.age}`,
+      improve: `building investments toward ${fmtX(target)} your pay (now ${fmtX(mult)})`};
+  }
+
+  function subjReady(d, c){
+    const s = {key: 'ready', name: 'Retirement readiness', weight: 15};
+    const sp = Household.sheetPlan(d);
+    const years = sp.years != null ? sp.years : c.age ? Math.max(1, 65 - c.age.age) : DEFAULT_YEARS;
+    const rate = Math.min(Household.planRate(d), 0.07), infl = 0.025, contrib = Household.planContrib(d);
+    const proj = Compute.retirement({start: c.hold.invested, rate, years, contrib, infl});
+    const pension = d.pension ? d.pension.estMonthly : 0;
+    const ssIn = d.inputs && d.inputs.num(/social security/i), ss = ssIn ? ssIn.v : 0;
+    let need = c.spend ? c.spend.monthly : null, needTxt = 'today’s spending';
+    if (need == null && c.income){ need = c.income.total * 0.75 / 12; needTxt = '75% of today’s pay'; }
+    if (need == null) return {...s, ...needSpend};
+    const cov = (proj.income4Real + pension + ss) / need;
+    const retireYr = sp.retireDate ? sp.retireDate.getFullYear() : new Date().getFullYear() + Math.round(years);
+    const parts = [`${Fmt.k(proj.income4Real)} from savings (the 4% rule)`];
+    if (pension) parts.push(`${Fmt.k(pension)} pension`);
+    if (ss) parts.push(`${Fmt.k(ss)} Social Security`);
+    return {...s, raw: cov, exact: curve(cov, [[0,30],[0.4,50],[0.6,64],[0.8,78],[1,88],[1.2,94],[1.5,98],[2,100]]),
+      value: Fmt.pct(cov, 0), unit: `of ${needTxt}, covered in retirement`,
+      why: `By ${retireYr}, at ${Household.fmtRate(rate)} a year and ${Fmt.usd(contrib)}/mo: ${joinList(parts)} a month, against ${Fmt.usd(need)} a month. All in today’s dollars.`,
+      bench: 'The aim is to keep today’s lifestyle, often put at 70–80% of pre-retirement pay.' + (Household.planRate(d) > rate ? ` Returns are capped at ${Household.fmtRate(rate)} here.` : ''),
+      tip: !ss ? {text: 'Social Security isn’t counted yet.', action: {text: 'Add your estimate', label: 'Social Security'}}
+           : !c.spend ? {text: 'Your spending would sharpen this.', action: {text: 'Add monthly spending', label: 'Monthly spending'}} : null,
+      praise: `your plan is on course to cover ${Fmt.pct(cov, 0)} of today’s spending in retirement`,
+      improve: `closing the retirement gap (on course for ${Fmt.pct(cov, 0)} of today’s spending)`,
+      calc: {rate, years, retireYr, pension, ss, need}};
+  }
+
+  function subjNetWorth(d, c){
+    const s = {key: 'nw', name: 'Net worth', weight: 15};
+    if (!c.age) return {...s, ...needAge};
+    if (!c.income) return {...s, ...needPay};
+    const exp = c.age.age * c.income.total / 10, ratio = c.nw.net / exp;
+    const kind = ratio >= 2 ? ' That makes you what the book calls a “prodigious accumulator of wealth”.'
+               : ratio <= 0.5 ? ' The book would call this an “under-accumulator”.' : '';
+    const home = c.nw.items.find(i => i.key === 'home');
+    return {...s, raw: ratio, expected: exp, exact: curve(ratio, [[-0.5,15],[0,35],[0.5,62],[1,83],[1.5,92],[2,98],[3,100]]),
+      value: fmtX(ratio), unit: 'the net worth expected for your age and pay',
+      why: `${Fmt.k(c.nw.net)} net worth against ${Fmt.k(exp)} expected (${c.age.age} × ${Fmt.k(c.income.total)} ÷ 10).${kind}`,
+      bench: 'From The Millionaire Next Door: age × yearly pre-tax income ÷ 10 is the expected net worth, and twice that is “prodigious”.',
+      tip: home && home.fresh === 'stale' ? {text: 'Your home still counts at its purchase price.', action: {text: 'Update home value', label: 'Home value'}}
+         : ratio < 2 ? {text: `${Fmt.k(2 * exp - c.nw.net)} more reaches “prodigious”.`} : null,
+      praise: `your net worth is ${fmtX(ratio)} what’s expected for your age and pay`,
+      improve: `growing net worth toward the ${Fmt.k(exp)} expected for your age and pay`};
+  }
+
+  function subjEmergency(d, c){
+    const s = {key: 'cash', name: 'Emergency fund', weight: 10};
+    if (!c.spend) return {...s, ...needSpend};
+    const months = c.liquid / c.spend.monthly;
+    const stale = c.checking && c.checking.fresh === 'stale';
+    return {...s, raw: months, exact: curve(months, [[0,20],[0.5,38],[1,52],[2,68],[3,82],[4,88],[6,97],[9,100]]),
+      value: months.toFixed(1), unit: 'months of spending in cash',
+      why: `${Fmt.k(c.hold.cash)} in savings${c.checking ? ' + ' + Fmt.k(c.checking.value) + ' in checking' : ''} ÷ ${Fmt.usd(c.spend.monthly)} a month of spending (from ${c.spend.src}, savings left out).`,
+      bench: `The usual advice is 3–6 months. ${Fmt.pct(BENCH.shed.threeMonths, 0)} of U.S. adults have 3 months set aside (Federal Reserve, ${BENCH.shed.year}).`,
+      tip: stale ? {text: `Checking is from ${Fmt.month(c.checking.asOf)}.`, action: {text: 'Update checking', label: 'Checking'}}
+         : !c.spend.input ? {text: 'Spending is read from the Budget sheet.', action: {text: 'Set it yourself', label: 'Monthly spending'}} : null,
+      praise: `${months.toFixed(1)} months of spending sit in cash`,
+      improve: `building cash from ${months.toFixed(1)} toward 3–6 months of spending`};
+  }
+
+  function subjDebt(d, c){
+    const s = {key: 'debt', name: 'Debt load', weight: 10};
+    const m = c.nw.m, open = c.nw.D.filter(x => x.now > 0.5);
+    const mortPay = m && m.timeline && m.now.balance > 0.5 ? (m.payment || m.pmt + m.escrow) : 0;
+    const pay = mortPay + sum(open.map(x => x.payment || 0));
+    const consumer = sum(open.map(x => x.now)), high = sum(open.filter(x => x.rate >= 0.08).map(x => x.now));
+    const bench = 'Lenders look for housing under 28% of gross pay and all debt payments under 36%.';
+    if (!d.accounts && !d.mortgage) return {...s, need: 'your loans: the LIABILITIES list on the account sheet, or the Mortgage Calc sheet'};
+    if (!pay && !consumer) return {...s, raw: 0, exact: 100, value: '$0', unit: 'owed', why: 'No loans found in the workbook.', bench,
+      praise: 'you owe nothing at all', improve: ''};
+    if (!c.income) return {...s, ...needPay};
+    const dti = pay / (c.income.total / 12);
+    let exact = curve(dti, [[0,100],[0.15,99],[0.2,96],[0.28,90],[0.36,80],[0.43,68],[0.5,55],[0.6,40],[0.8,25]]);
+    if (high > 500) exact -= 12; else if (consumer > 500) exact -= 3;
+    const bits = [];
+    if (mortPay) bits.push(`${Fmt.usd(mortPay)} mortgage`);
+    open.forEach(x => bits.push(`${Fmt.usd(x.payment || 0)} ${lower(x.name)}`));
+    const paidOff = c.nw.D.filter(x => x.now <= 0.5);
+    return {...s, raw: dti, exact: Math.max(0, exact), value: Fmt.pct(dti, 0), unit: 'of your pay goes to loan payments',
+      why: `${joinList(bits)} a month ÷ ${Fmt.usd(c.income.total / 12)} of monthly pay.` +
+           (!open.length && paidOff.length ? ` Your other loans are paid off.` : !open.length ? ' No other loans.' : ''),
+      bench, tip: high > 500 ? {text: `${Fmt.k(high)} is at 8% interest or more; paying it off is a guaranteed return.`} : null,
+      praise: `loan payments take only ${Fmt.pct(dti, 0)} of your pay` + (open.length ? '' : ' with no consumer debt'),
+      improve: `bringing loan payments down from ${Fmt.pct(dti, 0)} of your pay`};
+  }
+
+  function subjTrack(d){
+    const s = {key: 'track', name: 'On plan', weight: 10};
+    const H = Household.planHistory(d);
+    const pick = ['target', 'amort', 'forecast'].map(k => H.expected.find(e => e.key === k && e.value > 0)).find(Boolean);
+    if (!pick) return {...s, need: 'a plan in the workbook: a weekly target path, the Amortization plan or the Annual Forecast'};
+    const ratio = H.actual / pick.value, gap = H.actual - pick.value;
+    const beat = H.returns.filter(r => r.actual > r.assumed).length;
+    const name = pick.key === 'target' ? 'your weekly target path' : 'your ' + pick.label;
+    return {...s, raw: ratio, gap, exact: curve(ratio, [[0.6,40],[0.8,62],[0.9,76],[0.95,84],[1,92],[1.05,97],[1.1,100]]),
+      value: Fmt.signed(gap, Fmt.k), unit: gap >= 0 ? 'ahead of your plan' : 'behind your plan',
+      why: `The portfolio is at ${Fmt.k(H.actual)}; ${name} expected ${Fmt.k(pick.value)} by ${Fmt.day(H.asOf)}.`,
+      bench: H.returns.length ? `Your market return beat the plan’s assumption in ${beat} of the last ${H.returns.length} years.`
+                              : 'Measured against the plan in your own workbook.',
+      tip: gap < 0 ? {text: `About ${Fmt.usd(-gap / 12)} a month extra for a year would close the gap.`} : null,
+      praise: `you’re ${Fmt.k(gap)} ahead of ${name}`,
+      improve: `catching up to ${name} (${Fmt.k(-gap)} behind)`};
+  }
+
+  function subjKids(d){
+    const K = Household.kids(d);
+    if (!K || !K.length) return null;                       // no kids in the workbook: not a subject
+    const s = {key: 'kids', name: 'Kids’ college', weight: 5};
+    const B = BENCH.college, today = new Date(), cost4 = (B.tuition + B.housing) * 4;
+    const per = K.filter(k => k.at18).map(k => {
+      const cost = cost4 * Math.pow(1 + B.growth, (k.at18.date - today) / (365.25*864e5));
+      const rm = Math.pow(1 + k.rate, 1/12) - 1, n = k.at18.months;
+      const short = Math.max(0, cost / 2 - k.at18.value);
+      return {name: k.name, at18: k.at18, cost, cover: k.at18.value / cost,
+              extra: short > 0 ? (rm > 0 ? short * rm / (Math.pow(1 + rm, n) - 1) : short / n) : 0};
+    });
+    const missing = K.filter(k => !k.at18 && k.est != null && !k.birth);
+    if (!per.length){
+      const k = missing[0] || K[0];
+      return {...s, need: 'the kids’ birth dates, to project each 529 to age 18', needAction: {text: `Add ${k.name}’s birth date`, label: `${k.name} birth date`}};
+    }
+    const cover = sum(per.map(p => p.cover)) / per.length;
+    const ups = per.filter(p => p.extra > 0.5);
+    return {...s, raw: cover, per, exact: curve(cover, [[0,35],[0.1,55],[0.25,72],[0.33,80],[0.5,90],[0.75,96],[1,100]]),
+      value: Fmt.pct(cover, 0), unit: 'of a public in-state degree, on pace',
+      why: per.map(p => `${p.name}: ${Fmt.k(p.at18.value)} by ${p.at18.date.getFullYear()} against about ${Fmt.k(p.cost)}`).join(' · ') + '.',
+      bench: `Four years of in-state public tuition, housing and food cost ${Fmt.k(cost4)} today (College Board, ${B.year}), rising about ${Fmt.pct(B.growth, 0)} a year. Many families aim to save a third to a half.`,
+      tip: missing.length ? {text: `${missing[0].name} isn’t counted yet.`, action: {text: 'Add birth date', label: `${missing[0].name} birth date`}}
+         : ups.length ? {text: 'Covering half: about ' + joinList(ups.map(p => `${Fmt.usd(p.extra)}/mo more for ${p.name}`)) + '.'} : null,
+      topUp: ups,
+      praise: `the kids’ 529s are on pace for ${Fmt.pct(cover, 0)} of a public in-state degree`,
+      improve: `the kids’ 529s (on pace for about ${Fmt.pct(cover, 0)} of a public in-state degree)`};
+  }
+
+  /* ---------- the whole card ---------- */
+  function card(d){
+    const c = facts(d);
+    const subjects = [subjSaving, subjMultiple, subjReady, subjNetWorth, subjEmergency, subjDebt, subjTrack, subjKids]
+      .map(f => f(d, c)).filter(Boolean)
+      .map(s => s.exact != null && isFinite(s.exact) ? {...s, ...grade(s.exact)}
+                : {...s, exact: undefined, need: s.need || 'more complete numbers'});
+    const graded = subjects.filter(s => s.exact != null);
+    let overall = null;
+    if (graded.length >= 3){
+      const W = sum(graded.map(s => s.weight));
+      const exact = sum(graded.map(s => s.exact * s.weight)) / W;
+      overall = {...grade(exact), gpa: sum(graded.map(s => s.gpa * s.weight)) / W};
+    }
+    return {...c, subjects, graded, overall};
+  }
+
+  const VERDICT = {a: 'Honor roll', b: 'Solid work', c: 'Passing, with room to grow', d: 'Needs attention', f: 'Time to make a plan'};
+  const OPENER = {a: 'Excellent term.', b: 'A strong term.', c: 'A steady term.', d: 'A tough term, but fixable.', f: 'A hard term. Start with the basics below.'};
+  function comment(R){
+    if (!R.overall) return '';
+    const byScore = R.graded.slice().sort((a, b) => b.exact - a.exact || b.weight - a.weight);
+    const top = byScore.filter(s => s.exact >= 87 && s.praise).slice(0, 2);
+    const weak = byScore.slice().reverse().find(s => s.exact < 87 && s.improve);
+    let txt = OPENER[R.overall.tier];
+    if (top.length) txt += ' Top marks because ' + joinList(top.map(s => s.praise)) + '.';
+    txt += weak ? ' Room to grow: ' + weak.improve + '.' : ' Nothing below a B+.';
+    return txt;
+  }
+
+  /* ---------- this week ---------- */
+  function week(d){
+    const rows = d.rows, n = rows.length;
+    if (n < 2) return null;
+    const last = rows[n-1], prev = rows[n-2];
+    const delta = last.total - prev.total;
+    const past = [];                                        // the past 52 weekly changes, skipping jumps across gaps
+    for (let i = Math.max(1, n - 52); i < n; i++) if (!rows[i].gap) past.push(rows[i].total - rows[i-1].total);
+    const sorted = past.slice().sort((a, b) => a - b);
+    let streak = 0;
+    for (let i = n - 1; i >= 1 && !rows[i].gap; i--){
+      const x = rows[i].total - rows[i-1].total;
+      if (x !== 0 && (x > 0) === (delta > 0)) streak++; else break;
+    }
+    let before = 0;                                         // the opposite run that this week ended
+    for (let i = n - 1 - streak; i >= 1 && !rows[i].gap; i--){
+      const x = rows[i].total - rows[i-1].total;
+      if (x !== 0 && (x > 0) !== (delta > 0)) before++; else break;
+    }
+    const s = Compute.stats(rows);
+    const tpNow = Household.targetAt(d, last.date), tpPrev = Household.targetAt(d, prev.date);
+    const nws = Household.netWorthSeries(d, [prev, last]);
+    const lastBefore = dt => { let r = null; for (const x of rows){ if (x.date < dt) r = x; else break; } return r; };
+    const mStart = lastBefore(new Date(last.date.getFullYear(), last.date.getMonth(), 1));
+    const yStart = lastBefore(new Date(last.date.getFullYear(), 0, 1));
+    const miles = Compute.milestones(rows);
+    return {last, prev, delta, pct: last.total / prev.total - 1, weeks: Math.round((last.date - prev.date) / (7*864e5)),
+            gap: !!last.gap, rank: last.gap ? null : 1 + past.filter(x => x > delta).length, of: past.length,
+            beat: past.length ? past.filter(x => x < delta).length / past.length : null,
+            median: sorted.length ? sorted[Math.floor(sorted.length / 2)] : null, streak, before,
+            ath: s.ath, atHigh: s.ath.date.getTime() === last.date.getTime(), ddNow: s.ddNow,
+            vsTarget: tpNow ? last.total - tpNow.value : null, vsTargetPrev: tpPrev ? prev.total - tpPrev.value : null,
+            nwDelta: nws.length === 2 ? nws[1].net - nws[0].net : null,
+            mtd: mStart ? last.total - mStart.total : null, ytd: yStart ? last.total - yStart.total : null,
+            next: miles.next, weeksToNext: s.avgWeekly52 > 0 ? (miles.next - last.total) / s.avgWeekly52 : null,
+            movers: ACCOUNTS.map(a => ({key: a.key, label: a.label, group: a.group, d: (last[a.key] || 0) - (prev[a.key] || 0)}))
+                            .filter(x => Math.abs(x.d) >= 1).sort((a, b) => Math.abs(b.d) - Math.abs(a.d))};
+  }
+
+  /* ---------- you vs. households your age ---------- */
+  function peers(d, R){
+    if (!R.age) return null;
+    const b = R.band, nw = R.nw.net;
+    const sr = Household.savingsRate(d);
+    const p = pctileOf(b, nw);
+    return {band: b, nw, pctile: p, retire: R.hold.retire, saveRate: sr && sr.rate != null ? sr.rate : null,
+            months: R.spend ? R.liquid / R.spend.monthly : null, owns: !!(R.nw.m && R.nw.m.home),
+            next: p != null ? [0.5, 0.75, 0.9, 0.95, 0.99].filter(x => x > p).map(x => ({p: x, amount: amountAtPctile(b, x)}))[0] || null : null};
+  }
+
+  /* ---------- badges ---------- */
+  const tok = v => v >= 1e6 ? '$' + (v / 1e6) + 'M' : '$' + Math.round(v / 1e3) + 'k';
+  function badges(d, R){
+    const out = [];
+    const add = (earned, style, token, title, desc, progress) => out.push({earned, style, token, title, desc, progress: earned ? 1 : Math.max(0, Math.min(1, progress || 0))});
+    const sub = k => R.subjects.find(s => s.key === k && s.exact != null);
+    const nw = R.nw.net, last = R.hold.last;
+
+    const TIERS = [100e3, 250e3, 500e3, 750e3, 1e6, 1.5e6, 2e6, 3e6, 5e6, 10e6];
+    const got = TIERS.filter(v => nw >= v).pop(), next = TIERS.find(v => nw < v);
+    if (got) add(true, 'gold', tok(got), `${tok(got)} net worth`, 'Your net worth is past this mark', 1);
+    if (next) add(false, 'gold', tok(next), `${tok(next)} net worth`, `${Fmt.k(next - nw)} to go`, nw / next);
+
+    const P = peers(d, R);
+    if (P && P.pctile != null){
+      const topPct = Math.max(1, Math.round((1 - P.pctile) * 100));
+      if (P.pctile >= 0.5) add(true, 'green', 'Top ' + topPct + '%', `Top ${topPct}% for your age`, `Net worth among households ${P.band.label} (estimated)`, 1);
+      if (P.next) add(false, 'green', 'Top ' + Math.round((1 - P.next.p) * 100) + '%', `Top ${Math.round((1 - P.next.p) * 100)}% for your age`,
+                      `About ${Fmt.k(P.next.amount - nw)} more (estimated)`, P.pctile / P.next.p);
+    }
+
+    const miles = Compute.milestones(d.rows), m = miles.crossed[miles.crossed.length-1];
+    if (m) add(true, 'blue', tok(m.amount), `${tok(m.amount)} portfolio`, 'Crossed ' + Fmt.month(m.date), 1);
+    if (last.total < 1e6){
+      const wk = Compute.stats(d.rows).avgWeekly52;
+      add(false, 'blue', '$1M', 'Millionaire portfolio',
+          wk > 0 ? `About ${Fmt.month(new Date(last.date.getTime() + (1e6 - last.total) / wk * 7 * 864e5))} at your 52-week pace` : `${Fmt.k(1e6 - last.total)} to go`,
+          last.total / 1e6);
+    }
+
+    const nws = sub('nw');
+    if (nws) add(nws.raw >= 2, 'green', '2×', 'Prodigious accumulator',
+                 nws.raw >= 2 ? 'Net worth at least twice what’s expected for your age and pay' : `${fmtX(nws.raw)} of the expected net worth; 2× earns it`, nws.raw / 2);
+
+    const sv = sub('save');
+    if (sv){
+      const T = [0.10, 0.15, 0.20, 0.25, 0.30];
+      const g = T.filter(x => sv.raw >= x).pop(), nx = T.find(x => sv.raw < x);
+      if (g) add(true, 'blue', Fmt.pct(g, 0), `${Fmt.pct(g, 0)} saver`, `Saving ${Fmt.pct(sv.raw, 0)} of pay this year`, 1);
+      if (nx) add(false, 'blue', Fmt.pct(nx, 0), `${Fmt.pct(nx, 0)} saver`, `${Fmt.pct(sv.raw, 0)} so far this year`, sv.raw / nx);
+    }
+
+    const ef = sub('cash');
+    if (ef){
+      if (ef.raw >= 3) add(true, 'green', '3 mo', '3-month cushion', 'Three months of spending in cash', 1);
+      add(ef.raw >= 6, 'green', '6 mo', '6-month cushion', ef.raw >= 6 ? 'Six months of spending in cash' : `${ef.raw.toFixed(1)} months now`, ef.raw / 6);
+    }
+
+    const D = R.nw.D;
+    if (D.length || R.nw.m){
+      const open = D.filter(x => x.now > 0.5);
+      if (!open.length) add(true, 'blue', '$0', 'Consumer-debt free', D.length ? 'Every loan but the mortgage is paid off' : 'No loans besides the mortgage', 1);
+    }
+    const mt = R.nw.m;
+    if (mt && mt.home) add(true, 'gold', 'Home', 'Homeowner', mt.home.source === 'estimate' ? `Worth about ${Fmt.k(mt.home.value)}` : `Bought for ${Fmt.k(mt.home.value)}`, 1);
+    if (mt && mt.timeline && mt.now.balance > 0.5)
+      add(false, 'gold', 'Free', 'Mortgage-free', `${Fmt.pct(1 - mt.now.balance / mt.terms.loan, 0)} paid off · done ${Fmt.month(mt.payoff)}`, 1 - mt.now.balance / mt.terms.loan);
+
+    const H = Household.planHistory(d);
+    if (H.returns.length){
+      let run = 0;
+      for (let i = H.returns.length - 1; i >= 0 && H.returns[i].actual > H.returns[i].assumed; i--) run++;
+      if (run) add(true, 'green', run + '/' + H.returns.length, run > 1 ? `Beat the plan ${run} years running` : 'Beat the plan last year',
+                   'Market return above your plan’s assumption', 1);
+    }
+    const tr = sub('track');
+    if (tr && tr.gap >= 0) add(true, 'green', 'On plan', 'Ahead of plan', `${Fmt.k(tr.gap)} ahead of your target`, 1);
+
+    const rd = sub('ready');
+    if (rd && rd.calc){
+      const need = Math.max(0, (rd.calc.need - rd.calc.pension - rd.calc.ss) * 12) / 0.04;
+      const real = (1 + rd.calc.rate) / 1.025 - 1;
+      const coast = need / Math.pow(1 + real, rd.calc.years);
+      const inv = R.hold.invested;
+      add(inv >= coast, 'green', 'Coast', 'Coast FI',
+          inv >= coast ? `Even with no more saving, today’s investments could fund your spending by ${rd.calc.retireYr}` : `${Fmt.k(coast - inv)} to go`, inv / coast);
+    }
+
+    const k = Household.k401Year(d);
+    if (k){
+      const done = k.projected >= k.limit.limit - 1;
+      add(done, 'blue', done ? 'Max' : Fmt.pct(k.projected / k.limit.limit, 0), `Max the ${k.year} 401(k)`,
+          done ? 'On pace for the IRS limit' : `On pace for ${Fmt.usd(k.projected)} of ${Fmt.usd(k.limit.limit)}`, k.projected / k.limit.limit);
+    }
+
+    const pen = d.pension;
+    if (pen && pen.currentPoints){
+      const goal = Math.max(pen.estTotalPts || pen.currentPoints, pen.currentPoints);
+      add(pen.currentPoints >= goal, 'gold', pen.currentPoints.toLocaleString(), 'Pension points', `${pen.currentPoints.toLocaleString()} of ${goal.toLocaleString()} planned`, pen.currentPoints / goal);
+    }
+
+    const K = Household.kids(d);
+    if (K && K.length && K.every(x => x.est > 0 || (x.base && x.base.v > 0)))
+      add(true, 'blue', '529', K.length > 1 ? 'A 529 for every kid' : 'A 529 for your kid', `${K.length} college plan${K.length > 1 ? 's' : ''}, growing`, 1);
+
+    return out.filter(b => b.earned).concat(out.filter(b => !b.earned).sort((a, b) => b.progress - a.progress));
+  }
+
+  /* ---------- homework: protection the workbook can't see ---------- */
+  function homework(d){
+    const kids = !!(d && Household.kids(d));
+    return [
+      {id: 'will', text: kids ? 'Wills that name guardians for the kids' : 'Wills', sub: 'Plus powers of attorney and healthcare directives'},
+      {id: 'life', text: 'Term life insurance for each earner', sub: 'A common target is 10–12× income' + (kids ? ', until the kids are grown' : '')},
+      {id: 'benef', text: 'Beneficiaries checked on every account', sub: '401(k), 403(b), IRA, TSP' + (kids ? ', 529s' : '') + ' and life insurance'},
+      {id: 'disab', text: 'Long-term disability coverage', sub: 'Your future paychecks are your biggest asset'},
+      {id: 'umbrella', text: 'An umbrella liability policy', sub: 'Inexpensive protection once net worth passes your auto and home limits'},
+      {id: 'freeze', text: 'Credit frozen at Equifax, Experian and TransUnion', sub: 'Free, and it blocks most new-account fraud'},
+      {id: 'vault', text: 'A shared list of accounts and logins', sub: 'So your family could find everything in an emergency'},
+    ];
+  }
+  const hwDone = () => { const v = Prefs.get('rc-homework', {}); return v && typeof v === 'object' ? v : {}; };
+
+  /* ---------- next best moves ---------- */
+  function moves(d, R){
+    const out = [];
+    const add = (pri, title, text, action) => out.push({pri, title, text, action});
+    const sub = k => R.subjects.find(s => s.key === k);
+    R.nw.D.filter(x => x.now > 0.5 && x.rate >= 0.08).forEach(x =>
+      add(95, `Pay off the ${lower(x.name)}.`, `${Fmt.usd(x.now)} at ${Household.fmtRate(x.rate)} costs more than investing is likely to earn.`));
+    const ef = sub('cash');
+    if (ef && ef.exact != null){
+      if (ef.raw < 3) add(90, 'Build the emergency fund to 3 months.', `That’s ${Fmt.usd(3 * R.spend.monthly - R.liquid)} more in savings.`);
+      else if (ef.raw > 12) add(40, 'Put idle cash to work.', `You hold ${Math.round(ef.raw)} months of spending in cash; about ${Fmt.k(R.liquid - 6 * R.spend.monthly)} beyond six months could be invested.`);
+    }
+    if (!R.spend) add(70, 'Add your monthly spending.', 'It grades the emergency fund and retirement readiness.', {text: 'Add it', label: 'Monthly spending'});
+    if (!R.age) add(65, 'Add your birth date.', 'It unlocks the comparisons with people your age.', {text: 'Add it', label: 'Your birth date'});
+    const k = Household.k401Year(d);
+    if (k && k.short > 1 && k.remaining > 0)
+      add(60, `Max the ${k.year} 401(k).`, `About ${Fmt.usd(k.extraPerCheck)} more from each of the ${k.remaining} remaining paychecks reaches the ${Fmt.usd(k.limit.limit)} limit: ${Fmt.usd(k.short)} more, before tax.`);
+    const tr = sub('track');
+    if (tr && tr.exact != null && tr.gap < 0) add(55, 'Catch up to your plan.', tr.tip.text);
+    const home = R.nw.items.find(i => i.key === 'home');
+    if (home && home.fresh === 'stale')
+      add(50, 'Update your home value.', `Net worth still counts the home at its ${home.asOf ? home.asOf.getFullYear() + ' ' : ''}purchase price.`, {text: 'Update it', label: 'Home value'});
+    const kd = sub('kids');
+    if (kd && kd.topUp && kd.topUp.length) add(45, 'Top up the 529s.', `To be on pace for half of a public in-state degree: about ${joinList(kd.topUp.map(p => `${Fmt.usd(p.extra)}/mo more for ${p.name}`))}.`);
+    if (R.checking && R.checking.fresh === 'stale') add(35, 'Refresh your checking balance.', `The last one is from ${Fmt.month(R.checking.asOf)}.`, {text: 'Update it', label: 'Checking'});
+    if (!(d.inputs && d.inputs.num(/social security/i))) add(30, 'Add your Social Security estimate.', 'It’s at ssa.gov/myaccount, and it counts toward retirement income.', {text: 'Add it', label: 'Social Security'});
+    if (R.hold.second > 0 && !(R.income && R.income.household))
+      add(25, 'Add your spouse’s pay.', 'Then the savings rate and retirement savings count the whole household.', {text: 'Add it', label: 'Spouse gross pay'});
+    const hw = homework(d), done = hwDone(), left = hw.filter(h => !done[h.id]);
+    if (left.length) add(20 + left.length, 'Do the homework.', `${left.length} of ${hw.length} protection items are open, starting with: ${left[0].text.charAt(0).toLowerCase() + left[0].text.slice(1)}.`);
+    return out.sort((a, b) => b.pri - a.pri).slice(0, 6);
+  }
+
+  /* ---------- grade history, kept in this browser so each week shows what changed ---------- */
+  const dayKey = dt => `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+  function remember(d, R){
+    if (!R.overall || d.source === 'demo') return null;
+    const w = dayKey(R.hold.last.date);
+    let h = Prefs.get('rc-history', []);
+    if (!Array.isArray(h)) h = [];
+    h = h.filter(x => x && typeof x.w === 'string' && typeof x.s === 'number');
+    const prev = h.filter(x => x.w < w).sort((a, b) => a.w < b.w ? -1 : 1).pop() || null;
+    const entry = {w, s: Math.round(R.overall.exact * 10) / 10, l: R.overall.letter,
+                   sub: Object.fromEntries(R.graded.map(s => [s.key, Math.round(s.exact * 10) / 10]))};
+    Prefs.set('rc-history', h.filter(x => x.w !== w).concat([entry]).sort((a, b) => a.w < b.w ? -1 : 1).slice(-104));
+    return prev ? {...prev, date: new Date(+prev.w.slice(0, 4), +prev.w.slice(5, 7) - 1, +prev.w.slice(8, 10))} : null;
+  }
+
+  return {card, comment, VERDICT, week, peers, badges, moves, homework, hwDone, remember, grade, bandFor, pctileOf, fidelityTarget};
 })();
 
 
@@ -2774,7 +3591,7 @@ const Charts = (() => {
 
 function baseOption(t){
   return {
-    animation: MOTION,
+    animation: MOTION && !document.body.classList.contains('printing'),
     animationDuration: 600,
     animationEasing: 'cubicOut',
     animationDurationUpdate: 350,
@@ -4896,6 +5713,488 @@ Views.lab = function(){
   recomputeFire();
 };
 
+/* ---------------- REPORT CARD ---------------- */
+const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ({1: 'st', 2: 'nd', 3: 'rd'})[n % 10] || 'th');
+const txtParts = (el, parts) => { parts.forEach(p => el.appendChild(typeof p === 'string' ? document.createTextNode(p) : p)); return el; };
+
+Views.report = function(){
+  const d = state.data;
+  const R = Report.card(d);
+  const prev = Report.remember(d, R);
+  renderRcHero(d, R, prev);
+  renderSubjects(d, R, prev);
+  renderWeek(d);
+  renderPeers(d, R);
+  renderAgeChart(d, R);
+  renderBadges(d, R);
+  renderMoves(d, R);
+  renderHomework(d);
+  renderMethod();
+};
+
+function renderRcHero(d, R, prev){
+  const o = R.overall;
+  const badge = $('rcBadge');
+  badge.className = 'grade-badge ' + (o ? o.cls : 'g-i');
+  badge.setAttribute('aria-label', o ? `Overall grade ${o.letter}, ${o.score} out of 100` : 'Overall grade: incomplete');
+  $('rcLetter').textContent = o ? o.letter : '–';
+  $('rcScore').textContent = o ? `${o.score} / 100` : 'incomplete';
+  $('rcVerdict').textContent = o ? Report.VERDICT[o.tier] : 'Not enough to grade yet';
+  $('rcAsOf').textContent = `Week ending ${Fmt.date(R.hold.last.date)}` + (R.age ? ` · age ${R.age.age}` : '') +
+    ` · ${R.graded.length} of ${R.subjects.length} subjects graded`;
+  $('rcComment').textContent = o ? Report.comment(R)
+    : 'A grade needs at least three subjects. Each subject below says what it’s missing.';
+  $('rcGpa').textContent = o ? o.gpa.toFixed(2) : '—';
+  const n = {};
+  R.graded.forEach(s => { n[s.tier] = (n[s.tier] || 0) + 1; });
+  $('rcGpaSub').textContent = ['a', 'b', 'c', 'd', 'f'].filter(k => n[k])
+    .map(k => `${n[k]} ${k.toUpperCase()}${n[k] > 1 ? '’s' : ''}`).join(' · ') + (o ? ' · 4.0 scale' : '');
+  const chip = $('rcSinceChip');
+  chip.hidden = !(o && prev);
+  if (o && prev){
+    const dl = Math.round((o.exact - prev.s) * 10) / 10;
+    const el = $('rcSince');
+    el.textContent = dl ? (dl > 0 ? '▲ ' : '▼ ') + Math.abs(dl).toFixed(1) + ' points' : 'No change';
+    el.className = 'dv ' + dirClass(dl);
+    $('rcSinceLabel').textContent = 'Since the week of ' + Fmt.day(prev.date);
+    $('rcSinceSub').textContent = prev.l === o.letter ? `still ${o.letter}` : `${prev.l} → ${o.letter}`;
+  }
+}
+
+function tipEl(tip, demo){
+  const t = elx('div', 'subj-tip', tip.text);
+  if (tip.action && !demo){
+    t.appendChild(document.createTextNode(' '));
+    t.appendChild(linkBtn(tip.action.text, () => Manual.open(tip.action.label)));
+  }
+  return t;
+}
+
+function renderSubjects(d, R, prev){
+  const box = $('rcSubjects');
+  box.textContent = '';
+  const demo = d.source === 'demo';
+  R.subjects.forEach(s => {
+    const graded = s.exact != null;
+    const el = elx('div', 'subj ' + (graded ? s.cls : 'g-i'));
+    const top = elx('div', 'subj-top');
+    const lg = elx('div', 'lg', graded ? s.letter : '?');
+    lg.setAttribute('aria-label', graded ? `Grade ${s.letter}` : 'Not graded yet');
+    top.appendChild(lg);
+    const nm = elx('div');
+    nm.appendChild(elx('div', 'subj-name', s.name));
+    nm.appendChild(elx('div', 'subj-w', graded ? `${s.score}/100 · ${s.weight}% of the grade` : `${s.weight}% of the grade · not graded yet`));
+    top.appendChild(nm);
+    if (graded && prev && prev.sub && typeof prev.sub[s.key] === 'number'){
+      const dl = Math.round(s.exact - prev.sub[s.key]);
+      if (dl) top.appendChild(elx('span', 'trend ' + dirClass(dl), (dl > 0 ? '▲ ' : '▼ ') + Math.abs(dl)));
+    }
+    el.appendChild(top);
+    if (graded){
+      const v = elx('div', 'subj-val num', s.value);
+      v.appendChild(elx('small', null, s.unit));
+      el.appendChild(v);
+      const bar = elx('div', 'subj-bar'), fill = elx('i');
+      bar.appendChild(fill);
+      el.appendChild(bar);
+      requestAnimationFrame(() => { fill.style.width = s.score + '%'; });
+      el.appendChild(elx('div', 'subj-why', s.why));
+      el.appendChild(elx('div', 'subj-bench', s.bench));
+      if (s.tip) el.appendChild(tipEl(s.tip, demo));
+    } else {
+      el.appendChild(elx('div', 'subj-why', 'Needs ' + s.need + '.'));
+      if (s.needAction && !demo) el.appendChild(tipEl({text: '', action: s.needAction}, demo));
+    }
+    box.appendChild(el);
+  });
+  $('rcSubjSub').textContent = 'Each subject is scored 0–100 against a published rule of thumb, then weighted into the overall grade' +
+    (prev ? ` · arrows show the change since the week of ${Fmt.day(prev.date)}` : '');
+}
+
+function renderWeek(d){
+  const t = T();
+  const W = Report.week(d);
+  const head = $('rcWeekHead'), list = $('rcWeekList'), mv = $('rcMovers');
+  list.textContent = '';
+  mv.textContent = '';
+  if (!W){ head.textContent = 'Not enough weeks yet'; $('rcWeekSub').textContent = ''; return; }
+  head.textContent = W.delta === 0 ? 'Flat this week'
+    : `${W.delta > 0 ? 'Up' : 'Down'} ${Fmt.usd(Math.abs(W.delta))} ${W.weeks > 1 ? `over ${W.weeks} weeks` : 'this week'}`;
+  head.className = 'wk-head ' + dirClass(W.delta);
+  $('rcWeekSub').textContent = `${Fmt.signedPct(W.pct, 2)} · portfolio ${Fmt.usd(W.last.total)} · week ending ${Fmt.date(W.last.date)}` +
+    (W.weeks > 1 ? ` · the entry before this one is from ${Fmt.day(W.prev.date)}` : '');
+  const b = s => elx('b', null, s);
+  const li = (cls, parts) => { const x = elx('li', cls); x.appendChild(txtParts(elx('span'), parts)); list.appendChild(x); };
+
+  if (W.rank && W.of >= 8){
+    if (W.rank === 1) li('up', [b('Best week'), ` of the past ${W.of}.`]);
+    else if (W.rank === W.of) li('dn', [b('Weakest week'), ` of the past ${W.of}.`]);
+    else li(W.delta >= W.median ? 'up' : 'dn', ['Better than ', b(Fmt.pct(W.beat, 0)), ` of the past ${W.of} weeks; a typical week is ${Fmt.signed(W.median, Fmt.k)}.`]);
+  }
+  if (W.streak >= 2) li(W.delta > 0 ? 'up' : 'dn', [b(`${W.streak} ${W.delta > 0 ? 'up' : 'down'} weeks`), ' in a row.']);
+  else if (W.before >= 2) li(W.delta > 0 ? 'up' : 'dn', [W.delta > 0 ? 'Snapped a ' : 'Ended a ', b(`${W.before}-week ${W.delta > 0 ? 'losing' : 'winning'} streak`), '.']);
+  if (W.atHigh) li('hi', [b('A new all-time high.')]);
+  else li(null, [b(Fmt.pct(-W.ddNow, 1)), ` below the all-time high of ${Fmt.k(W.ath.v)} from ${Fmt.date(W.ath.date)}: ${Fmt.k(W.ath.v - W.last.total)} to go.`]);
+  if (W.vsTarget != null){
+    const parts = [b(Fmt.k(Math.abs(W.vsTarget)) + (W.vsTarget >= 0 ? ' ahead of' : ' behind')), ' your target path'];
+    if (W.vsTargetPrev != null){
+      const moved = W.vsTarget - W.vsTargetPrev;
+      parts.push(Math.abs(moved) < 50 ? ', about where it was last week'
+                 : `, ${Fmt.k(Math.abs(moved))} ${moved > 0 ? 'better' : 'worse'} than last week`);
+    }
+    li(W.vsTarget >= 0 ? 'up' : 'dn', parts.concat(['.']));
+  }
+  if (W.nwDelta != null && Math.abs(W.nwDelta - W.delta) >= 1)
+    li(dirClass(W.nwDelta), ['Net worth ', b(Fmt.signed(W.nwDelta)), ' once loan paydown is counted.']);
+  const my = [];
+  if (W.mtd != null) my.push('Month to date ', b(Fmt.signed(W.mtd, Fmt.k)));
+  if (W.ytd != null) my.push(my.length ? ' · year to date ' : 'Year to date ', b(Fmt.signed(W.ytd, Fmt.k)));
+  if (my.length) li(null, my.concat(['.']));
+  if (W.weeksToNext != null && W.weeksToNext < 520){
+    const when = new Date(W.last.date.getTime() + W.weeksToNext * 7 * 864e5);
+    li('hi', ['Next milestone ', b(Fmt.k(W.next)), `: ${Fmt.k(W.next - W.last.total)} away, around ${Fmt.month(when)} at your 52-week pace.`]);
+  }
+
+  if (W.movers.length) renderMovers(t, W, mv);
+  else mv.appendChild(elx('div', 'peer-foot', 'No account changed.'));
+
+  // the last 12 weeks, this one highlighted (jumps across skipped weeks are left out)
+  const rows = d.rows, wk = [];
+  for (let i = rows.length - 1; i >= 1 && wk.length < 12; i--)
+    if (!rows[i].gap) wk.unshift({date: rows[i].date, d: rows[i].total - rows[i-1].total, now: i === rows.length - 1});
+  Charts.mount('c-weeks', {
+    ...baseOption(t),
+    tooltip: tip(t, {axisPointer: {type: 'shadow', shadowStyle: {color: rgba(t.accent, .05)}}, valueFormatter: v => Fmt.signed(v)}),
+    grid: {left: 6, right: 8, top: 10, bottom: 4, containLabel: true},
+    xAxis: {type: 'category', data: wk.map(w => Fmt.day(w.date)), axisLine: {lineStyle: {color: t.axis}}, axisTick: {show: false},
+            axisLabel: {color: t.muted, fontSize: 10.5, hideOverlap: true}},
+    yAxis: {...valAxis(t), scale: false},
+    series: [{name: 'Change', type: 'bar', barMaxWidth: 26, data: wk.map(w => ({value: Math.round(w.d),
+      itemStyle: {color: w.d >= 0 ? t.good : t.bad, opacity: w.now ? 1 : 0.45, borderRadius: w.d >= 0 ? [3,3,0,0] : [0,0,3,3]}}))}],
+  });
+  Tables.set('c-weeks', {cols: ['Week ending', 'Change'], rows: wk.slice().reverse().map(w => [Fmt.date(w.date), Fmt.signed(w.d)])});
+}
+
+function renderMovers(t, W, mv){
+  const top = W.movers.slice(0, 5);
+  const max = Math.max(...top.map(x => Math.abs(x.d)));
+  top.forEach(x => {
+    const row = elx('div', 'mv-row');
+    const nm = elx('div', 'mv-name');
+    const sw = elx('span', 'swatch');
+    sw.style.background = groupColor(t, x.group);
+    nm.appendChild(sw);
+    nm.appendChild(elx('span', null, x.label));
+    const track = elx('div', 'mv-track'), bar = elx('div', 'mv-bar');
+    bar.style.background = x.d >= 0 ? t.good : t.bad;
+    if (x.d >= 0){ bar.style.left = '50%'; bar.style.borderRadius = '0 5px 5px 0'; }
+    else { bar.style.right = '50%'; bar.style.borderRadius = '5px 0 0 5px'; }
+    track.appendChild(bar);
+    requestAnimationFrame(() => { bar.style.width = (Math.abs(x.d) / max * 50).toFixed(1) + '%'; });
+    row.appendChild(nm);
+    row.appendChild(track);
+    row.appendChild(elx('div', 'mv-val ' + dirClass(x.d), Fmt.signed(x.d)));
+    mv.appendChild(row);
+  });
+  if (W.movers.length > top.length)
+    mv.appendChild(elx('div', 'peer-foot', `${W.movers.length - top.length} more account${W.movers.length - top.length > 1 ? 's' : ''} moved less.`));
+}
+
+function renderPeers(d, R){
+  const box = $('rcPeers'), sub = $('rcPeerSub');
+  box.textContent = '';
+  const P = Report.peers(d, R);
+  if (!P){
+    $('rcPeerTitle').textContent = 'You vs. people your age';
+    sub.textContent = 'Needs your age: add your birth date, or an Annual Forecast sheet with an age column. ';
+    if (d.source !== 'demo') sub.appendChild(linkBtn('Add your birth date', () => Manual.open('Your birth date')));
+    return;
+  }
+  const b = P.band;
+  $('rcPeerTitle').textContent = `You vs. households ${b.lo < 35 ? 'under 35' : 'aged ' + b.label}`;
+  sub.textContent = `Age ${R.age.age}, from ${R.age.src} · U.S. figures from the Federal Reserve’s ${BENCH.scf.year} Survey of Consumer Finances unless noted`;
+
+  const group = (name, note, good, bars, foot) => {
+    const g = elx('div', 'peer');
+    const top = elx('div', 'peer-top');
+    top.appendChild(elx('span', 'peer-name', name));
+    if (note) top.appendChild(elx('span', 'peer-note' + (good ? '' : ' dn'), note));
+    g.appendChild(top);
+    const max = Math.max(...bars.map(x => x.v), 1e-9);
+    bars.forEach(x => {
+      const r = elx('div', 'pbar' + (x.you ? ' you' : ''));
+      r.appendChild(elx('span', null, x.label));
+      const trk = elx('span', 'trk'), fill = elx('i');
+      trk.appendChild(fill);
+      r.appendChild(trk);
+      r.appendChild(elx('span', 'v', x.fmt(x.v)));
+      requestAnimationFrame(() => { fill.style.width = Math.max(0.6, x.v / max * 100).toFixed(1) + '%'; });
+      g.appendChild(r);
+    });
+    if (foot) g.appendChild(elx('div', 'peer-foot', foot));
+    box.appendChild(g);
+    return g;
+  };
+  const pctTxt = P.pctile == null ? null : P.pctile >= 0.995 ? 'the top 1%' : `about the ${ordinal(Math.round(P.pctile * 100))} percentile`;
+  group('Net worth', P.nw > 0 ? `${fmtX(P.nw / b.nwMedian)} the typical` : 'below the typical', P.nw >= b.nwMedian, [
+    {label: 'You', v: Math.max(0, P.nw), fmt: Fmt.k, you: true},
+    {label: 'Typical', v: b.nwMedian, fmt: Fmt.k},
+    {label: 'Average', v: b.nwMean, fmt: Fmt.k},
+  ], (pctTxt ? `That puts you at ${pctTxt} for your age (an estimate). ` : '') +
+     '“Typical” is the median household; the average is pulled up by the wealthiest few.');
+  if (P.retire > 0) group('Retirement accounts', `${fmtX(P.retire / b.raMedian)} the typical`, P.retire >= b.raMedian, [
+    {label: 'You', v: P.retire, fmt: Fmt.k, you: true},
+    {label: 'Typical', v: b.raMedian, fmt: Fmt.k},
+    {label: 'Average', v: b.raMean, fmt: Fmt.k},
+  ], '401(k), 403(b), IRA and TSP balances, among households that have these accounts.');
+  if (P.saveRate != null) group('Savings rate', P.saveRate >= 0.15 ? 'above the guideline' : 'below the guideline', P.saveRate >= 0.15, [
+    {label: 'You', v: P.saveRate, fmt: v => Fmt.pct(v, 0), you: true},
+    {label: 'Guideline', v: 0.15, fmt: v => Fmt.pct(v, 0)},
+    {label: '401(k) average', v: BENCH.vanguard.total, fmt: v => Fmt.pct(v, 0)},
+  ], `Fidelity’s guideline, and the average 401(k) saver of any age, match included (Vanguard, ${BENCH.vanguard.year}). ` +
+     `Americans overall saved ${Fmt.pct(BENCH.bea.rate, 1)} of after-tax income in ${BENCH.bea.period} (BEA).`);
+
+  const facts = elx('div', 'peer');
+  const fact = (ok, text) => {
+    const r = elx('div', 'peer-fact');
+    r.appendChild(elx('span', 'ck' + (ok ? '' : ' no'), ok ? '✓' : '–'));
+    r.appendChild(elx('span', null, text));
+    facts.appendChild(r);
+  };
+  const mult = R.subjects.find(s => s.key === 'mult' && s.exact != null);
+  if (mult) fact(mult.raw >= mult.target, `Retirement savings of ${fmtX(mult.raw)} your pay, against Fidelity’s ${fmtX(mult.target)} for age ${R.age.age}.`);
+  if (P.months != null) fact(P.months >= 3, `${P.months.toFixed(1)} months of spending in cash. ${Fmt.pct(BENCH.shed.threeMonths, 0)} of U.S. adults have 3 months set aside, and ${Fmt.pct(BENCH.shed.cover400, 0)} could cover a $400 surprise with cash (Federal Reserve, ${BENCH.shed.year}).`);
+  if (b.label === BENCH.census.band) fact(P.owns, (P.owns ? 'You own your home, like ' : 'Homeownership: ') +
+    `${Fmt.pct(BENCH.census.own, 1)} of households aged ${b.label} (Census Bureau, ${BENCH.census.period}).`);
+  if (facts.childNodes.length) box.appendChild(facts);
+}
+
+function renderAgeChart(d, R){
+  const card = $('card-age');
+  if (!R.age){ card.hidden = true; return; }
+  card.hidden = false;
+  const t = T();
+  const yr = 365.25 * 864e5, ageAt = dt => (dt - R.age.birth) / yr, r2 = v => Math.round(v * 100) / 100;
+  // your net worth history, one point a month (portfolio + home equity − loans), broken across long gaps
+  const byMonth = new Map();
+  Household.netWorthSeries(d, d.rows).forEach(p => byMonth.set(p.date.getFullYear() * 12 + p.date.getMonth(), p));
+  const pts = [...byMonth.values()], you = [];
+  pts.forEach((p, i) => {
+    if (i && p.date - pts[i-1].date > 62 * 864e5) you.push([r2(ageAt(p.date) - 0.01), null]);
+    if (p.net > 0) you.push([r2(ageAt(p.date)), Math.round(p.net)]);
+  });
+  const now = [r2(ageAt(new Date())), Math.round(R.nw.net)];
+  // the Annual Forecast's projection, shrunk to today's dollars
+  const y0 = new Date().getFullYear(), plan = [];
+  if (d.forecast) d.forecast.rows.filter(r => r.projected && r.year >= y0 && r.begin > 0)
+    .forEach(r => plan.push([r2(ageAt(new Date(r.year, 0, 1))), Math.round(r.begin / Math.pow(1.025, r.year - y0))]));
+  const bands = BENCH.scf.bands;
+  const steps = key => bands.map(b => [Math.max(20, b.lo), b[key]]).concat([[85, bands[bands.length-1][key]]]);
+  const bandAt = a => bands.find(b => a >= b.lo && a < b.hi + 1) || (a < bands[0].lo ? bands[0] : bands[bands.length-1]);
+  const along = (arr, a) => {                             // interpolated value of a line at age a (null outside it)
+    const q = arr.filter(p => p[1] != null);
+    if (!q.length || a < q[0][0] || a > q[q.length-1][0]) return null;
+    for (let i = 1; i < q.length; i++) if (a <= q[i][0]){
+      const f = (a - q[i-1][0]) / ((q[i][0] - q[i-1][0]) || 1);
+      return q[i-1][1] + (q[i][1] - q[i-1][1]) * f;
+    }
+    return q[q.length-1][1];
+  };
+  const NAMES = {med: 'Typical household (median)', avg: 'Average household', plan: 'Your plan (portfolio, today’s $)', you: 'You'};
+  const xMax = Math.max(80, Math.ceil((plan.length ? plan[plan.length-1][0] : 0) / 5) * 5);
+  const narrow = $('c-age').clientWidth < 620;             // the legend wraps onto three lines on a phone
+  Charts.mount('c-age', {
+    ...baseOption(t),
+    tooltip: tip(t, {
+      trigger: 'axis', axisPointer: {type: 'line', snap: false, lineStyle: {color: t.axis}},
+      formatter: ps => {
+        const a = ps.length ? (typeof ps[0].axisValue === 'number' ? ps[0].axisValue : ps[0].value[0]) : null;
+        if (a == null) return '';
+        const bd = bandAt(a);
+        const line = (color, label, v, dashed) => `<div style="display:flex;gap:10px;justify-content:space-between;align-items:center">` +
+          `<span><span style="display:inline-block;width:14px;border-top:2px ${dashed ? 'dashed' : 'solid'} ${color};vertical-align:middle;margin-right:6px"></span>${esc(label)}</span><b>${esc(Fmt.k(v))}</b></div>`;
+        let h = `<div style="font-weight:650;margin-bottom:4px">Age ${Math.floor(a)}</div>`;
+        const mine = along(you, a), pl = along(plan, a);
+        if (mine != null) h += line(t.accent, 'You', mine);
+        if (pl != null) h += line(t.accent, 'Your plan', pl, true);
+        h += line(t.ink2, `Typical, ${bd.label}`, bd.nwMedian);
+        h += line(t.muted, `Average, ${bd.label}`, bd.nwMean, true);
+        return h;
+      },
+    }),
+    legend: {top: 0, itemWidth: 22, textStyle: {color: t.ink2, fontSize: 11.5},
+             data: [NAMES.you, NAMES.plan, NAMES.med, NAMES.avg].filter(n => n !== NAMES.plan || plan.length)},
+    grid: {left: 6, right: 18, top: narrow ? 84 : 36, bottom: 26, containLabel: true},
+    xAxis: {type: 'value', min: 20, max: xMax, interval: narrow ? 10 : 5, name: 'Age', nameLocation: 'middle', nameGap: 26,
+            nameTextStyle: {color: t.muted, fontSize: 11}, axisLine: {lineStyle: {color: t.axis}}, axisTick: {show: false},
+            splitLine: {show: false}, axisLabel: {color: t.muted, fontSize: 11},
+            axisPointer: {label: {formatter: p => 'Age ' + Math.floor(p.value)}}},
+    yAxis: {type: 'log', logBase: 10, min: 10000, axisLine: {show: false}, axisTick: {show: false},
+            splitLine: {lineStyle: {color: t.grid}}, axisLabel: {color: t.muted, fontSize: 11, formatter: v => Fmt.k(v)},
+            axisPointer: {label: {formatter: p => Fmt.k(p.value)}}},
+    series: [
+      {name: NAMES.med, type: 'line', step: 'end', data: steps('nwMedian'), showSymbol: false,
+       lineStyle: {width: 2, color: t.ink2}, itemStyle: {color: t.ink2}},
+      {name: NAMES.avg, type: 'line', step: 'end', data: steps('nwMean'), showSymbol: false,
+       lineStyle: {width: 1.5, color: t.muted, type: 'dashed'}, itemStyle: {color: t.muted}},
+      plan.length ? {name: NAMES.plan, type: 'line', data: plan, showSymbol: false, smooth: .2,
+       lineStyle: {width: 2, color: t.accent, type: 'dotted'}, itemStyle: {color: t.accent}} : null,
+      {name: NAMES.you, type: 'line', data: you, showSymbol: false, connectNulls: false,
+       lineStyle: {width: 2.5, color: t.accent}, itemStyle: {color: t.accent},
+       markPoint: {symbol: 'circle', symbolSize: 12, silent: true, data: [{coord: now, value: now[1]}],
+                   itemStyle: {color: t.accent, borderColor: t.card, borderWidth: 2},
+                   label: {show: true, position: 'top', distance: 8, formatter: () => 'You today · ' + Fmt.k(now[1]),
+                           color: t.ink, fontSize: 11.5, fontWeight: 650}}},
+    ].filter(Boolean),
+  });
+  Tables.set('c-age', {
+    cols: ['Ages', 'Typical household', 'Average household', 'You'],
+    rows: bands.map(b => {
+      const inBand = you.filter(p => p[1] != null && p[0] >= b.lo && p[0] < b.hi + 1);
+      const mine = b === R.band ? Fmt.usd(R.nw.net) + ' today'
+                 : inBand.length ? `${Fmt.usd(inBand[inBand.length-1][1])} at ${Math.floor(inBand[inBand.length-1][0])}` : '—';
+      return [b.label, Fmt.usd(b.nwMedian), Fmt.usd(b.nwMean), mine];
+    }),
+  });
+  $('rcAgeSub').textContent = `U.S. households by age (Federal Reserve, ${BENCH.scf.year} dollars) against your net worth over time` +
+    (plan.length ? ' and your Annual Forecast' : '') + ' · log scale, so each gridline is 10× the one below';
+}
+
+function renderBadges(d, R){
+  const box = $('rcBadges');
+  box.textContent = '';
+  const list = Report.badges(d, R);
+  const earned = list.filter(b => b.earned).length;
+  $('rcBadgeSub').textContent = `${earned} earned · ${list.length - earned} in progress, closest first`;
+  list.forEach(b => {
+    const m = elx('div', 'medal ' + b.style + (b.earned ? '' : ' locked'));
+    m.appendChild(elx('div', 'medal-disc', b.token));
+    m.appendChild(elx('div', 'medal-title', b.title));
+    m.appendChild(elx('div', 'medal-desc', b.desc));
+    if (!b.earned){
+      const meter = elx('div', 'meter'), fill = elx('div', 'meter-fill');
+      meter.appendChild(fill);
+      m.appendChild(meter);
+      m.title = Fmt.pct(b.progress, 0) + ' of the way';
+      requestAnimationFrame(() => { fill.style.width = (b.progress * 100).toFixed(1) + '%'; });
+    }
+    box.appendChild(m);
+  });
+}
+
+function renderMoves(d, R){
+  const box = $('rcMoves');
+  box.textContent = '';
+  const demo = d.source === 'demo';
+  const list = Report.moves(d, R);
+  if (!list.length){ box.appendChild(elx('li', null, 'Nothing pressing. Keep doing what you’re doing.')); return; }
+  list.forEach(m => {
+    const body = elx('div');
+    body.appendChild(elx('b', null, m.title));
+    body.appendChild(document.createTextNode(' ' + m.text));
+    if (m.action && !demo) body.appendChild(linkBtn(m.action.text, () => Manual.open(m.action.label)));
+    const li = elx('li');
+    li.appendChild(body);
+    box.appendChild(li);
+  });
+}
+
+function renderHomework(d){
+  const box = $('rcHomework');
+  box.textContent = '';
+  const items = Report.homework(d), done = Report.hwDone();
+  const paint = () => {
+    const n = items.filter(h => done[h.id]).length;
+    const chip = $('rcHwChip');
+    chip.textContent = `${n} of ${items.length} done`;
+    chip.className = 'status-chip ' + (n === items.length ? 'ok' : 'warn');
+  };
+  items.forEach(h => {
+    const lab = elx('label', done[h.id] ? 'done' : null);
+    const cb = elx('input');
+    cb.type = 'checkbox';
+    cb.checked = !!done[h.id];
+    cb.addEventListener('change', () => {
+      if (cb.checked) done[h.id] = true; else delete done[h.id];
+      Prefs.set('rc-homework', done);
+      lab.classList.toggle('done', cb.checked);
+      paint();
+      renderMoves(state.data, Report.card(state.data));
+    });
+    const txt = elx('span');
+    txt.appendChild(elx('span', null, h.text));
+    txt.appendChild(elx('small', null, h.sub));
+    lab.appendChild(cb);
+    lab.appendChild(txt);
+    box.appendChild(lab);
+  });
+  paint();
+}
+
+function renderMethod(){
+  const box = $('rcMethod');
+  if (box.childNodes.length) return;                     // static text: build it once
+  box.appendChild(elx('p', 'method-p', 'Each subject turns one number from your workbook into a 0–100 score by comparing it with a published rule of thumb. ' +
+    'The overall grade is the weighted average; a subject that can’t be graded yet is left out and the rest are reweighted. ' +
+    'Letters follow the school scale: 97 A+, 93 A, 90 A−, 87 B+, 83 B, 80 B−, 77 C+, 73 C, 70 C−, 67 D+, 63 D, 60 D−, lower is F.'));
+  const table = elx('table', 'dtable text');
+  const thead = elx('thead'), hr = elx('tr');
+  ['Subject', 'Weight', 'What it measures', 'An A starts at'].forEach(h => hr.appendChild(elx('th', null, h)));
+  thead.appendChild(hr);
+  const tbody = elx('tbody');
+  [['Savings rate', '20%', 'Everything saved this year ÷ pay', '25% of pay'],
+   ['Retirement savings', '15%', 'Investments ÷ yearly pay, against Fidelity’s multiple for your age', '1.15× the guideline'],
+   ['Retirement readiness', '15%', 'Projected retirement income (4% rule + pension + Social Security) ÷ today’s spending', '117% covered'],
+   ['Net worth', '15%', 'Net worth ÷ (age × yearly pay ÷ 10)', '1.6× expected'],
+   ['Emergency fund', '10%', 'Savings + checking ÷ monthly spending', '5 months'],
+   ['Debt load', '10%', 'Monthly loan payments ÷ monthly gross pay; minus points for costly debt', 'under 24% of pay'],
+   ['On plan', '10%', 'Portfolio ÷ what your own plan expected by now', '1% ahead'],
+   ['Kids’ college', '5%', 'Each 529 at age 18 ÷ four years at a public in-state college', '63% covered'],
+  ].forEach(r => { const tr = elx('tr'); r.forEach(v => tr.appendChild(elx('td', null, v))); tbody.appendChild(tr); });
+  table.appendChild(thead);
+  table.appendChild(tbody);
+  const wrap = elx('div', 'tbl-wrap');
+  wrap.appendChild(table);
+  box.appendChild(wrap);
+  box.appendChild(elx('p', 'method-p', 'Sources. Percentiles are estimated from each age group’s median and average, assuming the usual lopsided (log-normal) shape of wealth, so treat them as approximate.'));
+  const ul = elx('ul', 'src-list');
+  [['Federal Reserve, Survey of Consumer Finances 2022: net worth and retirement accounts by age', BENCH.scf.url],
+   ['Fidelity: how much to have saved by each age', BENCH.fidelity.url],
+   ['Thomas Stanley and William Danko, The Millionaire Next Door (1996): expected net worth', null],
+   ['College Board, Trends in College Pricing 2025', BENCH.college.url],
+   ['Federal Reserve, Economic Well-Being of U.S. Households in 2025', BENCH.shed.url],
+   ['Vanguard, How America Saves 2025', BENCH.vanguard.url],
+   ['U.S. Bureau of Economic Analysis, Personal Income and Outlays, July 2026', BENCH.bea.url],
+   ['U.S. Census Bureau, Housing Vacancies and Homeownership, Q2 2026', BENCH.census.url],
+  ].forEach(([text, url]) => {
+    const li = elx('li');
+    if (url){ const a = elx('a', null, text); a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer'; li.appendChild(a); }
+    else li.textContent = text;
+    ul.appendChild(li);
+  });
+  box.appendChild(ul);
+  const p = elx('p', 'method-p', 'Each week’s grades are remembered in this browser (not in your workbook), so the card can show what changed. ');
+  p.appendChild(linkBtn('Clear the grade history', () => { Prefs.set('rc-history', null); if (state.view === 'report') Views.report(); }));
+  box.appendChild(p);
+}
+
+/* Print: light colors, animations settled, then back to how it was */
+function printView(){
+  const root = document.documentElement, wasDark = root.dataset.theme === 'dark';
+  const method = $('rcMethodBox'), wasOpen = method.open;
+  document.body.classList.add('printing');
+  method.open = true;
+  if (wasDark){ root.dataset.theme = 'light'; renderActive(); }
+  const restore = () => {
+    window.removeEventListener('afterprint', restore);
+    document.body.classList.remove('printing');
+    method.open = wasOpen;
+    if (wasDark){ root.dataset.theme = 'dark'; updateThemeIcon(); renderActive(); }
+  };
+  window.addEventListener('afterprint', restore);
+  requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
+}
+
 /* ---------------- CALCS: input wiring ---------------- */
 const Calcs = (() => {
   let wired = false;
@@ -5430,9 +6729,11 @@ const Manual = (() => {
   /* the fields offered — generic labels, plus one set per child found in the workbook */
   function fields(d){
     const out = [
+      {group: 'You', label: 'Your birth date', kind: 'date', hint: 'Sets your age for the report card. Without it, the age comes from the Annual Forecast sheet.'},
       {group: 'Home', label: 'Home value', kind: 'money', hint: 'Today’s estimate. A Zillow or Redfin figure is fine; update it every few months.', links: true},
       {group: 'Home', label: 'Mortgage balance', kind: 'money', hint: 'From a statement. Only needed if you’ve paid extra principal; otherwise it’s calculated.'},
       {group: 'Cash', label: 'Checking', kind: 'money', hint: 'Total across your checking accounts.'},
+      {group: 'Cash', label: 'Monthly spending', kind: 'money', hint: 'What a typical month costs, not counting savings. Grades the emergency fund; otherwise it comes from the Budget sheet.'},
       {group: 'Pay', label: 'Net pay per check', kind: 'money', hint: 'Take-home from each main paycheck.'},
       {group: 'Pay', label: 'Guard pay', kind: 'money', hint: 'Take-home per month.'},
       {group: 'Pay', label: 'Spouse gross pay', kind: 'money', hint: 'Per year, before taxes. Makes the savings rate household-wide.'},
@@ -5617,6 +6918,8 @@ function switchView(view){
     b.setAttribute('aria-selected', on);
   });
   positionInk();
+  const tabs = $('tabs'), act = tabs.querySelector('.tab.active');
+  if (act && tabs.scrollWidth > tabs.clientWidth) act.scrollIntoView({block: 'nearest', inline: 'nearest'});
   $('rangeChips').classList.toggle('off', !RANGED_VIEWS.includes(view));
   document.querySelectorAll('.view').forEach(sec =>
     sec.classList.toggle('active', sec.id === 'view-' + view));
@@ -5774,6 +7077,7 @@ function loadData(data, opts = {}){
     document.querySelectorAll('.mini.sel').forEach(m => m.classList.remove('sel'));
   });
   $('heroNwLink').addEventListener('click', () => switchView('networth'));
+  $('rcPrint').addEventListener('click', printView);
   Manual.wire();
 
   window.addEventListener('resize', debounce(positionInk, 120));

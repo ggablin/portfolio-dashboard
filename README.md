@@ -2,7 +2,7 @@
 
 | Page | What it is |
 |---|---|
-| `v3.html` | **Meridian v3.** Portfolio, net worth, saving and plan views. Loads the workbook straight from OneDrive. |
+| `v3.html` | **Meridian v3.** Portfolio, report card, net worth, saving and plan views. Loads the workbook straight from OneDrive. |
 | `v2.html` | Meridian v2 (upload a file each visit). |
 | `index.html` | The original dashboard. |
 
@@ -40,8 +40,10 @@ Recognized labels:
 
 | Label (column A) | Value (column B) | Used for |
 |---|---|---|
+| `Your birth date` | date | Report card: your age (otherwise read from the Annual Forecast sheet) |
 | `Home value` | today's estimate | Net worth, home equity |
-| `Checking` | total balance | Net worth |
+| `Checking` | total balance | Net worth, emergency fund |
+| `Monthly spending` | a typical month, not counting savings | Report card: emergency fund and retirement readiness (otherwise read from the Budget sheet) |
 | `Mortgage balance` | balance from your statement | Replaces the calculated balance (use this if you've paid extra principal) |
 | `<child> 529 balance` | balance | Kids' accounts (the first word is the child's name as used elsewhere in the workbook) |
 | `<child> savings` | balance | Kids' accounts |
@@ -50,6 +52,17 @@ Recognized labels:
 | `Social Security` | monthly estimate (today's dollars) | Retirement income |
 | `Net pay per check` | amount | Paycheck: take-home and where each check goes |
 | `Guard pay` | monthly take-home | Savings rate, take-home (replaces the Budget sheet's ANG line) |
+
+## v3: the report card
+
+The **Report card** tab grades eight subjects from 0 to 100 and weights them into one letter grade: savings rate, retirement savings, retirement readiness, net worth, emergency fund, debt load, staying on plan, and the kids' college funds. Each subject shows the number behind it, the rule of thumb it's measured against, and what would raise it. The tab also has:
+
+- **This week:** the week's change, how it ranks against the past year, streaks, distance from the all-time high and the target path, and the accounts that moved most.
+- **You vs. households your age:** net worth, retirement accounts and savings rate against the Federal Reserve's Survey of Consumer Finances, plus a net-worth-by-age chart.
+- **Badges, next best moves and homework** (protection the workbook can't see, like wills and insurance). Homework ticks and each week's grades are saved in that browser only.
+- **Print or save as PDF.**
+
+The benchmarks are public figures kept in `BENCH` near the top of the script in `v3.html`, each with its source. Update them when new editions come out; the Fed's 2025 Survey of Consumer Finances results are due in late 2026.
 
 ## Libraries
 
