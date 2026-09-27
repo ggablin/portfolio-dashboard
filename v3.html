@@ -595,6 +595,37 @@ select.inp{appearance:auto;-webkit-appearance:auto}
 .src-list a{color:var(--accent)}
 .method-p{font-size:12.5px;line-height:1.65;color:var(--ink2);margin-top:12px}
 
+/* what if */
+.wi-wrap{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:26px;align-items:start}
+.wi-sliders{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 26px}
+.wi-sliders .slider-block label{gap:10px}
+.wi-sliders .slider-block label output{white-space:nowrap}
+.wi-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.wi-chips button{font-size:11px;font-weight:600;color:var(--ink2);border:1px solid var(--border);border-radius:999px;padding:3px 10px;transition:all .15s}
+.wi-chips button:hover{border-color:var(--accent);color:var(--accent)}
+.wi-hint{font-size:11.5px;color:var(--muted);line-height:1.45;margin-top:7px}
+.wi-result{border:1px solid var(--border);border-radius:14px;background:var(--card2);padding:16px 18px}
+.wi-top{display:flex;align-items:center;gap:16px}
+.grade-badge.sm{width:84px;height:84px;border-width:5px;flex:none}
+.grade-badge.sm .gb-letter{font-size:32px}
+.grade-badge.sm .gb-score{font-size:10.5px}
+.wi-delta{font-size:21px;font-weight:760;letter-spacing:-.3px;margin-top:2px}
+.wi-line{font-size:12.5px;color:var(--ink2);line-height:1.5;margin-top:3px}
+.wi-rows{margin-top:14px;border-top:1px solid var(--grid)}
+.wi-row{display:grid;grid-template-columns:minmax(0,1fr) auto 12px auto 34px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px}
+.wi-row:last-child{border-bottom:none}
+.wi-row .nm{font-weight:650;min-width:0}
+.wi-row .nm small{display:block;font-weight:500;color:var(--muted);font-size:11.5px;margin-top:1px}
+.lg.xs{width:30px;height:30px;border-radius:9px;font-size:12.5px}
+.wi-arrow{color:var(--muted);text-align:center}
+.wi-d{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.wi-badges{font-size:12.5px;color:var(--ink2);line-height:1.55;margin-top:12px}
+.wi-badges b{color:var(--ink);font-weight:650}
+.wi-sum{font-size:12.5px;color:var(--ink2);line-height:1.55;margin-top:12px;padding-top:10px;border-top:1px dashed var(--border)}
+.wi-sum:empty{display:none}
+/* on a phone the result sits below the sliders, so a small bar keeps the grade in sight while dragging */
+.wi-mini{display:none}
+
 /* ============ 7. ANIMATIONS ============ */
 @keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .enter{animation:cardIn .38s cubic-bezier(.25,.6,.3,1) both;animation-delay:calc(var(--i,0)*46ms)}
@@ -609,6 +640,7 @@ select.inp{appearance:auto;-webkit-appearance:auto}
 
 /* ============ 9. RESPONSIVE ============ */
 @media (max-width:1020px){
+  .wi-sliders{grid-template-columns:1fr}
   .mini-grid{grid-template-columns:repeat(3,1fr)}
   .sliders{grid-template-columns:repeat(2,1fr)}
   .tiles{grid-template-columns:repeat(2,1fr)}
@@ -627,6 +659,15 @@ select.inp{appearance:auto;-webkit-appearance:auto}
   .rc-hero{grid-template-columns:auto minmax(0,1fr);gap:20px}
   .rc-side{grid-column:1 / -1;flex-direction:row;flex-wrap:wrap}
   .rc-side .delta-chip{flex:1 1 150px}
+  .wi-wrap{grid-template-columns:1fr}
+  .wi-sliders{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .wi-mini{
+    display:flex;align-items:center;gap:10px;position:sticky;bottom:12px;z-index:5;margin-top:16px;
+    background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px 12px;box-shadow:var(--shadow-lg);
+    font-size:12.5px;color:var(--ink2);
+  }
+  .wi-mini b{color:var(--ink);font-size:14px}
+  .wi-mini .lg.xs{flex:none}
 }
 @media (max-width:560px){
   .mini-grid{grid-template-columns:repeat(2,1fr)}
@@ -651,6 +692,9 @@ select.inp{appearance:auto;-webkit-appearance:auto}
   .mv-row{grid-template-columns:minmax(70px,96px) 1fr 76px;gap:8px}
   .badge-grid{grid-template-columns:repeat(2,1fr)}
   #c-age{height:380px}
+  .wi-sliders{grid-template-columns:1fr}
+  #card-whatif .card-head{flex-wrap:wrap}
+  #card-whatif .card-actions{margin-left:0}
 }
 
 /* ============ 10. PRINT — light colors, no app chrome ============ */
@@ -661,7 +705,7 @@ select.inp{appearance:auto;-webkit-appearance:auto}
   }
   body{background:#fff}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact;animation:none!important;transition:none!important}
-  .topbar,footer,.rc-print,.card-actions,.link-btn,#uploadView{display:none!important}
+  .topbar,footer,.rc-print,.card-actions,.link-btn,#uploadView,#card-whatif{display:none!important}
   main{padding:0;max-width:none}
   .grid{gap:12px}
   .card,.tile,.subj,.medal,.peer{break-inside:avoid;box-shadow:none}
@@ -895,6 +939,27 @@ select.inp{appearance:auto;-webkit-appearance:auto}
       <div class="card-head"><div class="card-title">Subjects</div></div>
       <div class="card-sub" id="rcSubjSub">Each subject is scored 0–100 against a published rule of thumb, then weighted into the overall grade</div>
       <div class="subj-grid" id="rcSubjects"></div>
+    </div>
+
+    <div class="card span-12" id="card-whatif" hidden data-card>
+      <div class="card-head">
+        <div class="card-title">What if…</div>
+        <div class="card-actions">
+          <button class="tbtn" id="wiMoves" type="button" hidden>Try the next best moves</button>
+          <button class="tbtn" id="wiReset" type="button">Reset</button>
+        </div>
+      </div>
+      <div class="card-sub">Drag a slider to see how your grade would change. It’s a sandbox: nothing here is saved or written to your workbook.</div>
+      <div class="wi-wrap">
+        <div>
+          <div class="wi-sliders" id="wiSliders"></div>
+          <div class="wi-mini" id="wiMini" aria-hidden="true"></div>
+        </div>
+        <div class="wi-result">
+          <div id="wiResult"></div>
+          <p class="wi-sum" id="wiSummary" aria-live="polite"></p>
+        </div>
+      </div>
     </div>
 
     <div class="card span-7" data-card>
@@ -1578,6 +1643,7 @@ const state = {
   stackMode: '$',
   etaTarget: null,
   histH: 'near',     // plan history horizon
+  whatIf: {},        // Report card sliders: lever key → value (null = today's)
 };
 
 function rowsInRange(rows, range){
@@ -3131,9 +3197,16 @@ const Report = (() => {
     return {last, cash, retire: of('retire'), kidsHeld, invested: last.total - cash - kidsHeld, second: last.b403 || 0};
   }
 
-  function facts(d){
-    const c = {age: age(d), income: income(d), spend: spending(d), hold: holdings(d), nw: Household.netWorth(d)};
+  /* adj holds the What if card's changes; the real card has none */
+  const NO_CHANGE = {saveMonthly: 0, kidMonthly: 0, toCash: 0, spend: null, rate: null, home: null};
+  function facts(d, adj){
+    const a = {...NO_CHANGE, ...(adj || {})};
+    const c = {age: age(d), income: income(d), spend: spending(d), hold: holdings(d), nw: Household.netWorth(d), adj: a};
     c.checking = c.nw.items.find(i => i.key === 'cash') || null;
+    const home = c.nw.items.find(i => i.key === 'home');
+    c.net = c.nw.net + (a.home != null && home ? a.home - home.value : 0);
+    if (a.toCash) c.hold = {...c.hold, cash: c.hold.cash + a.toCash, invested: c.hold.invested - a.toCash};
+    if (a.spend != null && c.spend) c.spend = {...c.spend, monthly: a.spend};
     c.liquid = c.hold.cash + (c.checking ? c.checking.value : 0);
     c.band = c.age ? bandFor(c.age.age) : null;
     return c;
@@ -3144,18 +3217,19 @@ const Report = (() => {
   const needPay = {need: 'your pay, from the paycheck rows on the Amortization sheet'};
   const needSpend = {need: 'your monthly spending', needAction: {text: 'Add monthly spending', label: 'Monthly spending'}};
 
-  function subjSaving(d){
+  function subjSaving(d, c){
     const s = {key: 'save', name: 'Savings rate', weight: 20};
     const R = Household.savingsRate(d), S = Household.contribSummary(d);
     if (!R || R.rate == null || !S.nDone) return {...s, need: 'this year’s paychecks (Amortization sheet) and deposits (Average Savings sheet)'};
-    const pct = Fmt.pct(R.rate, 0), lastM = MONTH_ABBR[S.done[S.done.length-1].m];
+    const saved = R.saved + c.adj.saveMonthly * S.nDone, rate = saved / R.income;
+    const pct = Fmt.pct(rate, 0), lastM = MONTH_ABBR[S.done[S.done.length-1].m];
     const perPoint = R.income / S.nDone / 100;
-    return {...s, raw: R.rate, exact: curve(R.rate, [[0,30],[0.05,55],[0.10,72],[0.15,84],[0.20,90],[0.25,94],[0.30,97],[0.40,100]]),
+    return {...s, raw: rate, exact: curve(rate, [[0,30],[0.05,55],[0.10,72],[0.15,84],[0.20,90],[0.25,94],[0.30,97],[0.40,100]]),
       value: pct, unit: 'of your pay saved this year',
-      why: `${Fmt.usd(R.saved)} saved from ${Fmt.usd(R.income)} of ${R.household ? 'household ' : ''}pay, January–${lastM}` +
+      why: `${Fmt.usd(saved)} saved from ${Fmt.usd(R.income)} of ${R.household ? 'household ' : ''}pay, January–${lastM}` +
            (R.excluded ? '. The second 403(b) is left out, since its paycheck isn’t counted.' : '.'),
       bench: `Fidelity suggests 15% or more, employer match included. The average 401(k) saver puts in ${Fmt.pct(BENCH.vanguard.total, 0)} (Vanguard).`,
-      tip: R.rate < 0.2 ? {text: `Each extra 1% of pay is about ${Fmt.usd(perPoint)} a month.`} : null,
+      tip: rate < 0.2 ? {text: `Each extra 1% of pay is about ${Fmt.usd(perPoint)} a month.`} : null,
       praise: `you save ${pct} of your pay`, improve: `lifting your savings rate from ${pct} toward 20%`};
   }
 
@@ -3182,7 +3256,8 @@ const Report = (() => {
     const s = {key: 'ready', name: 'Retirement readiness', weight: 15};
     const sp = Household.sheetPlan(d);
     const years = sp.years != null ? sp.years : c.age ? Math.max(1, 65 - c.age.age) : DEFAULT_YEARS;
-    const rate = Math.min(Household.planRate(d), 0.07), infl = 0.025, contrib = Household.planContrib(d);
+    const capped = Math.min(Household.planRate(d), 0.07);
+    const rate = c.adj.rate != null ? c.adj.rate : capped, infl = 0.025, contrib = Household.planContrib(d) + c.adj.saveMonthly;
     const proj = Compute.retirement({start: c.hold.invested, rate, years, contrib, infl});
     const pension = d.pension ? d.pension.estMonthly : 0;
     const ssIn = d.inputs && d.inputs.num(/social security/i), ss = ssIn ? ssIn.v : 0;
@@ -3197,7 +3272,8 @@ const Report = (() => {
     return {...s, raw: cov, exact: curve(cov, [[0,30],[0.4,50],[0.6,64],[0.8,78],[1,88],[1.2,94],[1.5,98],[2,100]]),
       value: Fmt.pct(cov, 0), unit: `of ${needTxt}, covered in retirement`,
       why: `By ${retireYr}, at ${Household.fmtRate(rate)} a year and ${Fmt.usd(contrib)}/mo: ${joinList(parts)} a month, against ${Fmt.usd(need)} a month. All in today’s dollars.`,
-      bench: 'The aim is to keep today’s lifestyle, often put at 70–80% of pre-retirement pay.' + (Household.planRate(d) > rate ? ` Returns are capped at ${Household.fmtRate(rate)} here.` : ''),
+      bench: 'The aim is to keep today’s lifestyle, often put at 70–80% of pre-retirement pay.' +
+             (c.adj.rate == null && Household.planRate(d) > rate ? ` Returns are capped at ${Household.fmtRate(rate)} here.` : ''),
       tip: !ss ? {text: 'Social Security isn’t counted yet.', action: {text: 'Add your estimate', label: 'Social Security'}}
            : !c.spend ? {text: 'Your spending would sharpen this.', action: {text: 'Add monthly spending', label: 'Monthly spending'}} : null,
       praise: `your plan is on course to cover ${Fmt.pct(cov, 0)} of today’s spending in retirement`,
@@ -3209,16 +3285,16 @@ const Report = (() => {
     const s = {key: 'nw', name: 'Net worth', weight: 15};
     if (!c.age) return {...s, ...needAge};
     if (!c.income) return {...s, ...needPay};
-    const exp = c.age.age * c.income.total / 10, ratio = c.nw.net / exp;
+    const exp = c.age.age * c.income.total / 10, ratio = c.net / exp;
     const kind = ratio >= 2 ? ' That makes you what the book calls a “prodigious accumulator of wealth”.'
                : ratio <= 0.5 ? ' The book would call this an “under-accumulator”.' : '';
     const home = c.nw.items.find(i => i.key === 'home');
     return {...s, raw: ratio, expected: exp, exact: curve(ratio, [[-0.5,15],[0,35],[0.5,62],[1,83],[1.5,92],[2,98],[3,100]]),
       value: fmtX(ratio), unit: 'the net worth expected for your age and pay',
-      why: `${Fmt.k(c.nw.net)} net worth against ${Fmt.k(exp)} expected (${c.age.age} × ${Fmt.k(c.income.total)} ÷ 10).${kind}`,
+      why: `${Fmt.k(c.net)} net worth against ${Fmt.k(exp)} expected (${c.age.age} × ${Fmt.k(c.income.total)} ÷ 10).${kind}`,
       bench: 'From The Millionaire Next Door: age × yearly pre-tax income ÷ 10 is the expected net worth, and twice that is “prodigious”.',
       tip: home && home.fresh === 'stale' ? {text: 'Your home still counts at its purchase price.', action: {text: 'Update home value', label: 'Home value'}}
-         : ratio < 2 ? {text: `${Fmt.k(2 * exp - c.nw.net)} more reaches “prodigious”.`} : null,
+         : ratio < 2 ? {text: `${Fmt.k(2 * exp - c.net)} more reaches “prodigious”.`} : null,
       praise: `your net worth is ${fmtX(ratio)} what’s expected for your age and pay`,
       improve: `growing net worth toward the ${Fmt.k(exp)} expected for your age and pay`};
   }
@@ -3282,17 +3358,17 @@ const Report = (() => {
       improve: `catching up to ${name} (${Fmt.k(-gap)} behind)`};
   }
 
-  function subjKids(d){
+  function subjKids(d, c){
     const K = Household.kids(d);
     if (!K || !K.length) return null;                       // no kids in the workbook: not a subject
     const s = {key: 'kids', name: 'Kids’ college', weight: 5};
     const B = BENCH.college, today = new Date(), cost4 = (B.tuition + B.housing) * 4;
     const per = K.filter(k => k.at18).map(k => {
       const cost = cost4 * Math.pow(1 + B.growth, (k.at18.date - today) / (365.25*864e5));
-      const rm = Math.pow(1 + k.rate, 1/12) - 1, n = k.at18.months;
-      const short = Math.max(0, cost / 2 - k.at18.value);
-      return {name: k.name, at18: k.at18, cost, cover: k.at18.value / cost,
-              extra: short > 0 ? (rm > 0 ? short * rm / (Math.pow(1 + rm, n) - 1) : short / n) : 0};
+      const rm = Math.pow(1 + k.rate, 1/12) - 1, n = k.at18.months, grow = rm > 0 ? (Math.pow(1 + rm, n) - 1) / rm : n;
+      const value = k.at18.value + c.adj.kidMonthly * grow;       // plus any what-if deposits
+      const short = Math.max(0, cost / 2 - value);
+      return {name: k.name, at18: {...k.at18, value}, cost, cover: value / cost, extra: short / grow};
     });
     const missing = K.filter(k => !k.at18 && k.est != null && !k.birth);
     if (!per.length){
@@ -3313,8 +3389,8 @@ const Report = (() => {
   }
 
   /* ---------- the whole card ---------- */
-  function card(d){
-    const c = facts(d);
+  function card(d, adj){
+    const c = facts(d, adj);
     const subjects = [subjSaving, subjMultiple, subjReady, subjNetWorth, subjEmergency, subjDebt, subjTrack, subjKids]
       .map(f => f(d, c)).filter(Boolean)
       .map(s => s.exact != null && isFinite(s.exact) ? {...s, ...grade(s.exact)}
@@ -3384,7 +3460,7 @@ const Report = (() => {
   /* ---------- you vs. households your age ---------- */
   function peers(d, R){
     if (!R.age) return null;
-    const b = R.band, nw = R.nw.net;
+    const b = R.band, nw = R.net;
     const sr = Household.savingsRate(d);
     const p = pctileOf(b, nw);
     return {band: b, nw, pctile: p, retire: R.hold.retire, saveRate: sr && sr.rate != null ? sr.rate : null,
@@ -3396,69 +3472,70 @@ const Report = (() => {
   const tok = v => v >= 1e6 ? '$' + (v / 1e6) + 'M' : '$' + Math.round(v / 1e3) + 'k';
   function badges(d, R){
     const out = [];
-    const add = (earned, style, token, title, desc, progress) => out.push({earned, style, token, title, desc, progress: earned ? 1 : Math.max(0, Math.min(1, progress || 0))});
+    const add = (group, earned, style, token, title, desc, progress, rank) =>
+      out.push({group, earned, style, token, title, desc, rank: rank || 0, progress: earned ? 1 : Math.max(0, Math.min(1, progress || 0))});
     const sub = k => R.subjects.find(s => s.key === k && s.exact != null);
-    const nw = R.nw.net, last = R.hold.last;
+    const nw = R.net, last = R.hold.last;
 
     const TIERS = [100e3, 250e3, 500e3, 750e3, 1e6, 1.5e6, 2e6, 3e6, 5e6, 10e6];
     const got = TIERS.filter(v => nw >= v).pop(), next = TIERS.find(v => nw < v);
-    if (got) add(true, 'gold', tok(got), `${tok(got)} net worth`, 'Your net worth is past this mark', 1);
-    if (next) add(false, 'gold', tok(next), `${tok(next)} net worth`, `${Fmt.k(next - nw)} to go`, nw / next);
+    if (got) add('nw', true, 'gold', tok(got), `${tok(got)} net worth`, 'Your net worth is past this mark', 1, got);
+    if (next) add('nw', false, 'gold', tok(next), `${tok(next)} net worth`, `${Fmt.k(next - nw)} to go`, nw / next);
 
     const P = peers(d, R);
     if (P && P.pctile != null){
       const topPct = Math.max(1, Math.round((1 - P.pctile) * 100));
-      if (P.pctile >= 0.5) add(true, 'green', 'Top ' + topPct + '%', `Top ${topPct}% for your age`, `Net worth among households ${P.band.label} (estimated)`, 1);
-      if (P.next) add(false, 'green', 'Top ' + Math.round((1 - P.next.p) * 100) + '%', `Top ${Math.round((1 - P.next.p) * 100)}% for your age`,
+      if (P.pctile >= 0.5) add('pct', true, 'green', 'Top ' + topPct + '%', `Top ${topPct}% for your age`, `Net worth among households ${P.band.label} (estimated)`, 1, 100 - topPct);
+      if (P.next) add('pct', false, 'green', 'Top ' + Math.round((1 - P.next.p) * 100) + '%', `Top ${Math.round((1 - P.next.p) * 100)}% for your age`,
                       `About ${Fmt.k(P.next.amount - nw)} more (estimated)`, P.pctile / P.next.p);
     }
 
     const miles = Compute.milestones(d.rows), m = miles.crossed[miles.crossed.length-1];
-    if (m) add(true, 'blue', tok(m.amount), `${tok(m.amount)} portfolio`, 'Crossed ' + Fmt.month(m.date), 1);
+    if (m) add('port', true, 'blue', tok(m.amount), `${tok(m.amount)} portfolio`, 'Crossed ' + Fmt.month(m.date), 1, m.amount);
     if (last.total < 1e6){
       const wk = Compute.stats(d.rows).avgWeekly52;
-      add(false, 'blue', '$1M', 'Millionaire portfolio',
+      add('port1m', false, 'blue', '$1M', 'Millionaire portfolio',
           wk > 0 ? `About ${Fmt.month(new Date(last.date.getTime() + (1e6 - last.total) / wk * 7 * 864e5))} at your 52-week pace` : `${Fmt.k(1e6 - last.total)} to go`,
           last.total / 1e6);
     }
 
     const nws = sub('nw');
-    if (nws) add(nws.raw >= 2, 'green', '2×', 'Prodigious accumulator',
+    if (nws) add('paw', nws.raw >= 2, 'green', '2×', 'Prodigious accumulator',
                  nws.raw >= 2 ? 'Net worth at least twice what’s expected for your age and pay' : `${fmtX(nws.raw)} of the expected net worth; 2× earns it`, nws.raw / 2);
 
     const sv = sub('save');
     if (sv){
       const T = [0.10, 0.15, 0.20, 0.25, 0.30];
       const g = T.filter(x => sv.raw >= x).pop(), nx = T.find(x => sv.raw < x);
-      if (g) add(true, 'blue', Fmt.pct(g, 0), `${Fmt.pct(g, 0)} saver`, `Saving ${Fmt.pct(sv.raw, 0)} of pay this year`, 1);
-      if (nx) add(false, 'blue', Fmt.pct(nx, 0), `${Fmt.pct(nx, 0)} saver`, `${Fmt.pct(sv.raw, 0)} so far this year`, sv.raw / nx);
+      if (g) add('save', true, 'blue', Fmt.pct(g, 0), `${Fmt.pct(g, 0)} saver`, `Saving ${Fmt.pct(sv.raw, 0)} of pay this year`, 1, g);
+      if (nx) add('save', false, 'blue', Fmt.pct(nx, 0), `${Fmt.pct(nx, 0)} saver`, `${Fmt.pct(sv.raw, 0)} so far this year`, sv.raw / nx);
     }
 
     const ef = sub('cash');
     if (ef){
-      if (ef.raw >= 3) add(true, 'green', '3 mo', '3-month cushion', 'Three months of spending in cash', 1);
-      add(ef.raw >= 6, 'green', '6 mo', '6-month cushion', ef.raw >= 6 ? 'Six months of spending in cash' : `${ef.raw.toFixed(1)} months now`, ef.raw / 6);
+      if (ef.raw >= 3) add('ef3', true, 'green', '3 mo', '3-month cushion', 'Three months of spending in cash', 1);
+      add('ef6', ef.raw >= 6, 'green', '6 mo', '6-month cushion', ef.raw >= 6 ? 'Six months of spending in cash' : `${ef.raw.toFixed(1)} months now`, ef.raw / 6);
     }
 
     const D = R.nw.D;
     if (D.length || R.nw.m){
       const open = D.filter(x => x.now > 0.5);
-      if (!open.length) add(true, 'blue', '$0', 'Consumer-debt free', D.length ? 'Every loan but the mortgage is paid off' : 'No loans besides the mortgage', 1);
+      if (!open.length) add('debt', true, 'blue', '$0', 'Consumer-debt free', D.length ? 'Every loan but the mortgage is paid off' : 'No loans besides the mortgage', 1);
     }
     const mt = R.nw.m;
-    if (mt && mt.home) add(true, 'gold', 'Home', 'Homeowner', mt.home.source === 'estimate' ? `Worth about ${Fmt.k(mt.home.value)}` : `Bought for ${Fmt.k(mt.home.value)}`, 1);
+    if (mt && mt.home) add('home', true, 'gold', 'Home', 'Homeowner', mt.home.source === 'estimate' ? `Worth about ${Fmt.k(mt.home.value)}` : `Bought for ${Fmt.k(mt.home.value)}`, 1);
     if (mt && mt.timeline && mt.now.balance > 0.5)
-      add(false, 'gold', 'Free', 'Mortgage-free', `${Fmt.pct(1 - mt.now.balance / mt.terms.loan, 0)} paid off · done ${Fmt.month(mt.payoff)}`, 1 - mt.now.balance / mt.terms.loan);
+      add('mort', false, 'gold', 'Free', 'Mortgage-free', `${Fmt.pct(1 - mt.now.balance / mt.terms.loan, 0)} paid off · done ${Fmt.month(mt.payoff)}`, 1 - mt.now.balance / mt.terms.loan);
 
     const H = Household.planHistory(d);
     if (H.returns.length){
       let run = 0;
       for (let i = H.returns.length - 1; i >= 0 && H.returns[i].actual > H.returns[i].assumed; i--) run++;
-      if (run) add(true, 'green', run + '/' + H.returns.length, run > 1 ? `Beat the plan ${run} years running` : 'Beat the plan last year',
+      if (run) add('beat', true, 'green', run + '/' + H.returns.length, run > 1 ? `Beat the plan ${run} years running` : 'Beat the plan last year',
                    'Market return above your plan’s assumption', 1);
     }
     const tr = sub('track');
-    if (tr && tr.gap >= 0) add(true, 'green', 'On plan', 'Ahead of plan', `${Fmt.k(tr.gap)} ahead of your target`, 1);
+    if (tr && tr.gap >= 0) add('plan', true, 'green', 'On plan', 'Ahead of plan', `${Fmt.k(tr.gap)} ahead of your target`, 1);
 
     const rd = sub('ready');
     if (rd && rd.calc){
@@ -3466,26 +3543,27 @@ const Report = (() => {
       const real = (1 + rd.calc.rate) / 1.025 - 1;
       const coast = need / Math.pow(1 + real, rd.calc.years);
       const inv = R.hold.invested;
-      add(inv >= coast, 'green', 'Coast', 'Coast FI',
+      add('coast', inv >= coast, 'green', 'Coast', 'Coast FI',
           inv >= coast ? `Even with no more saving, today’s investments could fund your spending by ${rd.calc.retireYr}` : `${Fmt.k(coast - inv)} to go`, inv / coast);
     }
 
     const k = Household.k401Year(d);
     if (k){
-      const done = k.projected >= k.limit.limit - 1;
-      add(done, 'blue', done ? 'Max' : Fmt.pct(k.projected / k.limit.limit, 0), `Max the ${k.year} 401(k)`,
-          done ? 'On pace for the IRS limit' : `On pace for ${Fmt.usd(k.projected)} of ${Fmt.usd(k.limit.limit)}`, k.projected / k.limit.limit);
+      const projected = Math.min(k.limit.limit, k.projected + (R.adj ? R.adj.saveMonthly * 12 : 0));   // what-if saving fills the 401(k) first
+      const done = projected >= k.limit.limit - 1;
+      add('401k', done, 'blue', done ? 'Max' : Fmt.pct(projected / k.limit.limit, 0), `Max the ${k.year} 401(k)`,
+          done ? 'On pace for the IRS limit' : `On pace for ${Fmt.usd(projected)} of ${Fmt.usd(k.limit.limit)}`, projected / k.limit.limit);
     }
 
     const pen = d.pension;
     if (pen && pen.currentPoints){
       const goal = Math.max(pen.estTotalPts || pen.currentPoints, pen.currentPoints);
-      add(pen.currentPoints >= goal, 'gold', pen.currentPoints.toLocaleString(), 'Pension points', `${pen.currentPoints.toLocaleString()} of ${goal.toLocaleString()} planned`, pen.currentPoints / goal);
+      add('pension', pen.currentPoints >= goal, 'gold', pen.currentPoints.toLocaleString(), 'Pension points', `${pen.currentPoints.toLocaleString()} of ${goal.toLocaleString()} planned`, pen.currentPoints / goal);
     }
 
     const K = Household.kids(d);
     if (K && K.length && K.every(x => x.est > 0 || (x.base && x.base.v > 0)))
-      add(true, 'blue', '529', K.length > 1 ? 'A 529 for every kid' : 'A 529 for your kid', `${K.length} college plan${K.length > 1 ? 's' : ''}, growing`, 1);
+      add('kids', true, 'blue', '529', K.length > 1 ? 'A 529 for every kid' : 'A 529 for your kid', `${K.length} college plan${K.length > 1 ? 's' : ''}, growing`, 1);
 
     return out.filter(b => b.earned).concat(out.filter(b => !b.earned).sort((a, b) => b.progress - a.progress));
   }
@@ -5723,6 +5801,7 @@ Views.report = function(){
   const prev = Report.remember(d, R);
   renderRcHero(d, R, prev);
   renderSubjects(d, R, prev);
+  renderWhatIf(d, R);
   renderWeek(d);
   renderPeers(d, R);
   renderAgeChart(d, R);
@@ -5809,6 +5888,201 @@ function renderSubjects(d, R, prev){
   });
   $('rcSubjSub').textContent = 'Each subject is scored 0–100 against a published rule of thumb, then weighted into the overall grade' +
     (prev ? ` · arrows show the change since the week of ${Fmt.day(prev.date)}` : '');
+}
+
+/* ---- What if: sliders that re-grade the card. Nothing is saved; the workbook isn't touched. ---- */
+let wiCtx = null, wiRaf = 0;
+const capFirst = t => t.charAt(0).toUpperCase() + t.slice(1);
+
+function whatIfAdj(){
+  const W = state.whatIf;
+  return {saveMonthly: W.saveMonthly || 0, kidMonthly: W.kidMonthly || 0, toCash: W.toCash || 0,
+          spend: W.spend != null ? W.spend : null, rate: W.rate != null ? W.rate / 100 : null, home: W.home != null ? W.home : null};
+}
+
+/* the levers this workbook supports, each ranged around today's value (def) */
+function whatIfLevers(d, R){
+  const sub = k => R.subjects.find(s => s.key === k && s.exact != null);
+  const around = (def, lo, hi, step) => ({min: def - Math.floor((def - lo) / step) * step, max: def + Math.ceil((hi - def) / step) * step});
+  const save = sub('save'), ready = sub('ready'), kids = sub('kids'), ef = sub('cash');
+  const out = [];
+  if (save || ready){
+    const chips = [];
+    const k = Household.k401Year(d);
+    if (k && k.short > 1 && k.remaining > 0) chips.push({text: `Max the ${k.year} 401(k)`, value: Math.ceil(k.short / 12 / 25) * 25, move: true});
+    if (save){
+      const SR = Household.savingsRate(d), n = Household.contribSummary(d).nDone;
+      const goal = [0.15, 0.2, 0.25, 0.3, 0.35, 0.4].find(x => x > save.raw + 0.004);
+      if (goal) chips.push({text: `Save ${Fmt.pct(goal, 0)} of pay`, value: Math.ceil((goal * SR.income - SR.saved) / n / 25) * 25});
+    }
+    const monthlyPay = R.income ? R.income.total / 12 : 4000;
+    out.push({key: 'saveMonthly', label: 'Save more each month', def: 0, min: 0, step: 25,
+      max: Math.max(1000, Math.ceil(monthlyPay * 0.25 / 250) * 250, ...chips.map(c => c.value)), chips,
+      fmt: v => v ? `+${Fmt.usd(v)}/mo` : 'no change', say: v => `saving ${Fmt.usd(v)} more a month`,
+      hint: 'Counts toward this year’s savings rate, then keeps going into your investments until retirement.'});
+  }
+  if (kids){
+    const each = kids.per.length > 1, half = Math.max(0, ...kids.per.map(p => p.extra));
+    const chips = half > 0.5 ? [{text: 'On pace for half', value: Math.ceil(half / 10) * 10, move: true}] : [];
+    out.push({key: 'kidMonthly', label: each ? 'Add to each child’s 529' : 'Add to the 529', def: 0, min: 0, step: 10,
+      max: Math.max(500, ...chips.map(c => c.value)), chips,
+      fmt: v => v ? `+${Fmt.usd(v)}/mo${each ? ' each' : ''}` : 'no change',
+      say: v => `adding ${Fmt.usd(v)} a month to ${each ? 'each 529' : 'the 529'}`,
+      hint: 'Every month until each child turns 18, growing at your plan’s return.'});
+  }
+  if (R.spend){
+    const def = R.spend.monthly, step = 50, r = around(def, def * 0.5, def * 1.5, step);
+    out.push({key: 'spend', label: 'Monthly spending', def, step, min: r.min, max: r.max,
+      chips: [{text: 'Spend 10% less', value: def - Math.round(def * 0.1 / step) * step}],
+      fmt: v => Fmt.usd(v) + '/mo' + (Math.abs(v - def) < step / 2 ? '' : ` (${Fmt.signed(v - def)})`),
+      say: v => `spending ${Fmt.usd(Math.abs(v - def))} ${v < def ? 'less' : 'more'} a month`,
+      hint: 'Changes how long your cash would last and how much retirement income you’d need.'});
+  }
+  if (ef){
+    const room = Math.max(0, R.hold.invested - R.hold.second), toSix = 6 * R.spend.monthly - R.liquid;
+    const max = Math.min(Math.floor(room / 500) * 500, Math.max(25000, Math.ceil(6 * R.spend.monthly / 5000) * 5000, Math.ceil(toSix / 500) * 500));
+    if (max >= 500) out.push({key: 'toCash', label: 'Move money into savings', def: 0, min: 0, step: 500, max,
+      chips: toSix > 250 && toSix <= max ? [{text: 'Reach 6 months', value: Math.ceil(toSix / 500) * 500, move: true}] : [],
+      fmt: v => v ? `+${Fmt.usd(v)}` : 'no change', say: v => `moving ${Fmt.usd(v)} from investments into savings`,
+      hint: 'Taken from your investments: a bigger cushion, a little less growing for retirement.'});
+  }
+  if (ready){
+    const def = Math.round(ready.calc.rate * 1000) / 10;
+    out.push({key: 'rate', label: 'Market return until retirement', def, min: 3, max: 10, step: 0.1,
+      chips: [{text: 'A rough stretch: 4%', value: 4}],
+      fmt: v => v.toFixed(1) + '% a year', say: v => `earning ${v.toFixed(1)}% a year`,
+      hint: `Only moves retirement readiness. The grade assumes ${def.toFixed(1)}%.`});
+  }
+  const home = R.nw.items.find(i => i.key === 'home');
+  if (home && sub('nw')){
+    const def = home.value, step = 5000, r = around(def, def * 0.6, def * 1.8, step);
+    out.push({key: 'home', label: 'Home value', def, step, min: r.min, max: r.max, chips: [],
+      fmt: v => Fmt.usd(v) + (Math.abs(v - def) < step / 2 ? '' : ` (${Fmt.signed(v - def, Fmt.k)})`),
+      say: v => `valuing the home at ${Fmt.k(v)}`,
+      hint: home.fresh === 'stale' ? 'Net worth still counts the purchase price. Try today’s estimate.' : 'Counts toward net worth.'});
+  }
+  return out;
+}
+
+function renderWhatIf(d, R){
+  const card = $('card-whatif'), box = $('wiSliders');
+  const levers = R.overall ? whatIfLevers(d, R) : [];
+  card.hidden = !levers.length;
+  box.textContent = '';
+  if (!levers.length){ wiCtx = null; return; }
+  const W = state.whatIf;
+  wiCtx = {d, R0: R, levers, earned0: Report.badges(d, R).filter(b => b.earned), sets: []};
+  levers.forEach(lv => {
+    const blk = elx('div', 'slider-block');
+    const lab = elx('label', null, lv.label);
+    const out = elx('output');
+    lab.appendChild(out);
+    lab.htmlFor = 'wi-' + lv.key;
+    const inp = elx('input');
+    inp.type = 'range';
+    inp.id = 'wi-' + lv.key;
+    inp.min = lv.min; inp.max = lv.max; inp.step = lv.step;
+    inp.value = W[lv.key] != null ? W[lv.key] : lv.def;
+    if (W[lv.key] != null) W[lv.key] = parseFloat(inp.value);          // kept within this workbook's range
+    blk.appendChild(lab);
+    blk.appendChild(inp);
+    const take = () => {
+      const v = parseFloat(inp.value);
+      W[lv.key] = Math.abs(v - lv.def) < lv.step / 2 ? null : v;
+      if (!wiRaf) wiRaf = requestAnimationFrame(() => { wiRaf = 0; recomputeWhatIf(); });
+    };
+    const paint = bindSlider(inp, out, lv.fmt, take);
+    const setTo = v => { inp.value = Math.min(lv.max, Math.max(lv.min, v)); paint(); take(); };
+    wiCtx.sets.push({lv, setTo});
+    if (lv.chips.length){
+      const row = elx('div', 'wi-chips');
+      lv.chips.forEach(c => {
+        const b = elx('button', null, c.text);
+        b.type = 'button';
+        b.addEventListener('click', () => setTo(c.value));
+        row.appendChild(b);
+      });
+      blk.appendChild(row);
+    }
+    blk.appendChild(elx('div', 'wi-hint', lv.hint));
+    box.appendChild(blk);
+  });
+  $('wiMoves').hidden = !levers.some(lv => lv.chips.some(c => c.move));
+  recomputeWhatIf();
+}
+
+function recomputeWhatIf(){
+  if (!wiCtx) return;
+  const {d, R0, levers, earned0} = wiCtx, W = state.whatIf;
+  const active = levers.filter(lv => W[lv.key] != null);
+  const R1 = active.length ? Report.card(d, whatIfAdj()) : R0;
+  const o0 = R0.overall, o1 = R1.overall || o0;
+  const dl = Math.round((o1.exact - o0.exact) * 10) / 10;
+  const box = $('wiResult');
+  box.textContent = '';
+
+  const top = elx('div', 'wi-top');
+  const badge = elx('div', 'grade-badge sm ' + o1.cls);
+  badge.setAttribute('role', 'img');
+  badge.setAttribute('aria-label', `${active.length ? 'What-if grade' : 'Grade today'} ${o1.letter}, ${o1.score} out of 100`);
+  badge.appendChild(elx('span', 'gb-letter', o1.letter));
+  badge.appendChild(elx('span', 'gb-score', `${o1.score} / 100`));
+  top.appendChild(badge);
+  const txt = elx('div');
+  txt.appendChild(elx('div', 'hero-label', active.length ? 'Your grade, what if' : 'Your grade today'));
+  txt.appendChild(elx('div', 'wi-delta' + (active.length ? ' ' + dirClass(dl) : ''),
+    !active.length ? `${o0.letter} · ${o0.score} / 100` : dl ? `${dl > 0 ? '▲' : '▼'} ${Math.abs(dl).toFixed(1)} points` : 'No change'));
+  txt.appendChild(elx('div', 'wi-line', !active.length ? 'Drag a slider or tap a suggestion to try a change.'
+    : `From ${o0.letter} (${o0.score}) today` + (o1.letter !== o0.letter ? ` to ${o1.letter} (${o1.score})` : `, still ${o1.letter}`)));
+  top.appendChild(txt);
+  box.appendChild(top);
+
+  if (active.length){
+    // the subjects that move
+    const rows = elx('div', 'wi-rows');
+    R1.subjects.forEach(s1 => {
+      const s0 = R0.subjects.find(x => x.key === s1.key);
+      if (!s0 || s0.exact == null || s1.exact == null) return;
+      const dd = s1.score - s0.score;
+      if (!dd && s1.value === s0.value) return;
+      const r = elx('div', 'wi-row');
+      const nm = elx('div', 'nm', s1.name);
+      nm.appendChild(elx('small', null, `${s0.value} → ${s1.value}${s1.key === 'cash' ? ' months' : ''}`));
+      r.appendChild(nm);
+      r.appendChild(elx('span', 'lg xs ' + s0.cls, s0.letter));
+      r.appendChild(elx('span', 'wi-arrow', '→'));
+      r.appendChild(elx('span', 'lg xs ' + s1.cls, s1.letter));
+      r.appendChild(elx('span', 'wi-d ' + dirClass(dd), dd > 0 ? '+' + dd : dd < 0 ? '−' + -dd : '±0'));
+      rows.appendChild(r);
+    });
+    if (rows.childNodes.length) box.appendChild(rows);
+    else box.appendChild(elx('div', 'wi-line', 'No subject moves enough to change its score.'));
+
+    // badges won or lost (moving up a tier, like $750k → $1M, counts as a new badge, not a loss)
+    const best = list => {
+      const m = new Map();
+      list.forEach(b => { const x = m.get(b.group); if (!x || b.rank > x.rank) m.set(b.group, b); });
+      return m;
+    };
+    const b0 = best(earned0), b1 = best(Report.badges(d, R1).filter(b => b.earned));
+    const gained = [...b1.values()].filter(b => { const a = b0.get(b.group); return !a || b.rank > a.rank; }).map(b => b.title);
+    const lost = [...b0.values()].filter(a => { const b = b1.get(a.group); return !b || b.rank < a.rank; }).map(a => a.title);
+    if (gained.length || lost.length){
+      const p = elx('div', 'wi-badges');
+      if (gained.length){ p.appendChild(elx('b', null, gained.length > 1 ? 'New badges: ' : 'New badge: ')); p.appendChild(document.createTextNode(gained.join(', ') + '. ')); }
+      if (lost.length){ p.appendChild(elx('b', null, 'Would lose: ')); p.appendChild(document.createTextNode(lost.join(', ') + '.')); }
+      box.appendChild(p);
+    }
+  }
+  const mini = $('wiMini');
+  mini.textContent = '';
+  mini.appendChild(elx('span', 'lg xs ' + o1.cls, o1.letter));
+  mini.appendChild(txtParts(elx('span'), active.length
+    ? ['What if: ', elx('b', null, `${o1.score} / 100`), ' ', elx('span', dirClass(dl), dl ? `${dl > 0 ? '▲' : '▼'} ${Math.abs(dl).toFixed(1)}` : 'no change')]
+    : ['Today: ', elx('b', null, `${o0.score} / 100`), ' · drag a slider']));
+  $('wiSummary').textContent = !active.length ? ''
+    : capFirst(joinList(active.map(lv => lv.say(W[lv.key])))) +
+      (dl ? ` would ${dl > 0 ? 'raise' : 'lower'} your grade ${Math.abs(dl).toFixed(1)} points, to ${o1.letter} (${o1.score}).` : ' wouldn’t change your grade.');
 }
 
 function renderWeek(d){
@@ -5983,7 +6257,7 @@ function renderAgeChart(d, R){
     if (i && p.date - pts[i-1].date > 62 * 864e5) you.push([r2(ageAt(p.date) - 0.01), null]);
     if (p.net > 0) you.push([r2(ageAt(p.date)), Math.round(p.net)]);
   });
-  const now = [r2(ageAt(new Date())), Math.round(R.nw.net)];
+  const now = [r2(ageAt(new Date())), Math.round(R.net)];
   // the Annual Forecast's projection, shrunk to today's dollars
   const y0 = new Date().getFullYear(), plan = [];
   if (d.forecast) d.forecast.rows.filter(r => r.projected && r.year >= y0 && r.begin > 0)
@@ -6051,7 +6325,7 @@ function renderAgeChart(d, R){
     cols: ['Ages', 'Typical household', 'Average household', 'You'],
     rows: bands.map(b => {
       const inBand = you.filter(p => p[1] != null && p[0] >= b.lo && p[0] < b.hi + 1);
-      const mine = b === R.band ? Fmt.usd(R.nw.net) + ' today'
+      const mine = b === R.band ? Fmt.usd(R.net) + ' today'
                  : inBand.length ? `${Fmt.usd(inBand[inBand.length-1][1])} at ${Math.floor(inBand[inBand.length-1][0])}` : '—';
       return [b.label, Fmt.usd(b.nwMedian), Fmt.usd(b.nwMean), mine];
     }),
@@ -6981,6 +7255,7 @@ function loadData(data, opts = {}){
     state.acct = null;
     state.etaTarget = null;
     state.histH = 'near';
+    state.whatIf = {};
   }
   Charts.disposeAll();
   Tables.clear();
@@ -7078,6 +7353,10 @@ function loadData(data, opts = {}){
   });
   $('heroNwLink').addEventListener('click', () => switchView('networth'));
   $('rcPrint').addEventListener('click', printView);
+  $('wiReset').addEventListener('click', () => { state.whatIf = {}; if (wiCtx) renderWhatIf(wiCtx.d, wiCtx.R0); });
+  $('wiMoves').addEventListener('click', () => {
+    if (wiCtx) wiCtx.sets.forEach(({lv, setTo}) => { const c = lv.chips.find(x => x.move); if (c) setTo(c.value); });
+  });
   Manual.wire();
 
   window.addEventListener('resize', debounce(positionInk, 120));

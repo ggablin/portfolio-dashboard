@@ -57,6 +57,7 @@ Recognized labels:
 
 The **Report card** tab grades eight subjects from 0 to 100 and weights them into one letter grade: savings rate, retirement savings, retirement readiness, net worth, emergency fund, debt load, staying on plan, and the kids' college funds. Each subject shows the number behind it, the rule of thumb it's measured against, and what would raise it. The tab also has:
 
+- **What if…:** sliders that re-grade the card as you drag them: save more each month, add to the 529s, change monthly spending, move money into savings, try a different market return or home value. Suggestions like "Max the 401(k)" or "Reach 6 months" set a slider for you. Nothing here is saved.
 - **This week:** the week's change, how it ranks against the past year, streaks, distance from the all-time high and the target path, and the accounts that moved most.
 - **You vs. households your age:** net worth, retirement accounts and savings rate against the Federal Reserve's Survey of Consumer Finances, plus a net-worth-by-age chart.
 - **Badges, next best moves and homework** (protection the workbook can't see, like wills and insurance). Homework ticks and each week's grades are saved in that browser only.
