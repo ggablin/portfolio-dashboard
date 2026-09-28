@@ -2853,6 +2853,18 @@ const Household = (() => {
   }
 
   /* ---------- 401(k) blocks: this year's pacing, and paycheck history ---------- */
+  /* TSP deposits share the 401(k)'s IRS limit: the limit is per person across every workplace plan, Roth or
+     traditional. Logged so far on the Average Savings sheet, plus the rest of the year at the same monthly pace. */
+  function tspYear(d, year, today){
+    const months = contribMonths(d).filter(m => m.year === year);
+    const amt = m => sum(m.items.filter(it => it.key === 'tsp').map(it => it.amount));
+    const done = months.filter(m => !m.planned), ahead = months.filter(m => m.planned);
+    const ytd = sum(done.map(amt)), logged = sum(ahead.map(amt));
+    const left = year === today.getFullYear() ? 11 - today.getMonth() : 0;
+    const rest = logged || (done.length ? ytd / done.length * left : 0);
+    return {ytd, rest, projected: ytd + rest};
+  }
+
   function k401Year(d){
     const K = d.k401;
     if (!K) return null;
@@ -2866,12 +2878,16 @@ const Household = (() => {
                     : ytd + (done.length ? ytd / done.length : 0) * Math.max(0, periods - done.length);
     const L = irsLimit(year);
     const remaining = planned.length || Math.max(0, periods - done.length);
-    const short = L.limit - projected;
+    const tsp = tspYear(d, year, today);
+    const combined = projected + tsp.projected;
+    const short = L.limit - combined;                       // negative = on pace to go over
     const next = planned[0] || done[done.length-1];
-    const extraPerCheck = remaining > 0 && short > 1 ? short / remaining : 0;
-    return {year, deps, done, planned, ytd, matchYtd, projected, limit: L, remaining, short, extraPerCheck,
+    const perCheck = remaining > 0 ? short / remaining : 0;
+    return {year, deps, done, planned, ytd, matchYtd, projected, tsp, combined, limit: L, remaining, short,
+            onPace: combined >= L.limit * 0.98,                // within 2%: close enough, and a buffer for the TSP estimate
+            over: Math.max(0, -short), extraPerCheck: short > 1 ? perCheck : 0,
             periods, next, curRate: next && next.gross ? next.employee / next.gross : null,
-            newRate: next && next.gross && extraPerCheck ? (next.employee + extraPerCheck) / next.gross : null};
+            newRate: next && next.gross && remaining > 0 && Math.abs(short) > 1 ? (next.employee + perCheck) / next.gross : null};
   }
 
   function paycheck(d){
@@ -3549,10 +3565,10 @@ const Report = (() => {
 
     const k = Household.k401Year(d);
     if (k){
-      const projected = Math.min(k.limit.limit, k.projected + (R.adj ? R.adj.saveMonthly * 12 : 0));   // what-if saving fills the 401(k) first
-      const done = projected >= k.limit.limit - 1;
-      add('401k', done, 'blue', done ? 'Max' : Fmt.pct(projected / k.limit.limit, 0), `Max the ${k.year} 401(k)`,
-          done ? 'On pace for the IRS limit' : `On pace for ${Fmt.usd(projected)} of ${Fmt.usd(k.limit.limit)}`, projected / k.limit.limit);
+      const total = Math.min(k.limit.limit, k.combined + (R.adj ? R.adj.saveMonthly * 12 : 0));   // what-if saving fills the 401(k) first
+      const done = total >= k.limit.limit * 0.98, withTsp = k.tsp.projected > 0 ? ', TSP included' : '';
+      add('401k', done, 'blue', done ? 'Max' : Fmt.pct(total / k.limit.limit, 0), `Max the ${k.year} 401(k)`,
+          done ? 'On pace for the IRS limit' + withTsp : `On pace for ${Fmt.usd(total)} of ${Fmt.usd(k.limit.limit)}${withTsp}`, total / k.limit.limit);
     }
 
     const pen = d.pension;
@@ -3598,8 +3614,12 @@ const Report = (() => {
     if (!R.spend) add(70, 'Add your monthly spending.', 'It grades the emergency fund and retirement readiness.', {text: 'Add it', label: 'Monthly spending'});
     if (!R.age) add(65, 'Add your birth date.', 'It unlocks the comparisons with people your age.', {text: 'Add it', label: 'Your birth date'});
     const k = Household.k401Year(d);
-    if (k && k.short > 1 && k.remaining > 0)
-      add(60, `Max the ${k.year} 401(k).`, `About ${Fmt.usd(k.extraPerCheck)} more from each of the ${k.remaining} remaining paychecks reaches the ${Fmt.usd(k.limit.limit)} limit: ${Fmt.usd(k.short)} more, before tax.`);
+    if (k && k.over > 1 && k.remaining > 0)
+      add(92, 'Trim your 401(k) a little.', `Counting your TSP deposits, you’re on pace to go ${Fmt.usd(k.over)} over the ${Fmt.usd(k.limit.limit)} limit. ` +
+          `About ${Fmt.usd(k.over / k.remaining)} less from each of the ${k.remaining} remaining paychecks keeps you under; money over the limit has to be refunded by April 15 or it’s taxed twice.`);
+    else if (k && !k.onPace && k.remaining > 0)
+      add(60, `Max the ${k.year} 401(k).`, `About ${Fmt.usd(k.extraPerCheck)} more from each of the ${k.remaining} remaining paychecks reaches the ${Fmt.usd(k.limit.limit)} limit: ${Fmt.usd(k.short)} more, before tax.` +
+          (k.tsp.projected > 0 ? ' That counts your TSP deposits, which share the limit.' : ''));
     const tr = sub('track');
     if (tr && tr.exact != null && tr.gap < 0) add(55, 'Catch up to your plan.', tr.tip.text);
     const home = R.nw.items.find(i => i.key === 'home');
@@ -5536,34 +5556,46 @@ function renderPacing(){
   if (!k){ card.hidden = true; return; }
   card.hidden = false;
   const L = k.limit.limit, n = k.done.length, N = k.deps.length;
-  const onTrack = k.projected >= L * 0.98;
-  const pctDone = Math.min(k.ytd / L * 100, 100);
+  const tsp = k.tsp.projected > 0 ? k.tsp : null;             // TSP deposits share the same limit
+  const room = L - (tsp ? tsp.projected : 0);                 // what's left of the limit for the 401(k) itself
+  const over = k.over > 1, onTrack = k.onPace && !over;
+  const soFar = k.ytd + (tsp ? tsp.ytd : 0);
+  const pctDone = Math.min(soFar / L * 100, 100);
   $('pacingSub').textContent =
     `${Fmt.usd(k.ytd)} of the ${Fmt.usd(L)} ${k.year} employee limit through ${n} of ${N} paychecks` +
+    (tsp ? ` · plus ${Fmt.usd(tsp.ytd)} into the TSP, which counts toward the same limit (Roth or not)` : '') +
     (k.limit.known ? '' : ` — using the ${k.limit.year} limit until ${k.year}’s is added to the dashboard`) +
     ` · ${Fmt.usd(k.matchYtd)} employer match on top (it doesn’t count toward the limit)`;
 
   const m = $('pacingMeter');
   m.textContent = '';
-  m.appendChild(elx('div', 'tile-label', `Employee deferrals, ${k.year} so far`));
+  m.appendChild(elx('div', 'tile-label', tsp ? `401(k) + TSP deferrals, ${k.year} so far` : `Employee deferrals, ${k.year} so far`));
   const big = elx('div', null, ''); big.style.cssText = 'font-size:34px;font-weight:800;letter-spacing:-.5px;margin:6px 0 2px';
   m.appendChild(big);
-  countUp(big, k.ytd, Fmt.usd, 700);
+  countUp(big, soFar, Fmt.usd, 700);
   m.appendChild(elx('div', 'r-sub', 'of ' + Fmt.usd(L) + ' IRS limit (' + pctDone.toFixed(1) + '%)'));
   const meter = elx('div', 'meter'); meter.style.margin = '14px 0 10px';
   if (onTrack) meter.classList.add('good-track');
   const fill = elx('div', 'meter-fill ' + (onTrack ? 'good' : 'warn'));
   meter.appendChild(fill); m.appendChild(meter);
   requestAnimationFrame(() => { fill.style.width = pctDone + '%'; });
-  m.appendChild(elx('span', 'status-chip ' + (onTrack ? 'ok' : 'warn'),
-    onTrack ? `✓ on pace to max — ${Fmt.k(k.projected)} by year-end`
-            : `⚠ on pace for ${Fmt.k(k.projected)}, ${Fmt.k(k.short)} under the max`));
-  if (k.extraPerCheck > 0 && k.remaining > 0){
+  m.appendChild(elx('span', 'status-chip ' + (onTrack ? 'ok' : over ? 'behind' : 'warn'),
+    onTrack ? `✓ on pace to max — ${Fmt.usd(k.combined)} by year-end`
+    : over ? `⚠ on pace to go ${Fmt.usd(k.over)} over the limit`
+           : `⚠ on pace for ${Fmt.usd(k.combined)}, ${Fmt.usd(k.short)} under the max`));
+  if (tsp){
+    const note = elx('div', null, `The year-end figure includes about ${Fmt.usd(tsp.projected)} in the TSP, at this year’s monthly pace.`);
+    note.style.cssText = 'margin-top:8px;font-size:12px;color:var(--muted);line-height:1.5';
+    m.appendChild(note);
+  }
+  if (k.remaining > 0 && (over || !onTrack)){
     const tip2 = elx('div', 'r-sub');
     tip2.style.cssText = 'margin-top:10px;font-size:12.5px;line-height:1.55';
-    tip2.textContent = `To max out: add ${Fmt.usd(k.extraPerCheck)} to each of the last ${k.remaining} checks` +
-      (k.newRate && k.curRate ? ` (about ${Fmt.pct(k.newRate, 1)} instead of ${Fmt.pct(k.curRate, 0)})` : '') +
-      `. For a full year at the latest pay, ${Fmt.pct(L / (k.periods * k.next.gross), 1)} would do it.`;
+    const rate = k.newRate && k.curRate ? ` (about ${Fmt.pct(k.newRate, 1)} instead of ${Fmt.pct(k.curRate, 0)})` : '';
+    tip2.textContent = over
+      ? `To stay under: take ${Fmt.usd(k.over / k.remaining)} off each of the last ${k.remaining} checks${rate}. Money over the limit has to be refunded by April 15, or it’s taxed twice.`
+      : `To max out: add ${Fmt.usd(k.extraPerCheck)} to each of the last ${k.remaining} checks${rate}.` +
+        ` For a full year at the latest pay, ${Fmt.pct(room / (k.periods * k.next.gross), 1)} would do it.`;
     m.appendChild(tip2);
   }
 
@@ -5571,7 +5603,7 @@ function renderPacing(){
   const cum = k.deps.map(x => { run += x.employee; return Math.round(run); });
   const actual = cum.map((v, i) => i < n ? v : null);
   const planned = cum.map((v, i) => (i >= n - 1 && n < N) ? v : null);
-  const pace = cum.map((_, i) => Math.round(L / N * (i + 1)));
+  const pace = cum.map((_, i) => Math.round(room / N * (i + 1)));
   Charts.mount('c-pacing', {
     ...baseOption(t),
     tooltip: tip(t, {valueFormatter: v => v != null ? Fmt.usd(v) : '—'}),
@@ -5591,7 +5623,7 @@ function renderPacing(){
       {name: 'Pace to max', type: 'line', data: pace,
        lineStyle: {width: 1.5, type: 'dashed', color: t.muted},
        itemStyle: {color: t.muted}, symbol: 'none'},
-      {name: 'IRS limit', type: 'line', data: pace.map(() => L),
+      {name: tsp ? 'Limit minus TSP' : 'IRS limit', type: 'line', data: pace.map(() => Math.round(room)),
        lineStyle: {width: 1, type: 'dashed', color: t.bad},
        itemStyle: {color: t.bad}, symbol: 'none'},
     ],
@@ -5909,7 +5941,7 @@ function whatIfLevers(d, R){
   if (save || ready){
     const chips = [];
     const k = Household.k401Year(d);
-    if (k && k.short > 1 && k.remaining > 0) chips.push({text: `Max the ${k.year} 401(k)`, value: Math.ceil(k.short / 12 / 25) * 25, move: true});
+    if (k && !k.onPace && k.remaining > 0) chips.push({text: `Max the ${k.year} 401(k)`, value: Math.ceil(k.short / 12 / 25) * 25, move: true});
     if (save){
       const SR = Household.savingsRate(d), n = Household.contribSummary(d).nDone;
       const goal = [0.15, 0.2, 0.25, 0.3, 0.35, 0.4].find(x => x > save.raw + 0.004);
