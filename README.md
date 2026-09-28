@@ -60,13 +60,15 @@ The **Report card** tab grades eight subjects from 0 to 100 and weights them int
 - **What if…:** sliders that re-grade the card as you drag them: save more each month, add to the 529s, change monthly spending, move money into savings, try a different market return or home value. Suggestions like "Max the 401(k)" or "Reach 6 months" set a slider for you. Nothing here is saved.
 - **This week:** the week's change, how it ranks against the past year, streaks, distance from the all-time high and the target path, and the accounts that moved most.
 - **You vs. households your age:** net worth, retirement accounts and savings rate against the Federal Reserve's Survey of Consumer Finances, plus a net-worth-by-age chart.
-- **Badges, next best moves and homework** (protection the workbook can't see, like wills and insurance). Homework ticks and each week's grades are saved in that browser only.
+- **Badges:** the ones you've earned, and ones to look forward to with progress rings and projected dates (a $1M net worth, "Seven figures before 40", "Work optional", mortgage halfway, college fully funded, saving streaks and more). A new badge gets confetti the first time you see it.
+- **The road ahead:** a dated timeline of what's coming: net worth and portfolio milestones, the kids turning 18, the mortgage, retirement, the Guard pension and Social Security.
+- **Next best moves and homework** (protection the workbook can't see, like wills and insurance). Homework ticks, each week's grades and the badges you've seen are saved in that browser only.
 - **Print or save as PDF.**
 
 The benchmarks are public figures kept in `BENCH` near the top of the script in `v3.html`, each with its source. Update them when new editions come out; the Fed's 2025 Survey of Consumer Finances results are due in late 2026.
 
 ## Libraries
 
-`vendor/` holds pinned copies of SheetJS 0.18.5 (mini build), Apache ECharts 5.6.0 and MSAL Browser 4.30.0. The licenses are in `vendor/licenses/`. They're served from this site rather than a CDN, so no third-party script runs on a page that holds a OneDrive sign-in.
+`vendor/` holds pinned copies of SheetJS 0.18.5 (mini build), Apache ECharts 5.6.0 and MSAL Browser 4.30.0, and `vendor/fonts/` holds the Fraunces and Figtree typefaces (SIL Open Font License). The licenses are in `vendor/licenses/`. They're served from this site rather than a CDN, so nothing third-party loads on a page that holds a OneDrive sign-in.
 
 At the start of each year, add the new IRS 401(k) limit to `IRS_401K_LIMITS` in `v3.html`.

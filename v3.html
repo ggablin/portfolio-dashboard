@@ -6,7 +6,9 @@
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
 <title>Meridian v3 · Household Dashboard</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%97%86%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%2314213d'/%3E%3Cpath d='M16 3l3.2 12.8L16 29l-3.2-13.2z' fill='%23f3eee3'/%3E%3Cpath d='M16 3l3.2 12.8h-6.4z' fill='%23e3a500'/%3E%3Cpath d='M3 16l12.8-3.2V19.2z M29 16l-12.8 3.2v-6.4z' fill='%23f3eee3' opacity='.55'/%3E%3C/svg%3E">
+<link rel="preload" href="vendor/fonts/figtree-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="vendor/fonts/fraunces-latin-full-normal.woff2" as="font" type="font/woff2" crossorigin>
 <script>(function(){var t;try{t=localStorage.getItem('pp2-theme')}catch(e){}
 if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
 document.documentElement.dataset.theme=t;})();</script>
@@ -15,59 +17,101 @@ document.documentElement.dataset.theme=t;})();</script>
 <script src="vendor/echarts-5.6.0.min.js"></script>
 <script src="vendor/msal-browser-4.30.0.min.js"></script>
 <style>
-/* ============ 1. TOKENS — warm paper + indigo ============ */
+/* ============ 1. TOKENS — a navigator's chart: paper, navy ink, signal flags ============ */
+/* Fonts are vendored (vendor/fonts, SIL OFL): Fraunces for display, Figtree for everything else */
+@font-face{font-family:"Fraunces";src:url("vendor/fonts/fraunces-latin-full-normal.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Figtree";src:url("vendor/fonts/figtree-latin-wght-normal.woff2") format("woff2");font-weight:300 900;font-style:normal;font-display:swap}
+/* registered so the tab color can fade from one tab to the next, and rings can fill */
+@property --tab{syntax:"<color>";inherits:true;initial-value:#1f5fc8}
+@property --p{syntax:"<number>";inherits:false;initial-value:0}
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f9f9f7; --card:#fcfcfb; --card2:#f3f2ee;
-  --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
-  --grid:#e1e0d9; --axis:#c3c2b7;
-  --border:rgba(11,11,11,.10);
-  --accent:#2a78d6; --accent-rgb:42,120,214;
+  --font-ui:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-display:"Fraunces",Georgia,"Times New Roman",serif;
+  --bg:#f3eee3; --card:#fffdf7; --card2:#f7f1e5;
+  --ink:#14213d; --ink2:#4b5670; --muted:#6b7386;
+  --grid:#e7e0d1; --axis:#cfc5b0;
+  --border:rgba(20,33,61,.12);
+  --paper-line:rgba(20,33,61,.05);
+  --accent:#1f5fc8; --accent-rgb:31,95,200; --on-accent:#ffffff;
   --good:#006300; --good-mark:#0ca30c; --good-rgb:12,163,12;
   --warn:#fab219; --bad:#d03b3b; --bad-rgb:208,59,59;
   --s-retire:#2a78d6; --s-broker:#1baf7a; --s-cash:#eda100; --s-crypto:#4a3aa7;
   --s-match:#eb6834; --s-kids:#e87ba4; --s-home:#008300;
-  --shadow:0 1px 2px rgba(0,0,0,.04);
-  --shadow-lg:0 8px 28px rgba(0,0,0,.10);
+  /* signal flags: one color per tab (UI only; chart series keep their own validated colors) */
+  --f-pulse:#1f5fc8; --f-report:#e3a500; --f-accounts:#0b7d69; --f-networth:#2a7f36;
+  --f-saving:#c9481f; --f-plan:#5b3fc4; --f-lab:#c02f55;
+  --on-flag:#ffffff; --gold-text:#8a6400;
+  --shadow:0 1px 2px rgba(20,33,61,.06),0 2px 10px rgba(20,33,61,.04);
+  --shadow-lg:0 14px 34px rgba(20,33,61,.16);
   color-scheme:light;
 }
 :root[data-theme="dark"]{
-  --bg:#0d0d0d; --card:#1a1a19; --card2:#232322;
-  --ink:#ffffff; --ink2:#c3c2b7; --muted:#898781;
-  --grid:#2c2c2a; --axis:#383835;
-  --border:rgba(255,255,255,.10);
-  --accent:#3987e5; --accent-rgb:57,135,229;
+  --bg:#07111f; --card:#0e1b2e; --card2:#15263f;
+  --ink:#f3efe6; --ink2:#b9c3d6; --muted:#8a97ae;
+  --grid:#1d2e47; --axis:#2b3f5e;
+  --border:rgba(185,200,230,.14);
+  --paper-line:rgba(185,200,230,.04);
+  --accent:#4b8ff0; --accent-rgb:75,143,240; --on-accent:#07111f;
   --good:#0ca30c; --good-mark:#0ca30c;
   --warn:#fab219; --bad:#e66767; --bad-rgb:230,103,103;
   --s-retire:#3987e5; --s-broker:#199e70; --s-cash:#c98500; --s-crypto:#9085e9;
   --s-match:#d95926; --s-kids:#d55181; --s-home:#008300;
+  --f-pulse:#4b8ff0; --f-report:#f2b705; --f-accounts:#1fb596; --f-networth:#44b451;
+  --f-saving:#ff7d52; --f-plan:#9c88ff; --f-lab:#ff6d8f;
+  --on-flag:#07111f; --gold-text:#f2b705;
   --shadow:0 1px 2px rgba(0,0,0,.4);
-  --shadow-lg:0 8px 28px rgba(0,0,0,.55);
+  --shadow-lg:0 14px 34px rgba(0,0,0,.6);
   color-scheme:dark;
 }
+/* every tab flies its own flag; --tab follows the open tab (set on <body>) and each tab button */
+[data-view="pulse"]{--tab:var(--f-pulse)}
+[data-view="report"]{--tab:var(--f-report)}
+[data-view="accounts"]{--tab:var(--f-accounts)}
+[data-view="networth"]{--tab:var(--f-networth)}
+[data-view="saving"]{--tab:var(--f-saving)}
+[data-view="plan"]{--tab:var(--f-plan)}
+[data-view="lab"]{--tab:var(--f-lab)}
 
 /* ============ 2. BASE ============ */
 html{scroll-behavior:smooth}
 body{
-  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  background:var(--bg); color:var(--ink);
-  transition:background-color .3s ease,color .3s ease;
+  font-family:var(--font-ui);
+  background-color:var(--bg); color:var(--ink);
+  /* chart paper: a faint grid, and a glow in the open tab's color */
+  background-image:
+    radial-gradient(900px 420px at 88% -140px, color-mix(in srgb,var(--tab) 20%,transparent), transparent 72%),
+    radial-gradient(700px 360px at -10% -160px, color-mix(in srgb,var(--tab) 9%,transparent), transparent 70%),
+    linear-gradient(var(--paper-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+  background-size:auto, auto, 32px 32px, 32px 32px;
+  transition:background-color .3s ease,color .3s ease,--tab .6s ease;
   min-height:100vh; -webkit-font-smoothing:antialiased;
 }
 button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 input{font:inherit}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
-b,strong{font-weight:650}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+b,strong{font-weight:700}
+::selection{background:color-mix(in srgb,var(--tab) 30%,transparent)}
+.display{font-family:var(--font-display);font-variation-settings:"SOFT" 100,"WONK" 0}
+.big-num{font-family:var(--font-display);font-variation-settings:"SOFT" 100,"WONK" 1;font-weight:740;letter-spacing:-.8px;line-height:1.05}
 .num{font-variant-numeric:tabular-nums}
 .up{color:var(--good)} .dn{color:var(--bad)} .flat{color:var(--muted)}
 [hidden]{display:none!important}
 
 /* ============ 3. UPLOAD VIEW ============ */
-.upload-wrap{max-width:640px;margin:0 auto;padding:9vh 24px 64px;text-align:center}
-.upload-brand{font-size:15px;font-weight:700;letter-spacing:.4px;color:var(--accent);margin-bottom:36px}
-.upload-brand .diamond{display:inline-block;margin-right:6px}
-.upload-wrap h1{font-size:clamp(30px,5vw,44px);font-weight:800;letter-spacing:-1px;line-height:1.12;margin-bottom:14px}
-.upload-sub{color:var(--ink2);font-size:15px;line-height:1.6;margin-bottom:36px}
+.upload-wrap{max-width:640px;margin:0 auto;padding:7vh 24px 64px;text-align:center;position:relative}
+.upload-brand{display:inline-flex;align-items:center;gap:10px;margin-bottom:22px;
+  font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--ink);font-variation-settings:"SOFT" 100,"WONK" 1}
+.upload-brand .compass{width:34px;height:34px}
+.upload-wrap h1{font-family:var(--font-display);font-variation-settings:"SOFT" 100,"WONK" 0;
+  font-size:clamp(34px,6vw,54px);font-weight:760;letter-spacing:-1.2px;line-height:1.04;margin-bottom:16px}
+.upload-wrap h1 em{font-style:normal;color:var(--f-saving);font-variation-settings:"SOFT" 100,"WONK" 1}
+.upload-sub{color:var(--ink2);font-size:15.5px;line-height:1.6;margin-bottom:34px}
+/* a nautical-chart rose behind the load screen */
+.upload-rose{position:absolute;left:50%;top:-40px;width:560px;height:560px;transform:translateX(-50%);z-index:-1;pointer-events:none;opacity:.5;
+  background:repeating-radial-gradient(circle, transparent 0 34px, color-mix(in srgb,var(--f-pulse) 14%,transparent) 34px 35px);
+  -webkit-mask:radial-gradient(circle, #000 20%, transparent 68%);mask:radial-gradient(circle, #000 20%, transparent 68%)}
 .dropzone{
   border:2px dashed var(--axis);border-radius:20px;background:var(--card);
   padding:52px 24px;cursor:pointer;box-shadow:var(--shadow);
@@ -83,66 +127,82 @@ b,strong{font-weight:650}
 .upload-error{margin-top:18px;color:var(--bad);font-size:13.5px;font-weight:550}
 .demo-row{margin-top:30px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 .btn-primary{
-  background:var(--accent);color:#fff;font-weight:650;font-size:14px;
-  padding:11px 22px;border-radius:12px;transition:transform .15s,filter .15s;
+  background:var(--accent);color:var(--on-accent);font-weight:700;font-size:14px;
+  padding:11px 22px;border-radius:999px;transition:transform .15s,filter .15s,box-shadow .15s;
+  box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000);
 }
-.btn-primary:hover{transform:translateY(-1px);filter:brightness(1.08)}
-.btn-primary:active{transform:translateY(0)}
+.btn-primary:hover{transform:translateY(-1px);filter:brightness(1.06);box-shadow:0 4px 0 color-mix(in srgb,var(--accent) 55%,#000)}
+.btn-primary:active{transform:translateY(2px);box-shadow:0 1px 0 color-mix(in srgb,var(--accent) 55%,#000)}
 .btn-ghost{
-  color:var(--ink2);font-weight:550;font-size:14px;padding:11px 18px;border-radius:12px;
-  border:1px solid var(--border);transition:background .15s,color .15s;
+  color:var(--ink2);font-weight:650;font-size:14px;padding:11px 18px;border-radius:999px;background:var(--card);
+  border:1px solid var(--border);transition:background .15s,color .15s,border-color .15s;
 }
-.btn-ghost:hover{background:var(--card2);color:var(--ink)}
+.btn-ghost:hover{background:var(--card2);color:var(--ink);border-color:color-mix(in srgb,var(--tab) 45%,var(--border))}
 .upload-note{margin-top:28px;font-size:12px;color:var(--muted)}
 
 /* ============ 4. TOPBAR ============ */
 .topbar{
   position:sticky;top:0;z-index:40;
   display:flex;align-items:center;gap:18px;flex-wrap:wrap;
-  padding:12px 28px;background:color-mix(in srgb,var(--bg) 82%,transparent);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  padding:12px 28px;background:color-mix(in srgb,var(--bg) 84%,transparent);
+  backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);
   border-bottom:1px solid var(--border);
   transition:background-color .3s ease;
 }
-.brand{font-size:15px;font-weight:750;letter-spacing:.2px;white-space:nowrap}
-.brand .diamond{color:var(--accent);margin-right:5px}
+/* a thin rule in the open tab's color along the bottom of the bar */
+.topbar::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;
+  background:linear-gradient(90deg,transparent,var(--tab) 20%,var(--tab) 80%,transparent);opacity:.55}
+.brand{display:flex;align-items:center;gap:9px;white-space:nowrap;
+  font-family:var(--font-display);font-size:21px;font-weight:720;letter-spacing:-.2px;font-variation-settings:"SOFT" 100,"WONK" 1}
+.brand .compass{width:30px;height:30px;flex:none}
 .brand-tag{
-  font-size:10px;font-weight:650;letter-spacing:.6px;text-transform:uppercase;
-  color:var(--accent);background:rgba(var(--accent-rgb),.12);
-  border-radius:6px;padding:2px 7px;margin-left:8px;vertical-align:2px;
+  font-family:var(--font-ui);font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+  color:var(--on-flag);background:var(--f-saving);transform:rotate(-4deg);
+  border-radius:6px;padding:2px 7px;margin-left:1px;
 }
-.tabs{position:relative;display:flex;gap:2px}
+/* the compass needle settles on north when the page opens */
+.compass .needle{transform-origin:16px 16px;animation:needle 1.6s cubic-bezier(.3,1.6,.5,1) .15s both}
+@keyframes needle{from{transform:rotate(-120deg)}to{transform:rotate(0)}}
+.tabs{position:relative;display:flex;gap:4px}
 .tab{
-  position:relative;z-index:1;padding:7px 15px;border-radius:10px;
-  font-size:13.5px;font-weight:550;color:var(--ink2);transition:color .18s;
+  position:relative;z-index:1;display:inline-flex;align-items:center;gap:7px;padding:7px 14px 7px 11px;border-radius:999px;
+  font-size:13.5px;font-weight:650;color:var(--ink2);transition:color .2s,background-color .2s;white-space:nowrap;
 }
-.tab:hover{color:var(--ink)}
-.tab.active{color:var(--ink);font-weight:650}
+.tab svg{width:16px;height:16px;flex:none;color:var(--tab);transition:color .2s,transform .25s}
+.tab:hover{color:var(--ink);background:color-mix(in srgb,var(--tab) 12%,transparent)}
+.tab:hover svg{transform:rotate(-8deg) scale(1.08)}
+.tab.active{color:var(--on-flag);font-weight:750}
+.tab.active svg{color:var(--on-flag)}
+.tab.active:hover{background:transparent}
+[data-view="report"].tab.active,[data-view="report"].tab.active svg{color:#14213d}
 .tab-ink{
-  position:absolute;top:0;left:0;height:100%;border-radius:10px;
-  background:var(--card2);border:1px solid var(--border);z-index:0;
-  transition:transform .28s cubic-bezier(.4,0,.2,1),width .28s cubic-bezier(.4,0,.2,1);
+  position:absolute;top:0;left:0;height:100%;border-radius:999px;z-index:0;
+  background:var(--tab);box-shadow:0 5px 16px color-mix(in srgb,var(--tab) 40%,transparent);
+  transition:transform .32s cubic-bezier(.34,1.3,.5,1),width .32s cubic-bezier(.34,1.3,.5,1),background-color .3s,box-shadow .3s;
   will-change:transform,width;
 }
 .top-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
-.chips{display:flex;gap:2px;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:2px}
+.chips{display:flex;gap:2px;background:var(--card2);border:1px solid var(--border);border-radius:999px;padding:3px}
 .chips button{
-  font-size:12px;font-weight:600;color:var(--muted);padding:4px 10px;border-radius:8px;
+  font-size:12px;font-weight:700;color:var(--muted);padding:4px 11px;border-radius:999px;
   transition:color .15s,background .15s;
 }
 .chips button:hover{color:var(--ink)}
-.chips button.active{background:var(--card);color:var(--accent);box-shadow:var(--shadow)}
+.chips button.active{background:var(--card);color:var(--tab);box-shadow:var(--shadow)}
+body[data-view="report"] .chips button.active{color:var(--gold-text)}
 .chips.off{opacity:.4}
 .icon-btn{
-  width:34px;height:34px;border-radius:10px;border:1px solid var(--border);
-  display:grid;place-items:center;color:var(--ink2);transition:background .15s,color .15s;
+  width:36px;height:36px;border-radius:12px;border:1px solid var(--border);background:var(--card);
+  display:grid;place-items:center;color:var(--ink2);transition:background .15s,color .15s,transform .15s;
 }
-.icon-btn:hover{background:var(--card2);color:var(--ink)}
+.icon-btn:hover{background:var(--card2);color:var(--ink);transform:translateY(-1px)}
 .icon-btn svg{width:17px;height:17px}
 .avatar{
-  width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
-  background:var(--accent);color:#fff;font-size:12px;font-weight:700;letter-spacing:.5px;
+  width:36px;height:36px;border-radius:50%;display:grid;place-items:center;
+  background:conic-gradient(var(--f-pulse),var(--f-accounts),var(--f-report),var(--f-saving),var(--f-lab),var(--f-plan),var(--f-pulse));
+  color:#fff;font-size:12px;font-weight:800;letter-spacing:.5px;position:relative;
 }
+.avatar span{position:absolute;inset:3px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center}
 
 /* ============ 5. LAYOUT ============ */
 main{max-width:1240px;margin:0 auto;padding:26px 28px 80px}
@@ -156,60 +216,76 @@ main{max-width:1240px;margin:0 auto;padding:26px 28px 80px}
 
 /* ============ 6. CARDS & COMPONENTS ============ */
 .card{
-  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
   box-shadow:var(--shadow);padding:22px;
-  transition:background-color .3s ease,border-color .3s ease;
+  transition:background-color .3s ease,border-color .3s ease,box-shadow .25s ease;
 }
+.card:hover{box-shadow:0 1px 2px rgba(20,33,61,.06),0 10px 26px color-mix(in srgb,var(--tab) 10%,transparent)}
 .card-head{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
-.card-title{font-size:14.5px;font-weight:650}
-.card-sub{font-size:12.5px;color:var(--muted);margin-bottom:14px}
+.card-title{font-size:15px;font-weight:780;letter-spacing:-.1px;display:flex;align-items:center;gap:9px}
+/* every card title flies a small pennant in the tab's color */
+.card-title:not(summary)::before{content:"";width:10px;height:13px;flex:none;background:var(--tab);clip-path:polygon(0 0,100% 50%,0 100%);transform:translateY(.5px)}
+.card-sub{font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.5}
 .card-actions{margin-left:auto;display:flex;gap:6px;align-self:center}
 .tbtn{
-  font-size:11px;font-weight:600;color:var(--muted);padding:4px 10px;
-  border:1px solid var(--border);border-radius:8px;transition:all .15s;
+  font-size:11px;font-weight:700;color:var(--muted);padding:4px 11px;background:var(--card);
+  border:1px solid var(--border);border-radius:999px;transition:all .15s;
 }
-.tbtn:hover{color:var(--ink)}
+.tbtn:hover{color:var(--ink);border-color:color-mix(in srgb,var(--tab) 50%,var(--border))}
 .tbtn[aria-pressed="true"]{background:var(--card2);color:var(--accent);border-color:rgba(var(--accent-rgb),.4)}
-.seg{display:inline-flex;gap:2px;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:2px}
-.seg button{font-size:11.5px;font-weight:600;color:var(--muted);padding:3px 11px;border-radius:7px;transition:all .15s}
+.seg{display:inline-flex;gap:2px;background:var(--card2);border:1px solid var(--border);border-radius:999px;padding:3px}
+.seg button{font-size:11.5px;font-weight:700;color:var(--muted);padding:3px 12px;border-radius:999px;transition:all .15s}
 .seg button.active{background:var(--card);color:var(--accent);box-shadow:var(--shadow)}
 .chart{width:100%}
 .h-wk{height:170px}
 .h-main{height:400px}.h-mid{height:300px}.h-sm{height:240px}.h-stack{height:340px}.h-mini{height:104px}
 
-/* hero */
-.hero-card{display:flex;align-items:center;gap:36px;flex-wrap:wrap;padding:26px 28px}
-.hero-label{font-size:12.5px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.hero-value{font-size:56px;font-weight:800;letter-spacing:-1.5px;line-height:1.05}
+/* hero: a chart cartouche — depth rings and a wash of the tab's color in the corner */
+.hero-card{display:flex;align-items:center;gap:36px;flex-wrap:wrap;padding:28px 30px}
+.hero-card,.rc-hero{position:relative;overflow:hidden;isolation:isolate;
+  background:radial-gradient(520px 300px at 100% 0%, color-mix(in srgb,var(--tab) 22%,transparent), transparent 72%),
+             radial-gradient(380px 220px at 0% 100%, color-mix(in srgb,var(--tab) 8%,transparent), transparent 70%), var(--card)}
+.hero-card::after,.rc-hero::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:repeating-radial-gradient(circle at 100% 0%, transparent 0 22px, color-mix(in srgb,var(--tab) 18%,transparent) 22px 23px);
+  -webkit-mask:radial-gradient(460px 320px at 100% 0%, #000, transparent 78%);mask:radial-gradient(460px 320px at 100% 0%, #000, transparent 78%)}
+.hero-label{font-size:12px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.hero-value{font-family:var(--font-display);font-variation-settings:"SOFT" 100,"WONK" 0;
+  font-size:60px;font-weight:720;letter-spacing:-1.8px;line-height:1.02}
 .hero-asof{font-size:12.5px;color:var(--muted);margin-top:8px}
 .hero-deltas{display:flex;gap:12px;flex-wrap:wrap}
 .delta-chip{
-  border:1px solid var(--border);border-radius:14px;padding:12px 18px;min-width:150px;
-  background:var(--card2);transition:background-color .3s ease;
+  border:1px solid var(--border);border-radius:16px;padding:12px 18px;min-width:150px;
+  background:color-mix(in srgb,var(--card) 82%,transparent);backdrop-filter:blur(4px);transition:background-color .3s ease,transform .2s;
 }
-.delta-chip .dl{font-size:11.5px;font-weight:600;color:var(--muted);margin-bottom:4px}
-.delta-chip .dv{font-size:19px;font-weight:700}
+.delta-chip:hover{transform:translateY(-2px)}
+.delta-chip .dl{font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.delta-chip .dv{font-family:var(--font-display);font-variation-settings:"SOFT" 100;font-size:22px;font-weight:700;letter-spacing:-.3px}
 .delta-chip .ds{font-size:12px;color:var(--ink2);margin-top:2px}
 
 /* stat tiles */
 .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;grid-column:span 12}
 .tile{
-  background:var(--card);border:1px solid var(--border);border-radius:16px;
-  box-shadow:var(--shadow);padding:18px 20px 12px;
+  position:relative;overflow:hidden;
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  box-shadow:var(--shadow);padding:20px 20px 12px;
   transition:background-color .3s ease,transform .2s ease,box-shadow .2s ease;
 }
-.tile:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
-.tile-label{font-size:12px;font-weight:600;color:var(--muted)}
-.tile-value{font-size:28px;font-weight:650;letter-spacing:-.5px;margin-top:5px}
+.tile::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;
+  background:linear-gradient(90deg,var(--tab),color-mix(in srgb,var(--tab) 35%,transparent))}
+.tile:hover{transform:translateY(-3px) rotate(-.3deg);box-shadow:var(--shadow-lg)}
+.tile-label{font-size:11.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+.tile-value{font-family:var(--font-display);font-variation-settings:"SOFT" 100;font-size:31px;font-weight:700;letter-spacing:-.6px;margin-top:5px}
 .tile-delta{font-size:12.5px;font-weight:600;margin-top:2px}
 .tile-spark{height:38px;margin-top:6px}
 
 /* milestones */
 .mile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
 .mile{
-  border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--card2);
+  border:1px solid var(--border);border-radius:14px;padding:12px 14px;background:var(--card2);
+  transition:transform .2s;
 }
-.mile .m-amt{font-size:16px;font-weight:700}
+.mile:hover{transform:translateY(-2px)}
+.mile .m-amt{font-family:var(--font-display);font-variation-settings:"SOFT" 100;font-size:19px;font-weight:700}
 .mile .m-date{font-size:12px;color:var(--ink2);margin-top:2px}
 .mile .m-gap{font-size:11.5px;color:var(--muted);margin-top:2px}
 .mile.next{border-style:dashed;border-color:rgba(var(--accent-rgb),.5);background:rgba(var(--accent-rgb),.05)}
@@ -231,28 +307,28 @@ main{max-width:1240px;margin:0 auto;padding:26px 28px 80px}
 /* mini account grid */
 .mini-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
 .mini{
-  border:1px solid var(--border);border-radius:14px;padding:12px 14px 8px;background:var(--card);
+  border:1px solid var(--border);border-radius:16px;padding:12px 14px 8px;background:var(--card);
   cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s,opacity .3s;
 }
 .mini:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
 .mini.dim{opacity:.32}
 .mini.sel{border-color:rgba(var(--accent-rgb),.55)}
 .mini-name{font-size:12px;font-weight:650;display:flex;align-items:center;gap:6px}
-.mini-val{font-size:16px;font-weight:700;margin-top:3px}
+.mini-val{font-family:var(--font-display);font-variation-settings:"SOFT" 100;font-size:18px;font-weight:700;margin-top:3px}
 .mini-delta{font-size:11px;font-weight:600}
 
 /* sliders */
 .sliders{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin:6px 0 18px}
 .slider-block label{font-size:12px;font-weight:600;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:8px}
-.slider-block label output{color:var(--accent);font-weight:700;font-size:13px}
+.slider-block label output{color:var(--accent);font-weight:800;font-size:13px}
 input[type=range]{
-  -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;
+  -webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;
   background:linear-gradient(to right,var(--accent) var(--fill,50%),var(--grid) var(--fill,50%));
   outline-offset:6px;
 }
 input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);
-  border:3px solid var(--card);box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:grab;
+  -webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);
+  border:4px solid var(--card);box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 40%,transparent),0 2px 6px rgba(0,0,0,.25);cursor:grab;
   transition:transform .15s;
 }
 input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.18)}
@@ -273,9 +349,10 @@ input[type=range]::-moz-range-progress{height:4px;border-radius:2px;background:v
 
 /* result tiles (calculators) */
 .res-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
-.res{border:1px solid var(--border);border-radius:12px;padding:13px 16px;background:var(--card2);transition:background-color .3s ease}
-.res .r-label{font-size:11.5px;font-weight:600;color:var(--muted)}
-.res .r-value{font-size:21px;font-weight:700;margin-top:3px;letter-spacing:-.3px}
+.res{border:1px solid var(--border);border-radius:14px;padding:13px 16px;background:var(--card2);transition:background-color .3s ease,transform .2s}
+.res:hover{transform:translateY(-2px)}
+.res .r-label{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+.res .r-value{font-family:var(--font-display);font-variation-settings:"SOFT" 100;font-size:23px;font-weight:700;margin-top:3px;letter-spacing:-.3px}
 .res .r-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
 .narrative{
   font-size:13px;line-height:1.7;color:var(--ink2);border-top:1px solid var(--border);
@@ -295,11 +372,11 @@ input[type=range]::-moz-range-progress{height:4px;border-radius:2px;background:v
 .field-label output{color:var(--accent);font-weight:700}
 
 /* meter */
-.meter{height:10px;border-radius:5px;background:rgba(var(--accent-rgb),.15);overflow:hidden}
-.meter-fill{height:100%;border-radius:5px;background:var(--accent);width:0;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.meter{height:10px;border-radius:999px;background:rgba(var(--accent-rgb),.15);overflow:hidden}
+.meter-fill{height:100%;border-radius:999px;background:var(--accent);width:0;transition:width .9s cubic-bezier(.34,1.2,.5,1)}
 .meter.good-track{background:rgba(var(--good-rgb),.15)} .meter-fill.good{background:var(--good-mark)}
 .meter-fill.warn{background:var(--warn)}
-.status-chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:650;border-radius:999px;padding:3px 10px}
+.status-chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:750;border-radius:999px;padding:3px 10px}
 .status-chip.ok{color:var(--good);background:rgba(var(--good-rgb),.12)}
 .status-chip.warn{color:#8a5f00;background:rgba(250,178,25,.16)}
 :root[data-theme="dark"] .status-chip.warn{color:var(--warn)}
@@ -309,7 +386,7 @@ input[type=range]::-moz-range-progress{height:4px;border-radius:2px;background:v
 .tbl-wrap{overflow-x:auto}
 .dtable{width:100%;border-collapse:collapse;font-size:12.5px}
 .dtable th{
-  text-align:right;font-weight:600;color:var(--muted);font-size:11.5px;
+  text-align:right;font-weight:800;color:var(--muted);font-size:11px;letter-spacing:.4px;text-transform:uppercase;
   padding:7px 10px;border-bottom:1px solid var(--grid);white-space:nowrap;
 }
 .dtable th:first-child,.dtable td:first-child{text-align:left}
@@ -493,29 +570,42 @@ select.inp{appearance:auto;-webkit-appearance:auto}
 :root[data-theme="dark"] .g-c{--g-ink:var(--warn)}
 
 .rc-hero{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:28px;align-items:center;padding:26px 28px}
+/* the grade ring fills to the score (--p, 0–100) */
 .grade-badge{
-  width:128px;height:128px;border-radius:50%;display:grid;place-items:center;align-content:center;gap:2px;
-  border:7px solid var(--g);background:color-mix(in srgb,var(--g) 9%,var(--card));
+  position:relative;isolation:isolate;flex:none;
+  width:136px;height:136px;border-radius:50%;display:grid;place-items:center;align-content:center;gap:2px;
+  background:conic-gradient(var(--g) calc(var(--p) * 1%), color-mix(in srgb,var(--g) 16%,transparent) 0);
+  box-shadow:0 8px 24px color-mix(in srgb,var(--g) 28%,transparent);
+  transition:--p 1.3s cubic-bezier(.2,.8,.2,1);
 }
-.gb-letter{font-size:52px;font-weight:800;letter-spacing:-1px;line-height:1;color:var(--g-ink)}
-.gb-score{font-size:12px;font-weight:650;color:var(--muted)}
-.rc-verdict{font-size:27px;font-weight:780;letter-spacing:-.5px;line-height:1.15}
+.grade-badge::before{content:"";position:absolute;inset:10px;border-radius:50%;z-index:-1;
+  background:radial-gradient(circle at 34% 28%, color-mix(in srgb,var(--g) 16%,var(--card)), var(--card) 72%);
+  box-shadow:inset 0 0 0 1px var(--border)}
+.gb-letter{font-family:var(--font-display);font-variation-settings:"SOFT" 100,"WONK" 1;
+  font-size:58px;font-weight:800;letter-spacing:-1px;line-height:.95;color:var(--g-ink)}
+.gb-score{font-size:12px;font-weight:750;color:var(--muted)}
+.rc-verdict{font-family:var(--font-display);font-variation-settings:"SOFT" 100,"WONK" 1;
+  font-size:34px;font-weight:760;letter-spacing:-.8px;line-height:1.08}
 .rc-comment{font-size:13.5px;line-height:1.65;color:var(--ink2);margin-top:10px;max-width:660px}
 .rc-side{display:flex;flex-direction:column;gap:10px}
 .rc-print{align-self:flex-end}
 
 .subj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
-.subj{border:1px solid var(--border);border-radius:14px;padding:14px 16px 13px;background:var(--card2);display:flex;flex-direction:column;gap:7px}
+.subj{border:1px solid var(--border);border-radius:16px;padding:14px 16px 13px;background:var(--card2);display:flex;flex-direction:column;gap:7px;
+  position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.subj::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--g)}
+.subj:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
 .subj-top{display:flex;align-items:center;gap:11px}
 .lg{
-  width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none;
-  font-size:17px;font-weight:800;color:var(--g-ink);
+  width:42px;height:42px;border-radius:13px;display:grid;place-items:center;flex:none;
+  font-family:var(--font-display);font-variation-settings:"SOFT" 100,"WONK" 1;font-size:19px;font-weight:800;color:var(--g-ink);
   background:color-mix(in srgb,var(--g) 15%,transparent);border:1px solid color-mix(in srgb,var(--g) 45%,transparent);
 }
 .subj-name{font-size:13.5px;font-weight:680}
 .subj-w{font-size:11px;color:var(--muted);margin-top:1px}
 .trend{margin-left:auto;font-size:11px;font-weight:700;white-space:nowrap}
-.subj-val{font-size:22px;font-weight:760;letter-spacing:-.3px;line-height:1.2}
+.subj-val{font-family:var(--font-display);font-variation-settings:"SOFT" 100;font-size:25px;font-weight:720;letter-spacing:-.4px;line-height:1.15}
+.subj-val small{font-family:var(--font-ui)}
 .subj-val small{display:block;font-size:12px;font-weight:550;color:var(--muted);letter-spacing:0;line-height:1.4;margin-top:1px}
 .subj-bar{height:6px;border-radius:3px;background:var(--grid);overflow:hidden}
 .subj-bar i{display:block;height:100%;width:0;border-radius:3px;background:var(--g);transition:width .7s cubic-bezier(.4,0,.2,1)}
@@ -524,7 +614,7 @@ select.inp{appearance:auto;-webkit-appearance:auto}
 .subj-tip{font-size:12px;line-height:1.5;color:var(--ink2);border-top:1px dashed var(--border);padding-top:8px;margin-top:auto}
 .subj-tip .link-btn{font-size:12px}
 
-.wk-head{font-size:25px;font-weight:760;letter-spacing:-.4px;line-height:1.2}
+.wk-head{font-family:var(--font-display);font-variation-settings:"SOFT" 100,"WONK" 1;font-size:30px;font-weight:740;letter-spacing:-.6px;line-height:1.12}
 .wk-sub{font-size:12.5px;color:var(--muted);margin:4px 0 14px}
 .wk-list{list-style:none;display:grid;gap:9px}
 .wk-list li{display:grid;grid-template-columns:16px 1fr;gap:8px;font-size:13px;line-height:1.5;color:var(--ink2)}
@@ -555,20 +645,40 @@ select.inp{appearance:auto;-webkit-appearance:auto}
 .peer-fact .ck.no{color:var(--muted)}
 
 .badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px}
-.medal{border:1px solid var(--border);border-radius:14px;padding:14px 12px 12px;background:var(--card2);text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+.medal{position:relative;isolation:isolate;border:1px solid var(--border);border-radius:18px;padding:16px 12px 13px;background:var(--card2);
+  text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;transition:transform .2s,box-shadow .2s}
+.medal:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
 .medal-disc{
-  width:64px;height:64px;border-radius:50%;display:grid;place-items:center;padding:0 6px;
-  font-size:15px;font-weight:800;letter-spacing:-.3px;line-height:1.05;
-  color:var(--m-ink,#fff);background:var(--m);box-shadow:inset 0 -4px 0 rgba(0,0,0,.16),0 2px 6px rgba(0,0,0,.10);
+  position:relative;width:70px;height:70px;border-radius:50%;display:grid;place-items:center;padding:0 6px;margin-bottom:12px;
+  font-family:var(--font-display);font-variation-settings:"SOFT" 100,"WONK" 1;font-size:17px;font-weight:800;letter-spacing:-.3px;line-height:1.02;
+  color:var(--m-ink,#fff);
+  background:linear-gradient(115deg, transparent 35%, rgba(255,255,255,.55) 48%, transparent 60%) 160% 0/260% 100% no-repeat,
+             radial-gradient(circle at 32% 26%, rgba(255,255,255,.45), transparent 42%), var(--m);
+  box-shadow:inset 0 0 0 4px rgba(255,255,255,.28), inset 0 -5px 0 rgba(0,0,0,.18), 0 5px 12px color-mix(in srgb,var(--m) 35%,transparent);
 }
-.medal.gold{--m:#eda100;--m-ink:#0b0b0b}
-.medal.blue{--m:var(--accent)}
+/* ribbon tails behind the pin */
+.medal:not(.locked) .medal-disc::before,.medal:not(.locked) .medal-disc::after{
+  content:"";position:absolute;top:52px;width:15px;height:24px;z-index:-1;background:var(--m);filter:brightness(.82);
+  clip-path:polygon(0 0,100% 0,100% 100%,50% 74%,0 100%)}
+.medal-disc::before{left:14px;transform:rotate(24deg)}
+.medal-disc::after{right:14px;transform:rotate(-24deg)}
+.medal:not(.locked):hover .medal-disc{animation:shine .9s ease}
+@keyframes shine{from{background-position:160% 0,0 0,0 0}to{background-position:-60% 0,0 0,0 0}}
+.medal.gold{--m:#eda100;--m-ink:#14213d}
+.medal.blue{--m:#2a78d6}
 .medal.green{--m:#008300}
-.medal-title{font-size:12.5px;font-weight:700;line-height:1.3}
+.medal.violet{--m:#5b3fc4}
+.medal.coral{--m:#c9481f}
+.medal.teal{--m:#0b7d69}
+.medal.crimson{--m:#c02f55}
+.medal-title{font-size:12.5px;font-weight:800;line-height:1.3}
 .medal-desc{font-size:11px;color:var(--muted);line-height:1.45}
-.medal.locked .medal-disc{background:var(--card);color:var(--muted);border:2px dashed var(--axis);box-shadow:none}
+.medal.locked{background:transparent;border-style:dashed}
+.medal.locked .medal-disc{--p:0;color:var(--ink2);box-shadow:none;margin-bottom:6px;
+  background:radial-gradient(circle, var(--card) 0 27px, transparent 28px),
+             conic-gradient(var(--m) calc(var(--p) * 1%), var(--grid) 0)}
 .medal.locked .medal-title{color:var(--ink2)}
-.medal .meter{width:100%;height:6px;margin-top:auto}
+.medal-when{font-size:10.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);margin-top:auto;padding-top:4px}
 
 .moves{list-style:none;counter-reset:mv;display:grid;gap:12px}
 .moves li{counter-increment:mv;display:grid;grid-template-columns:26px 1fr;gap:10px;font-size:13px;line-height:1.55;color:var(--ink2)}
@@ -606,17 +716,18 @@ select.inp{appearance:auto;-webkit-appearance:auto}
 .wi-hint{font-size:11.5px;color:var(--muted);line-height:1.45;margin-top:7px}
 .wi-result{border:1px solid var(--border);border-radius:14px;background:var(--card2);padding:16px 18px}
 .wi-top{display:flex;align-items:center;gap:16px}
-.grade-badge.sm{width:84px;height:84px;border-width:5px;flex:none}
-.grade-badge.sm .gb-letter{font-size:32px}
+.grade-badge.sm{width:88px;height:88px;transition:none}
+.grade-badge.sm::before{inset:7px}
+.grade-badge.sm .gb-letter{font-size:34px}
 .grade-badge.sm .gb-score{font-size:10.5px}
-.wi-delta{font-size:21px;font-weight:760;letter-spacing:-.3px;margin-top:2px}
+.wi-delta{font-family:var(--font-display);font-variation-settings:"SOFT" 100;font-size:24px;font-weight:740;letter-spacing:-.3px;margin-top:2px}
 .wi-line{font-size:12.5px;color:var(--ink2);line-height:1.5;margin-top:3px}
 .wi-rows{margin-top:14px;border-top:1px solid var(--grid)}
 .wi-row{display:grid;grid-template-columns:minmax(0,1fr) auto 12px auto 34px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px}
 .wi-row:last-child{border-bottom:none}
 .wi-row .nm{font-weight:650;min-width:0}
 .wi-row .nm small{display:block;font-weight:500;color:var(--muted);font-size:11.5px;margin-top:1px}
-.lg.xs{width:30px;height:30px;border-radius:9px;font-size:12.5px}
+.lg.xs{width:30px;height:30px;border-radius:9px;font-size:13.5px}
 .wi-arrow{color:var(--muted);text-align:center}
 .wi-d{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
 .wi-badges{font-size:12.5px;color:var(--ink2);line-height:1.55;margin-top:12px}
@@ -625,6 +736,39 @@ select.inp{appearance:auto;-webkit-appearance:auto}
 .wi-sum:empty{display:none}
 /* on a phone the result sits below the sliders, so a small bar keeps the grade in sight while dragging */
 .wi-mini{display:none}
+
+/* badges: earned, then what's next */
+.badge-head{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:4px 0 10px;display:flex;align-items:center;gap:10px}
+.badge-head::after{content:"";flex:1;height:1px;background:var(--border)}
+.badge-grid + .badge-head{margin-top:20px}
+
+/* the road ahead: a dated route, nearest first */
+.road{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+.road-col{position:relative}
+.road-col::before{content:"";position:absolute;left:111px;top:10px;bottom:24px;width:2px;border-radius:1px;
+  background:repeating-linear-gradient(var(--axis) 0 6px,transparent 6px 11px)}
+.road-item{position:relative;display:grid;grid-template-columns:92px 16px 1fr;gap:0 12px;align-items:start;padding:0 0 18px}
+.road-when{text-align:right;font-weight:800;font-size:13px;line-height:1.3}
+.road-when small{display:block;font-weight:600;font-size:11.5px;color:var(--muted)}
+.road-dot{width:16px;height:16px;border-radius:50%;margin-top:2px;background:var(--k);position:relative;z-index:1;
+  box-shadow:0 0 0 3px var(--card),0 0 0 6px color-mix(in srgb,var(--k) 25%,transparent)}
+.road-title{font-family:var(--font-display);font-variation-settings:"SOFT" 100;font-size:17px;font-weight:700;line-height:1.25}
+.road-sub{font-size:12px;color:var(--muted);line-height:1.5;margin-top:2px}
+.road-in{display:inline-block;font-family:var(--font-ui);font-size:10.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--k-text,var(--k));margin-left:6px;vertical-align:2px}
+.road .k-nw{--k:#eda100;--k-text:var(--gold-text)} .road .k-port{--k:#2a78d6} .road .k-fi{--k:#5b3fc4}
+.road .k-home{--k:#2a7f36} .road .k-kids{--k:#c9481f} .road .k-plan{--k:#c02f55} .road .k-you{--k:#0b7d69}
+:root[data-theme="dark"] .road .k-fi{--k:#9c88ff} :root[data-theme="dark"] .road .k-home{--k:#44b451}
+:root[data-theme="dark"] .road .k-kids{--k:#ff7d52} :root[data-theme="dark"] .road .k-plan{--k:#ff6d8f} :root[data-theme="dark"] .road .k-you{--k:#1fb596}
+
+/* celebrations: a toast, and confetti in the signal-flag colors */
+.toast{position:fixed;left:50%;bottom:22px;z-index:120;transform:translate(-50%,140%);max-width:calc(100vw - 32px);
+  display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:999px;font-weight:750;font-size:14px;
+  background:var(--ink);color:var(--bg);box-shadow:var(--shadow-lg);visibility:hidden;opacity:0;
+  transition:transform .45s cubic-bezier(.34,1.4,.5,1),opacity .3s,visibility .45s}
+.toast.show{transform:translate(-50%,0);visibility:visible;opacity:1}
+.toast .t-medal{width:26px;height:26px;border-radius:50%;flex:none;background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.55),transparent 45%),var(--f-report)}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:110;overflow:hidden}
+.confetti i{position:absolute;top:-16px;width:9px;height:14px;border-radius:2px}
 
 /* ============ 7. ANIMATIONS ============ */
 @keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
@@ -692,6 +836,9 @@ select.inp{appearance:auto;-webkit-appearance:auto}
   .mv-row{grid-template-columns:minmax(70px,96px) 1fr 76px;gap:8px}
   .badge-grid{grid-template-columns:repeat(2,1fr)}
   #c-age{height:380px}
+  .road{grid-template-columns:1fr}
+  .road-item{grid-template-columns:78px 16px 1fr;gap:0 10px}
+  .road-col::before{left:95px}
   .wi-sliders{grid-template-columns:1fr}
   #card-whatif .card-head{flex-wrap:wrap}
   #card-whatif .card-actions{margin-left:0}
@@ -716,12 +863,13 @@ select.inp{appearance:auto;-webkit-appearance:auto}
 .printing *{animation:none!important;transition:none!important}
 </style>
 </head>
-<body>
+<body data-view="pulse">
 
 <!-- ============ LOAD SCREEN ============ -->
 <div id="uploadView" class="upload-wrap">
-  <div class="upload-brand"><span class="diamond">◆</span>MERIDIAN</div>
-  <h1>Your whole household,<br>one clear picture.</h1>
+  <div class="upload-rose" aria-hidden="true"></div>
+  <div class="upload-brand"><svg class="compass" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" style="fill:var(--ink)"/><circle cx="16" cy="16" r="11.5" fill="none" stroke-dasharray="1.2 2.6" style="stroke:var(--bg);stroke-opacity:.35"/><g class="needle"><path d="M16 4.2l3.1 11.8h-6.2z" style="fill:var(--f-report)"/><path d="M16 27.8l3.1-11.8h-6.2z" style="fill:var(--bg)"/></g><circle cx="16" cy="16" r="1.7" style="fill:var(--ink)"/></svg>Meridian</div>
+  <h1>Your whole household,<br><em>one clear picture.</em></h1>
   <p class="upload-sub">Meridian reads <b>greg_numbers.xlsx</b> straight from your OneDrive, so there's nothing to upload.
   Your numbers go from OneDrive directly to this browser tab and are worked out here; <b>this website never sees them</b>.</p>
 
@@ -768,16 +916,16 @@ select.inp{appearance:auto;-webkit-appearance:auto}
 <div id="appView" hidden>
 
 <header class="topbar">
-  <div class="brand"><span class="diamond">◆</span>Meridian<span class="brand-tag">v3</span></div>
+  <div class="brand"><svg class="compass" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" style="fill:var(--ink)"/><circle cx="16" cy="16" r="11.5" fill="none" stroke-dasharray="1.2 2.6" style="stroke:var(--bg);stroke-opacity:.35"/><g class="needle"><path d="M16 4.2l3.1 11.8h-6.2z" style="fill:var(--f-report)"/><path d="M16 27.8l3.1-11.8h-6.2z" style="fill:var(--bg)"/></g><circle cx="16" cy="16" r="1.7" style="fill:var(--ink)"/></svg>Meridian<span class="brand-tag">v3</span></div>
   <nav class="tabs" id="tabs" role="tablist" aria-label="Dashboard sections">
     <span class="tab-ink" id="tabInk" aria-hidden="true"></span>
-    <button class="tab active" role="tab" aria-selected="true" data-view="pulse">Pulse</button>
-    <button class="tab" role="tab" aria-selected="false" data-view="report">Report card</button>
-    <button class="tab" role="tab" aria-selected="false" data-view="accounts">Accounts</button>
-    <button class="tab" role="tab" aria-selected="false" data-view="networth">Net worth</button>
-    <button class="tab" role="tab" aria-selected="false" data-view="saving">Saving</button>
-    <button class="tab" role="tab" aria-selected="false" data-view="plan">Plan</button>
-    <button class="tab" role="tab" aria-selected="false" data-view="lab">Lab</button>
+    <button class="tab active" role="tab" aria-selected="true" data-view="pulse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Pulse</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="M8.6 13.8 7 22l5-3 5 3-1.6-8.2"/></svg>Report card</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="accounts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.5A9 9 0 1 1 11.5 3v9.5z"/><path d="M15 3.4A9 9 0 0 1 20.6 9H15z"/></svg>Accounts</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="networth"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-5h4v5"/></svg>Net worth</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="saving"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="2.8"/><path d="M5 6v6c0 1.6 3.1 2.8 7 2.8s7-1.2 7-2.8V6"/><path d="M5 12v6c0 1.6 3.1 2.8 7 2.8s7-1.2 7-2.8v-6"/></svg>Saving</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 21V3.5"/><path d="M5.5 4h12l-2.4 4.2L17.5 12.5h-12"/></svg>Plan</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6"/><path d="M10 3v6.2L4.6 18.8A1.5 1.5 0 0 0 5.9 21h12.2a1.5 1.5 0 0 0 1.3-2.2L14 9.2V3"/><path d="M7.4 15.5h9.2"/></svg>Lab</button>
   </nav>
   <div class="top-actions">
     <button id="srcPill" class="src-pill" type="button" data-state="idle" aria-label="Data source — open the data source screen">
@@ -800,7 +948,7 @@ select.inp{appearance:auto;-webkit-appearance:auto}
       <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
     </button>
-    <div class="avatar" aria-hidden="true">GG</div>
+    <div class="avatar" aria-hidden="true"><span>GG</span></div>
   </div>
 </header>
 
@@ -996,7 +1144,16 @@ select.inp{appearance:auto;-webkit-appearance:auto}
     <div class="card span-12" data-card>
       <div class="card-head"><div class="card-title">Badges</div></div>
       <div class="card-sub" id="rcBadgeSub"></div>
+      <div class="badge-head">Earned</div>
       <div class="badge-grid" id="rcBadges"></div>
+      <div class="badge-head" id="rcAheadHead">Up next</div>
+      <div class="badge-grid" id="rcAhead"></div>
+    </div>
+
+    <div class="card span-12" id="card-road" hidden data-card>
+      <div class="card-head"><div class="card-title">The road ahead</div></div>
+      <div class="card-sub" id="rcRoadSub"></div>
+      <div class="road" id="rcRoad"></div>
     </div>
 
     <div class="card span-6" data-card>
@@ -1404,6 +1561,8 @@ select.inp{appearance:auto;-webkit-appearance:auto}
 
 </div><!-- /appView -->
 
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
 <!-- ============ YOUR NUMBERS (manual inputs) ============ -->
 <dialog id="inputsDlg" class="dlg" aria-labelledby="dlgTitle">
   <form id="inputsForm" novalidate>
@@ -1434,7 +1593,7 @@ select.inp{appearance:auto;-webkit-appearance:auto}
 
 /* ============ CORE: constants, formatters, theme, motion ============ */
 const $ = id => document.getElementById(id);
-const FONT = 'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+const FONT = 'Figtree,system-ui,-apple-system,"Segoe UI",sans-serif';
 const MOTION = !matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const GROUPS = [
@@ -1516,18 +1675,18 @@ const CONTRIB_GROUPS = [
 /* Theme token mirrors (kept in sync with the CSS custom properties) */
 const THEMES = {
   light: {
-    bg:'#f9f9f7', card:'#fcfcfb', card2:'#f3f2ee',
-    ink:'#0b0b0b', ink2:'#52514e', muted:'#898781',
-    grid:'#e1e0d9', axis:'#c3c2b7',
+    bg:'#f3eee3', card:'#fffdf7', card2:'#f7f1e5',
+    ink:'#14213d', ink2:'#4b5670', muted:'#6b7386',
+    grid:'#e7e0d1', axis:'#cfc5b0',
     accent:'#2a78d6', accentRGB:'42,120,214',
     good:'#0ca30c', bad:'#d03b3b', warn:'#fab219',
     series:{retire:'#2a78d6', broker:'#1baf7a', cash:'#eda100', crypto:'#4a3aa7',
             match:'#eb6834', kids:'#e87ba4', home:'#008300'},
   },
   dark: {
-    bg:'#0d0d0d', card:'#1a1a19', card2:'#232322',
-    ink:'#ffffff', ink2:'#c3c2b7', muted:'#898781',
-    grid:'#2c2c2a', axis:'#383835',
+    bg:'#07111f', card:'#0e1b2e', card2:'#15263f',
+    ink:'#f3efe6', ink2:'#b9c3d6', muted:'#8a97ae',
+    grid:'#1d2e47', axis:'#2b3f5e',
     accent:'#3987e5', accentRGB:'57,135,229',
     good:'#0ca30c', bad:'#e66767', warn:'#fab219',
     series:{retire:'#3987e5', broker:'#199e70', cash:'#c98500', crypto:'#9085e9',
@@ -2853,6 +3012,18 @@ const Household = (() => {
   }
 
   /* ---------- 401(k) blocks: this year's pacing, and paycheck history ---------- */
+  /* TSP deposits share the 401(k)'s IRS limit: the limit is per person across every workplace plan, Roth or
+     traditional. Logged so far on the Average Savings sheet, plus the rest of the year at the same monthly pace. */
+  function tspYear(d, year, today){
+    const months = contribMonths(d).filter(m => m.year === year);
+    const amt = m => sum(m.items.filter(it => it.key === 'tsp').map(it => it.amount));
+    const done = months.filter(m => !m.planned), ahead = months.filter(m => m.planned);
+    const ytd = sum(done.map(amt)), logged = sum(ahead.map(amt));
+    const left = year === today.getFullYear() ? 11 - today.getMonth() : 0;
+    const rest = logged || (done.length ? ytd / done.length * left : 0);
+    return {ytd, rest, projected: ytd + rest};
+  }
+
   function k401Year(d){
     const K = d.k401;
     if (!K) return null;
@@ -2866,12 +3037,16 @@ const Household = (() => {
                     : ytd + (done.length ? ytd / done.length : 0) * Math.max(0, periods - done.length);
     const L = irsLimit(year);
     const remaining = planned.length || Math.max(0, periods - done.length);
-    const short = L.limit - projected;
+    const tsp = tspYear(d, year, today);
+    const combined = projected + tsp.projected;
+    const short = L.limit - combined;                       // negative = on pace to go over
     const next = planned[0] || done[done.length-1];
-    const extraPerCheck = remaining > 0 && short > 1 ? short / remaining : 0;
-    return {year, deps, done, planned, ytd, matchYtd, projected, limit: L, remaining, short, extraPerCheck,
+    const perCheck = remaining > 0 ? short / remaining : 0;
+    return {year, deps, done, planned, ytd, matchYtd, projected, tsp, combined, limit: L, remaining, short,
+            onPace: combined >= L.limit * 0.98,                // within 2%: close enough, and a buffer for the TSP estimate
+            over: Math.max(0, -short), extraPerCheck: short > 1 ? perCheck : 0,
             periods, next, curRate: next && next.gross ? next.employee / next.gross : null,
-            newRate: next && next.gross && extraPerCheck ? (next.employee + extraPerCheck) / next.gross : null};
+            newRate: next && next.gross && remaining > 0 && Math.abs(short) > 1 ? (next.employee + perCheck) / next.gross : null};
   }
 
   function paycheck(d){
@@ -3468,104 +3643,216 @@ const Report = (() => {
             next: p != null ? [0.5, 0.75, 0.9, 0.95, 0.99].filter(x => x > p).map(x => ({p: x, amount: amountAtPctile(b, x)}))[0] || null : null};
   }
 
-  /* ---------- badges ---------- */
+  /* ---------- the outlook: month by month at the plan's return (capped at 7%) and monthly saving ----------
+     Net worth moves with the portfolio and the mortgage paydown; the home and other assets are held level. */
+  function outlook(d, R){
+    const rate = Math.min(Household.planRate(d), 0.07), rm = Math.pow(1 + rate, 1/12) - 1, contrib = Household.planContrib(d);
+    const m = R.nw.m, mort = m && m.timeline ? m : null, start = R.hold.last.total, t0 = monthStart(new Date());
+    const rest = R.net - start + (mort ? mort.now.balance : 0);           // net worth apart from the portfolio and the mortgage
+    const at = n => {
+      const date = addMonths(t0, n), grow = Math.pow(1 + rm, n);
+      const portfolio = start * grow + (rm > 0 ? contrib * (grow - 1) / rm : contrib * n);
+      return {date, portfolio, net: portfolio + rest - (mort ? Household.mortBalanceAt(mort, date) || 0 : 0)};
+    };
+    const when = (key, target, limit = 480) => { for (let n = 1; n <= limit; n++){ const x = at(n); if (x[key] >= target) return x.date; } return null; };
+    return {rate, contrib, at, when, pace: `at ${Household.fmtRate(rate)} and ${Fmt.usd(contrib)}/mo`};
+  }
+  const around = dt => dt ? 'Around ' + Fmt.month(dt) : null;
+
+  /* ---------- badges: earned, and the ones ahead (with a projected date where there is one) ---------- */
   const tok = v => v >= 1e6 ? '$' + (v / 1e6) + 'M' : '$' + Math.round(v / 1e3) + 'k';
   function badges(d, R){
     const out = [];
-    const add = (group, earned, style, token, title, desc, progress, rank) =>
-      out.push({group, earned, style, token, title, desc, rank: rank || 0, progress: earned ? 1 : Math.max(0, Math.min(1, progress || 0))});
+    const add = (group, earned, style, token, title, desc, progress, extra) =>
+      out.push({group, earned, style, token, title, desc, rank: 0, when: null, ...(extra || {}),
+                progress: earned ? 1 : Math.max(0, Math.min(1, progress || 0))});
     const sub = k => R.subjects.find(s => s.key === k && s.exact != null);
-    const nw = R.net, last = R.hold.last;
+    const O = outlook(d, R), nw = R.net, last = R.hold.last, today = new Date();
+    const ageAt = dt => R.age ? (dt - R.age.birth) / (365.25 * 864e5) : null;
 
+    // net worth tiers: the one reached, and the next two with dates
     const TIERS = [100e3, 250e3, 500e3, 750e3, 1e6, 1.5e6, 2e6, 3e6, 5e6, 10e6];
-    const got = TIERS.filter(v => nw >= v).pop(), next = TIERS.find(v => nw < v);
-    if (got) add('nw', true, 'gold', tok(got), `${tok(got)} net worth`, 'Your net worth is past this mark', 1, got);
-    if (next) add('nw', false, 'gold', tok(next), `${tok(next)} net worth`, `${Fmt.k(next - nw)} to go`, nw / next);
+    const got = TIERS.filter(v => nw >= v).pop();
+    if (got) add('nw', true, 'gold', tok(got), `${tok(got)} net worth`, 'Your net worth is past this mark', 1, {rank: got});
+    TIERS.filter(v => nw < v).slice(0, 2).forEach(v =>
+      add('nw', false, 'gold', tok(v), `${tok(v)} net worth`, `${Fmt.k(v - nw)} to go`, nw / v, {when: around(O.when('net', v))}));
+    // seven figures before 40
+    if (R.age && R.age.age < 40){
+      const forty = new Date(R.age.birth.getFullYear() + 40, R.age.birth.getMonth(), R.age.birth.getDate());
+      if (nw >= 1e6) add('nw40', true, 'gold', '40', 'Seven figures before 40', 'A $1M net worth ahead of your 40th birthday', 1);
+      else {
+        const eta = O.when('net', 1e6);
+        add('nw40', false, 'gold', '40', 'Seven figures before 40', `${Fmt.k(1e6 - nw)} to go before ${Fmt.month(forty)}`, nw / 1e6,
+            {when: eta ? (eta <= forty ? 'On pace: ' + Fmt.month(eta) : 'Not on pace yet') : null});
+      }
+    }
 
+    // standing among households your age, in tiers (so the estimate wobbling a point doesn't reshuffle badges)
     const P = peers(d, R);
     if (P && P.pctile != null){
-      const topPct = Math.max(1, Math.round((1 - P.pctile) * 100));
-      if (P.pctile >= 0.5) add('pct', true, 'green', 'Top ' + topPct + '%', `Top ${topPct}% for your age`, `Net worth among households ${P.band.label} (estimated)`, 1, 100 - topPct);
-      if (P.next) add('pct', false, 'green', 'Top ' + Math.round((1 - P.next.p) * 100) + '%', `Top ${Math.round((1 - P.next.p) * 100)}% for your age`,
-                      `About ${Fmt.k(P.next.amount - nw)} more (estimated)`, P.pctile / P.next.p);
+      const T = [0.5, 0.75, 0.9, 0.95, 0.99], name = x => x === 0.5 ? 'Top half' : `Top ${Math.round((1 - x) * 100)}%`;
+      const reached = T.filter(x => P.pctile >= x).pop(), next = T.find(x => P.pctile < x);
+      if (reached) add('pct', true, 'green', name(reached), `${name(reached)} for your age`,
+                       `About the ${ordinal(Math.min(99, Math.round(P.pctile * 100)))} percentile of households ${P.band.label} (estimated)`, 1, {rank: reached});
+      if (next){
+        const need = amountAtPctile(P.band, next);
+        add('pct', false, 'green', name(next), `${name(next)} for your age`, `About ${Fmt.k(need - nw)} more (estimated)`, P.pctile / next,
+            {when: around(O.when('net', need))});
+      }
     }
 
+    // portfolio milestones
     const miles = Compute.milestones(d.rows), m = miles.crossed[miles.crossed.length-1];
-    if (m) add('port', true, 'blue', tok(m.amount), `${tok(m.amount)} portfolio`, 'Crossed ' + Fmt.month(m.date), 1, m.amount);
-    if (last.total < 1e6){
-      const wk = Compute.stats(d.rows).avgWeekly52;
-      add('port1m', false, 'blue', '$1M', 'Millionaire portfolio',
-          wk > 0 ? `About ${Fmt.month(new Date(last.date.getTime() + (1e6 - last.total) / wk * 7 * 864e5))} at your 52-week pace` : `${Fmt.k(1e6 - last.total)} to go`,
-          last.total / 1e6);
-    }
+    if (m) add('port', true, 'blue', tok(m.amount), `${tok(m.amount)} portfolio`, 'Crossed ' + Fmt.month(m.date), 1, {rank: m.amount});
+    [1e6, 2e6].filter(v => last.total < v).forEach(v =>
+      add('port' + v, false, 'blue', tok(v), v === 1e6 ? 'Millionaire portfolio' : 'Double millionaire', `${Fmt.k(v - last.total)} to go`, last.total / v,
+          {when: around(O.when('portfolio', v))}));
 
     const nws = sub('nw');
-    if (nws) add('paw', nws.raw >= 2, 'green', '2×', 'Prodigious accumulator',
+    if (nws) add('paw', nws.raw >= 2, 'violet', '2×', 'Prodigious accumulator',
                  nws.raw >= 2 ? 'Net worth at least twice what’s expected for your age and pay' : `${fmtX(nws.raw)} of the expected net worth; 2× earns it`, nws.raw / 2);
 
+    // habits
     const sv = sub('save');
     if (sv){
       const T = [0.10, 0.15, 0.20, 0.25, 0.30];
       const g = T.filter(x => sv.raw >= x).pop(), nx = T.find(x => sv.raw < x);
-      if (g) add('save', true, 'blue', Fmt.pct(g, 0), `${Fmt.pct(g, 0)} saver`, `Saving ${Fmt.pct(sv.raw, 0)} of pay this year`, 1, g);
-      if (nx) add('save', false, 'blue', Fmt.pct(nx, 0), `${Fmt.pct(nx, 0)} saver`, `${Fmt.pct(sv.raw, 0)} so far this year`, sv.raw / nx);
+      if (g) add('save', true, 'coral', Fmt.pct(g, 0), `${Fmt.pct(g, 0)} saver`, `Saving ${Fmt.pct(sv.raw, 0)} of pay this year`, 1, {rank: g});
+      if (nx) add('save', false, 'coral', Fmt.pct(nx, 0), `${Fmt.pct(nx, 0)} saver`, `${Fmt.pct(sv.raw, 0)} so far this year`, sv.raw / nx);
     }
-
+    const streak = savingStreak(d);
+    if (streak){
+      const T = [12, 24, 36, 60], g = T.filter(x => streak.months >= x).pop(), nx = T.find(x => streak.months > 0 && streak.months < x);
+      const label = n => n % 12 ? `${n}-month` : n === 12 ? '1-year' : `${n / 12}-year`;
+      if (g) add('streak', true, 'teal', `${g / 12}y`, `${label(g)} saving streak`, `Money saved every month since ${Fmt.month(streak.since)}`, 1, {rank: g});
+      if (nx) add('streak', false, 'teal', `${nx / 12}y`, `${label(nx)} saving streak`, `${streak.months} months in a row so far`, streak.months / nx,
+                  {when: around(addMonths(streak.last, nx - streak.months))});
+    }
     const ef = sub('cash');
     if (ef){
-      if (ef.raw >= 3) add('ef3', true, 'green', '3 mo', '3-month cushion', 'Three months of spending in cash', 1);
-      add('ef6', ef.raw >= 6, 'green', '6 mo', '6-month cushion', ef.raw >= 6 ? 'Six months of spending in cash' : `${ef.raw.toFixed(1)} months now`, ef.raw / 6);
+      if (ef.raw >= 3) add('ef3', true, 'teal', '3 mo', '3-month cushion', 'Three months of spending in cash', 1);
+      add('ef6', ef.raw >= 6, 'teal', '6 mo', '6-month cushion', ef.raw >= 6 ? 'Six months of spending in cash' : `${ef.raw.toFixed(1)} months now`, ef.raw / 6);
     }
 
+    // debt and the house
     const D = R.nw.D;
-    if (D.length || R.nw.m){
-      const open = D.filter(x => x.now > 0.5);
-      if (!open.length) add('debt', true, 'blue', '$0', 'Consumer-debt free', D.length ? 'Every loan but the mortgage is paid off' : 'No loans besides the mortgage', 1);
-    }
+    if ((D.length || R.nw.m) && !D.some(x => x.now > 0.5))
+      add('debt', true, 'blue', '$0', 'Consumer-debt free', D.length ? 'Every loan but the mortgage is paid off' : 'No loans besides the mortgage', 1);
     const mt = R.nw.m;
     if (mt && mt.home) add('home', true, 'gold', 'Home', 'Homeowner', mt.home.source === 'estimate' ? `Worth about ${Fmt.k(mt.home.value)}` : `Bought for ${Fmt.k(mt.home.value)}`, 1);
-    if (mt && mt.timeline && mt.now.balance > 0.5)
-      add('mort', false, 'gold', 'Free', 'Mortgage-free', `${Fmt.pct(1 - mt.now.balance / mt.terms.loan, 0)} paid off · done ${Fmt.month(mt.payoff)}`, 1 - mt.now.balance / mt.terms.loan);
+    if (mt && mt.timeline && mt.now.balance > 0.5){
+      const paid = 1 - mt.now.balance / mt.terms.loan;
+      const half = mt.timeline.find(p => p.balance <= mt.terms.loan / 2);
+      if (paid < 0.5) add('mort50', false, 'gold', '½', 'Mortgage halfway', `${Fmt.pct(paid, 0)} paid off so far`, paid / 0.5, {when: half ? 'On schedule: ' + Fmt.month(half.date) : null});
+      add('mort', false, 'gold', 'Free', 'Mortgage-free', `${Fmt.pct(paid, 0)} paid off`, paid, {when: 'On schedule: ' + Fmt.month(mt.payoff)});
+    }
 
+    // the plan
     const H = Household.planHistory(d);
     if (H.returns.length){
       let run = 0;
       for (let i = H.returns.length - 1; i >= 0 && H.returns[i].actual > H.returns[i].assumed; i--) run++;
-      if (run) add('beat', true, 'green', run + '/' + H.returns.length, run > 1 ? `Beat the plan ${run} years running` : 'Beat the plan last year',
-                   'Market return above your plan’s assumption', 1);
+      if (run) add('beat', true, 'green', `${run}/${H.returns.length}`, run > 1 ? `Beat the plan ${run} years running` : 'Beat the plan last year',
+                   'Market return above your plan’s assumption', 1, {rank: run});
+      if (run < 5) add('beat5', false, 'green', '5×', 'Beat the plan 5 years running', run ? `${run} in a row so far` : 'Starts with a year above the plan', run / 5,
+                       {when: `${5 - run} more year${5 - run > 1 ? 's' : ''}`});
     }
     const tr = sub('track');
     if (tr && tr.gap >= 0) add('plan', true, 'green', 'On plan', 'Ahead of plan', `${Fmt.k(tr.gap)} ahead of your target`, 1);
 
-    const rd = sub('ready');
+    // independence
+    const rd = sub('ready'), spend = R.spend ? R.spend.monthly : null;
     if (rd && rd.calc){
       const need = Math.max(0, (rd.calc.need - rd.calc.pension - rd.calc.ss) * 12) / 0.04;
-      const real = (1 + rd.calc.rate) / 1.025 - 1;
-      const coast = need / Math.pow(1 + real, rd.calc.years);
-      const inv = R.hold.invested;
-      add('coast', inv >= coast, 'green', 'Coast', 'Coast FI',
+      const real = (1 + rd.calc.rate) / 1.025 - 1, coast = need / Math.pow(1 + real, rd.calc.years), inv = R.hold.invested;
+      add('coast', inv >= coast, 'violet', 'Coast', 'Coast FI',
           inv >= coast ? `Even with no more saving, today’s investments could fund your spending by ${rd.calc.retireYr}` : `${Fmt.k(coast - inv)} to go`, inv / coast);
     }
+    if (spend){
+      const f = Compute.fire({monthlySpend: spend, swr: 0.04, pensionMonthly: 0, rate: O.rate, infl: 0.025, contrib: O.contrib,
+                              start: R.hold.invested, horizonYears: 40});
+      const eta = f.months != null ? addMonths(monthStart(today), f.months) : null, age = eta && ageAt(eta);
+      add('fi', f.months === 0, 'violet', 'FI', 'Work optional', f.months === 0 ? 'Your investments alone could cover today’s spending'
+          : `Investments that cover your spending at 4%: ${Fmt.k(f.fireNumber)} in today’s dollars`, f.progress,
+          {when: eta && f.months > 0 ? `${around(eta)}${age ? ', age ' + Math.floor(age) : ''}` : null});
+    }
 
+    // this year's 401(k)
     const k = Household.k401Year(d);
     if (k){
-      const projected = Math.min(k.limit.limit, k.projected + (R.adj ? R.adj.saveMonthly * 12 : 0));   // what-if saving fills the 401(k) first
-      const done = projected >= k.limit.limit - 1;
-      add('401k', done, 'blue', done ? 'Max' : Fmt.pct(projected / k.limit.limit, 0), `Max the ${k.year} 401(k)`,
-          done ? 'On pace for the IRS limit' : `On pace for ${Fmt.usd(projected)} of ${Fmt.usd(k.limit.limit)}`, projected / k.limit.limit);
+      const total = Math.min(k.limit.limit, k.combined + (R.adj ? R.adj.saveMonthly * 12 : 0));   // what-if saving fills the 401(k) first
+      const done = total >= k.limit.limit * 0.98, withTsp = k.tsp.projected > 0 ? ', TSP included' : '';
+      add('401k', done, 'blue', done ? 'Max' : Fmt.pct(total / k.limit.limit, 0), `Max the ${k.year} 401(k)`,
+          done ? 'On pace for the IRS limit' + withTsp : `On pace for ${Fmt.usd(total)} of ${Fmt.usd(k.limit.limit)}${withTsp}`, total / k.limit.limit);
     }
 
     const pen = d.pension;
     if (pen && pen.currentPoints){
       const goal = Math.max(pen.estTotalPts || pen.currentPoints, pen.currentPoints);
-      add('pension', pen.currentPoints >= goal, 'gold', pen.currentPoints.toLocaleString(), 'Pension points', `${pen.currentPoints.toLocaleString()} of ${goal.toLocaleString()} planned`, pen.currentPoints / goal);
+      add('pension', pen.currentPoints >= goal, 'crimson', pen.currentPoints.toLocaleString(), 'Pension points', `${pen.currentPoints.toLocaleString()} of ${goal.toLocaleString()} planned`, pen.currentPoints / goal);
     }
 
-    const K = Household.kids(d);
+    // the kids
+    const K = Household.kids(d), kd = sub('kids');
     if (K && K.length && K.every(x => x.est > 0 || (x.base && x.base.v > 0)))
-      add('kids', true, 'blue', '529', K.length > 1 ? 'A 529 for every kid' : 'A 529 for your kid', `${K.length} college plan${K.length > 1 ? 's' : ''}, growing`, 1);
+      add('kids', true, 'coral', '529', K.length > 1 ? 'A 529 for every kid' : 'A 529 for your kid', `${K.length} college plan${K.length > 1 ? 's' : ''}, growing`, 1);
+    if (kd && kd.per && kd.per.length){
+      const low = Math.min(...kd.per.map(p => p.cover));
+      [[0.5, '½', 'College half-funded'], [1, 'Full', 'College fully funded']].forEach(([x, token, title]) =>
+        add('college' + x, low >= x, 'coral', token, title,
+            low >= x ? `Every 529 on pace for ${x < 1 ? 'half of' : ''} a public in-state degree`.replace('for  a', 'for a')
+                     : `The furthest behind is on pace for ${Fmt.pct(low, 0)}`, low / x));
+    }
 
     return out.filter(b => b.earned).concat(out.filter(b => !b.earned).sort((a, b) => b.progress - a.progress));
+  }
+
+  /* months in a row with money saved, from the Average Savings log (ending last month or this one) */
+  function savingStreak(d){
+    const months = Household.contribMonths(d).filter(m => !m.planned);
+    if (!months.length) return null;
+    let i = months.length - 1;
+    if (months[i].total <= 0 && i > 0) i--;                // this month may not be logged yet
+    const lastM = months[i];
+    let n = 0, since = null;
+    for (; i >= 0 && months[i].total > 0; i--){
+      if (n && monthsBetween(months[i].date, since) !== 1) break;   // a missing month ends the run
+      n++; since = months[i].date;
+    }
+    return n ? {months: n, since, last: lastM.date} : null;
+  }
+
+  /* ---------- the road ahead: dated milestones, nearest first ---------- */
+  function roadAhead(d, R){
+    const O = outlook(d, R), today = new Date(), items = [];
+    const push = (date, kind, title, sub) => { if (date && date > today) items.push({date, kind, title, sub}); };
+    const nw = R.net, last = R.hold.last;
+    [1e6, 2e6].filter(v => nw < v).forEach(v => push(O.when('net', v), 'nw', `${tok(v)} net worth`, `Net worth reaches ${Fmt.usd(v)} ${O.pace}`));
+    const miles = Compute.milestones(d.rows);
+    if (miles.next < 1e6) push(O.when('portfolio', miles.next), 'port', `${tok(miles.next)} portfolio`, 'The next $100k mark');
+    [1e6, 2e6].filter(v => last.total < v).forEach(v => push(O.when('portfolio', v), 'port', `${tok(v)} portfolio`, v === 1e6 ? 'A seven-figure portfolio' : 'Double millionaire'));
+    if (R.spend){
+      const f = Compute.fire({monthlySpend: R.spend.monthly, swr: 0.04, pensionMonthly: 0, rate: O.rate, infl: 0.025, contrib: O.contrib, start: R.hold.invested, horizonYears: 40});
+      if (f.months > 0) push(addMonths(monthStart(today), f.months), 'fi', 'Work optional', `Investments could cover today’s spending at 4% (${Fmt.k(f.fireNumber)} in today’s dollars)`);
+    }
+    const mt = R.nw.m;
+    if (mt && mt.timeline){
+      const half = mt.timeline.find(p => p.balance <= mt.terms.loan / 2);
+      if (half) push(half.date, 'home', 'Mortgage halfway', `Half of the ${Fmt.k(mt.terms.loan)} loan paid off`);
+      push(mt.payoff, 'home', 'Mortgage paid off', `The last payment on the ${Household.fmtRate(mt.terms.rate)} loan`);
+    }
+    (Household.kids(d) || []).forEach(k => { if (k.at18) push(k.at18.date, 'kids', `${k.name} turns 18`, `529 on pace for about ${Fmt.k(k.at18.value)}`); });
+    const sp = Household.sheetPlan(d);
+    if (sp.retireDate) push(sp.retireDate, 'plan', 'Retirement', `Your sheet’s retirement date · portfolio ≈ ${Fmt.k(O.at(Math.max(0, monthsBetween(monthStart(today), sp.retireDate))).portfolio)} ${O.pace}`);
+    if (R.age){
+      const b = R.age.birth, on = y => new Date(b.getFullYear() + y, b.getMonth(), b.getDate());
+      if (R.age.age < 40) push(on(40), 'you', 'You turn 40', nw >= 1e6 ? 'Seven figures already in hand' : 'The seven-figures-before-40 deadline');
+      if (d.pension) push(on(60), 'plan', 'Guard pension begins', `About ${Fmt.usd(d.pension.estMonthly)}/mo at age 60`);
+      const ss = d.inputs && d.inputs.num(/social security/i);
+      push(on(67), 'plan', 'Social Security full retirement age', ss ? `About ${Fmt.usd(ss.v)}/mo in today’s dollars` : 'Add your estimate from ssa.gov to see it here');
+    }
+    items.sort((a, b) => a.date - b.date);
+    return {items, pace: O.pace, ageAt: dt => R.age ? Math.floor((dt - R.age.birth) / (365.25 * 864e5) + 0.01) : null};
   }
 
   /* ---------- homework: protection the workbook can't see ---------- */
@@ -3598,8 +3885,12 @@ const Report = (() => {
     if (!R.spend) add(70, 'Add your monthly spending.', 'It grades the emergency fund and retirement readiness.', {text: 'Add it', label: 'Monthly spending'});
     if (!R.age) add(65, 'Add your birth date.', 'It unlocks the comparisons with people your age.', {text: 'Add it', label: 'Your birth date'});
     const k = Household.k401Year(d);
-    if (k && k.short > 1 && k.remaining > 0)
-      add(60, `Max the ${k.year} 401(k).`, `About ${Fmt.usd(k.extraPerCheck)} more from each of the ${k.remaining} remaining paychecks reaches the ${Fmt.usd(k.limit.limit)} limit: ${Fmt.usd(k.short)} more, before tax.`);
+    if (k && k.over > 1 && k.remaining > 0)
+      add(92, 'Trim your 401(k) a little.', `Counting your TSP deposits, you’re on pace to go ${Fmt.usd(k.over)} over the ${Fmt.usd(k.limit.limit)} limit. ` +
+          `About ${Fmt.usd(k.over / k.remaining)} less from each of the ${k.remaining} remaining paychecks keeps you under; money over the limit has to be refunded by April 15 or it’s taxed twice.`);
+    else if (k && !k.onPace && k.remaining > 0)
+      add(60, `Max the ${k.year} 401(k).`, `About ${Fmt.usd(k.extraPerCheck)} more from each of the ${k.remaining} remaining paychecks reaches the ${Fmt.usd(k.limit.limit)} limit: ${Fmt.usd(k.short)} more, before tax.` +
+          (k.tsp.projected > 0 ? ' That counts your TSP deposits, which share the limit.' : ''));
     const tr = sub('track');
     if (tr && tr.exact != null && tr.gap < 0) add(55, 'Catch up to your plan.', tr.tip.text);
     const home = R.nw.items.find(i => i.key === 'home');
@@ -3631,7 +3922,7 @@ const Report = (() => {
     return prev ? {...prev, date: new Date(+prev.w.slice(0, 4), +prev.w.slice(5, 7) - 1, +prev.w.slice(8, 10))} : null;
   }
 
-  return {card, comment, VERDICT, week, peers, badges, moves, homework, hwDone, remember, grade, bandFor, pctileOf, fidelityTarget};
+  return {card, comment, VERDICT, week, peers, badges, roadAhead, moves, homework, hwDone, remember, grade, bandFor, pctileOf, fidelityTarget};
 })();
 
 
@@ -5022,8 +5313,8 @@ function renderRate(R, S){
   }
   $('rateSub').textContent = R.household ? 'Everything saved ÷ household pay, this year so far'
                                          : 'Everything saved ÷ your pay, this year so far';
-  const big = elx('div', null, '');
-  big.style.cssText = 'font-size:40px;font-weight:800;letter-spacing:-.8px;margin:2px 0 4px';
+  const big = elx('div', 'big-num', '');
+  big.style.cssText = 'font-size:46px;margin:2px 0 4px';
   body.appendChild(big);
   countUp(big, R.rate * 100, v => v.toFixed(0) + '%', 700);
   const meter = elx('div', 'meter good-track');
@@ -5536,34 +5827,46 @@ function renderPacing(){
   if (!k){ card.hidden = true; return; }
   card.hidden = false;
   const L = k.limit.limit, n = k.done.length, N = k.deps.length;
-  const onTrack = k.projected >= L * 0.98;
-  const pctDone = Math.min(k.ytd / L * 100, 100);
+  const tsp = k.tsp.projected > 0 ? k.tsp : null;             // TSP deposits share the same limit
+  const room = L - (tsp ? tsp.projected : 0);                 // what's left of the limit for the 401(k) itself
+  const over = k.over > 1, onTrack = k.onPace && !over;
+  const soFar = k.ytd + (tsp ? tsp.ytd : 0);
+  const pctDone = Math.min(soFar / L * 100, 100);
   $('pacingSub').textContent =
     `${Fmt.usd(k.ytd)} of the ${Fmt.usd(L)} ${k.year} employee limit through ${n} of ${N} paychecks` +
+    (tsp ? ` · plus ${Fmt.usd(tsp.ytd)} into the TSP, which counts toward the same limit (Roth or not)` : '') +
     (k.limit.known ? '' : ` — using the ${k.limit.year} limit until ${k.year}’s is added to the dashboard`) +
     ` · ${Fmt.usd(k.matchYtd)} employer match on top (it doesn’t count toward the limit)`;
 
   const m = $('pacingMeter');
   m.textContent = '';
-  m.appendChild(elx('div', 'tile-label', `Employee deferrals, ${k.year} so far`));
-  const big = elx('div', null, ''); big.style.cssText = 'font-size:34px;font-weight:800;letter-spacing:-.5px;margin:6px 0 2px';
+  m.appendChild(elx('div', 'tile-label', tsp ? `401(k) + TSP deferrals, ${k.year} so far` : `Employee deferrals, ${k.year} so far`));
+  const big = elx('div', 'big-num', ''); big.style.cssText = 'font-size:38px;margin:6px 0 2px';
   m.appendChild(big);
-  countUp(big, k.ytd, Fmt.usd, 700);
+  countUp(big, soFar, Fmt.usd, 700);
   m.appendChild(elx('div', 'r-sub', 'of ' + Fmt.usd(L) + ' IRS limit (' + pctDone.toFixed(1) + '%)'));
   const meter = elx('div', 'meter'); meter.style.margin = '14px 0 10px';
   if (onTrack) meter.classList.add('good-track');
   const fill = elx('div', 'meter-fill ' + (onTrack ? 'good' : 'warn'));
   meter.appendChild(fill); m.appendChild(meter);
   requestAnimationFrame(() => { fill.style.width = pctDone + '%'; });
-  m.appendChild(elx('span', 'status-chip ' + (onTrack ? 'ok' : 'warn'),
-    onTrack ? `✓ on pace to max — ${Fmt.k(k.projected)} by year-end`
-            : `⚠ on pace for ${Fmt.k(k.projected)}, ${Fmt.k(k.short)} under the max`));
-  if (k.extraPerCheck > 0 && k.remaining > 0){
+  m.appendChild(elx('span', 'status-chip ' + (onTrack ? 'ok' : over ? 'behind' : 'warn'),
+    onTrack ? `✓ on pace to max — ${Fmt.usd(k.combined)} by year-end`
+    : over ? `⚠ on pace to go ${Fmt.usd(k.over)} over the limit`
+           : `⚠ on pace for ${Fmt.usd(k.combined)}, ${Fmt.usd(k.short)} under the max`));
+  if (tsp){
+    const note = elx('div', null, `The year-end figure includes about ${Fmt.usd(tsp.projected)} in the TSP, at this year’s monthly pace.`);
+    note.style.cssText = 'margin-top:8px;font-size:12px;color:var(--muted);line-height:1.5';
+    m.appendChild(note);
+  }
+  if (k.remaining > 0 && (over || !onTrack)){
     const tip2 = elx('div', 'r-sub');
     tip2.style.cssText = 'margin-top:10px;font-size:12.5px;line-height:1.55';
-    tip2.textContent = `To max out: add ${Fmt.usd(k.extraPerCheck)} to each of the last ${k.remaining} checks` +
-      (k.newRate && k.curRate ? ` (about ${Fmt.pct(k.newRate, 1)} instead of ${Fmt.pct(k.curRate, 0)})` : '') +
-      `. For a full year at the latest pay, ${Fmt.pct(L / (k.periods * k.next.gross), 1)} would do it.`;
+    const rate = k.newRate && k.curRate ? ` (about ${Fmt.pct(k.newRate, 1)} instead of ${Fmt.pct(k.curRate, 0)})` : '';
+    tip2.textContent = over
+      ? `To stay under: take ${Fmt.usd(k.over / k.remaining)} off each of the last ${k.remaining} checks${rate}. Money over the limit has to be refunded by April 15, or it’s taxed twice.`
+      : `To max out: add ${Fmt.usd(k.extraPerCheck)} to each of the last ${k.remaining} checks${rate}.` +
+        ` For a full year at the latest pay, ${Fmt.pct(room / (k.periods * k.next.gross), 1)} would do it.`;
     m.appendChild(tip2);
   }
 
@@ -5571,7 +5874,7 @@ function renderPacing(){
   const cum = k.deps.map(x => { run += x.employee; return Math.round(run); });
   const actual = cum.map((v, i) => i < n ? v : null);
   const planned = cum.map((v, i) => (i >= n - 1 && n < N) ? v : null);
-  const pace = cum.map((_, i) => Math.round(L / N * (i + 1)));
+  const pace = cum.map((_, i) => Math.round(room / N * (i + 1)));
   Charts.mount('c-pacing', {
     ...baseOption(t),
     tooltip: tip(t, {valueFormatter: v => v != null ? Fmt.usd(v) : '—'}),
@@ -5591,7 +5894,7 @@ function renderPacing(){
       {name: 'Pace to max', type: 'line', data: pace,
        lineStyle: {width: 1.5, type: 'dashed', color: t.muted},
        itemStyle: {color: t.muted}, symbol: 'none'},
-      {name: 'IRS limit', type: 'line', data: pace.map(() => L),
+      {name: tsp ? 'Limit minus TSP' : 'IRS limit', type: 'line', data: pace.map(() => Math.round(room)),
        lineStyle: {width: 1, type: 'dashed', color: t.bad},
        itemStyle: {color: t.bad}, symbol: 'none'},
     ],
@@ -5806,6 +6109,7 @@ Views.report = function(){
   renderPeers(d, R);
   renderAgeChart(d, R);
   renderBadges(d, R);
+  renderRoad(d, R);
   renderMoves(d, R);
   renderHomework(d);
   renderMethod();
@@ -5815,6 +6119,7 @@ function renderRcHero(d, R, prev){
   const o = R.overall;
   const badge = $('rcBadge');
   badge.className = 'grade-badge ' + (o ? o.cls : 'g-i');
+  requestAnimationFrame(() => badge.style.setProperty('--p', o ? o.score : 0));
   badge.setAttribute('aria-label', o ? `Overall grade ${o.letter}, ${o.score} out of 100` : 'Overall grade: incomplete');
   $('rcLetter').textContent = o ? o.letter : '–';
   $('rcScore').textContent = o ? `${o.score} / 100` : 'incomplete';
@@ -5909,7 +6214,7 @@ function whatIfLevers(d, R){
   if (save || ready){
     const chips = [];
     const k = Household.k401Year(d);
-    if (k && k.short > 1 && k.remaining > 0) chips.push({text: `Max the ${k.year} 401(k)`, value: Math.ceil(k.short / 12 / 25) * 25, move: true});
+    if (k && !k.onPace && k.remaining > 0) chips.push({text: `Max the ${k.year} 401(k)`, value: Math.ceil(k.short / 12 / 25) * 25, move: true});
     if (save){
       const SR = Household.savingsRate(d), n = Household.contribSummary(d).nDone;
       const goal = [0.15, 0.2, 0.25, 0.3, 0.35, 0.4].find(x => x > save.raw + 0.004);
@@ -6023,6 +6328,7 @@ function recomputeWhatIf(){
 
   const top = elx('div', 'wi-top');
   const badge = elx('div', 'grade-badge sm ' + o1.cls);
+  badge.style.setProperty('--p', o1.score);
   badge.setAttribute('role', 'img');
   badge.setAttribute('aria-label', `${active.length ? 'What-if grade' : 'Grade today'} ${o1.letter}, ${o1.score} out of 100`);
   badge.appendChild(elx('span', 'gb-letter', o1.letter));
@@ -6335,24 +6641,103 @@ function renderAgeChart(d, R){
 }
 
 function renderBadges(d, R){
-  const box = $('rcBadges');
-  box.textContent = '';
+  const earnedBox = $('rcBadges'), aheadBox = $('rcAhead');
+  earnedBox.textContent = '';
+  aheadBox.textContent = '';
   const list = Report.badges(d, R);
-  const earned = list.filter(b => b.earned).length;
-  $('rcBadgeSub').textContent = `${earned} earned · ${list.length - earned} in progress, closest first`;
+  const earned = list.filter(b => b.earned), ahead = list.filter(b => !b.earned);
+  $('rcBadgeSub').textContent = `${earned.length} earned · ${ahead.length} to look forward to, closest first` +
+    (ahead.some(b => b.when) ? ' · dates assume your plan’s return and saving' : '');
+  $('rcAheadHead').hidden = !ahead.length;
   list.forEach(b => {
     const m = elx('div', 'medal ' + b.style + (b.earned ? '' : ' locked'));
-    m.appendChild(elx('div', 'medal-disc', b.token));
+    const disc = elx('div', 'medal-disc', b.token);
+    m.appendChild(disc);
     m.appendChild(elx('div', 'medal-title', b.title));
     m.appendChild(elx('div', 'medal-desc', b.desc));
+    m.setAttribute('aria-label', `${b.title}: ${b.earned ? 'earned' : Fmt.pct(b.progress, 0) + ' of the way'}. ${b.desc}.${b.when ? ' ' + b.when + '.' : ''}`);
     if (!b.earned){
-      const meter = elx('div', 'meter'), fill = elx('div', 'meter-fill');
-      meter.appendChild(fill);
-      m.appendChild(meter);
       m.title = Fmt.pct(b.progress, 0) + ' of the way';
-      requestAnimationFrame(() => { fill.style.width = (b.progress * 100).toFixed(1) + '%'; });
+      if (b.when) m.appendChild(elx('div', 'medal-when', b.when));
+      requestAnimationFrame(() => disc.style.setProperty('--p', (b.progress * 100).toFixed(1)));
     }
-    box.appendChild(m);
+    (b.earned ? earnedBox : aheadBox).appendChild(m);
+  });
+  celebrate(d, earned);
+}
+
+/* a new badge since the last visit: confetti and a toast (once; remembered in this browser) */
+function celebrate(d, earned){
+  if (d.source === 'demo') return;
+  const ids = earned.map(b => b.group + ':' + b.title);
+  const seen = Prefs.get('rc-seen', null);
+  Prefs.set('rc-seen', ids);
+  if (!Array.isArray(seen)) return;                     // first visit: nothing to compare with
+  const fresh = earned.filter(b => !seen.includes(b.group + ':' + b.title));
+  if (!fresh.length) return;
+  toast((fresh.length > 1 ? 'New badges: ' : 'New badge: ') + fresh.map(b => b.title).join(', '));
+  confetti();
+}
+
+function toast(text){
+  const el = $('toast');
+  el.textContent = '';
+  el.appendChild(elx('span', 't-medal'));
+  el.appendChild(document.createTextNode(text));
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 5200);
+}
+
+function confetti(){
+  if (!MOTION) return;
+  const colors = ['#1f5fc8', '#e3a500', '#0b7d69', '#2a7f36', '#c9481f', '#5b3fc4', '#c02f55'];
+  const box = elx('div', 'confetti');
+  box.setAttribute('aria-hidden', 'true');
+  for (let i = 0; i < 90; i++){
+    const p = elx('i');
+    p.style.left = (Math.random() * 100) + '%';
+    p.style.background = colors[i % colors.length];
+    if (i % 3 === 0) p.style.borderRadius = '50%';
+    box.appendChild(p);
+    const drift = (Math.random() - .5) * 260, fall = window.innerHeight * (.7 + Math.random() * .5), spin = (Math.random() - .5) * 900;
+    p.animate([{transform: 'translate(0,0) rotate(0)', opacity: 1},
+               {transform: `translate(${drift}px,${fall}px) rotate(${spin}deg)`, opacity: 0}],
+              {duration: 1600 + Math.random() * 1400, delay: Math.random() * 400, easing: 'cubic-bezier(.15,.6,.35,1)', fill: 'forwards'});
+  }
+  document.body.appendChild(box);
+  setTimeout(() => box.remove(), 3600);
+}
+
+function renderRoad(d, R){
+  const card = $('card-road'), box = $('rcRoad');
+  const road = Report.roadAhead(d, R);
+  card.hidden = !road.items.length;
+  box.textContent = '';
+  if (!road.items.length) return;
+  $('rcRoadSub').textContent = `What’s coming, nearest first · portfolio dates assume your plan ${road.pace}; the rest come from your loan, the kids’ birthdays and your plan`;
+  const today = new Date();
+  const inWords = dt => { const n = monthsBetween(today, dt); return n < 12 ? `in ${Math.max(1, n)} mo` : `in ${Math.round(n / 12)} yr`; };
+  const half = Math.ceil(road.items.length / 2);
+  [road.items.slice(0, half), road.items.slice(half)].forEach(part => {
+    if (!part.length) return;
+    const col = elx('div', 'road-col');
+    part.forEach(x => {
+      const row = elx('div', 'road-item k-' + x.kind);
+      const when = elx('div', 'road-when', Fmt.month(x.date));
+      const age = road.ageAt(x.date);
+      if (age != null) when.appendChild(elx('small', null, 'age ' + age));
+      row.appendChild(when);
+      row.appendChild(elx('div', 'road-dot'));
+      const txt = elx('div');
+      const t = elx('div', 'road-title', x.title);
+      t.appendChild(elx('span', 'road-in', inWords(x.date)));
+      txt.appendChild(t);
+      txt.appendChild(elx('div', 'road-sub', x.sub));
+      row.appendChild(txt);
+      col.appendChild(row);
+    });
+    box.appendChild(col);
   });
 }
 
@@ -7178,6 +7563,7 @@ function positionInk(){
   const active = document.querySelector('#tabs .tab.active');
   const ink = $('tabInk');
   if (!active || !ink) return;
+  ink.dataset.view = active.dataset.view;              // the ink takes the tab's flag color
   ink.style.width = active.offsetWidth + 'px';
   ink.style.transform = `translateX(${active.offsetLeft}px)`;
 }
@@ -7186,6 +7572,7 @@ const RANGED_VIEWS = ['pulse', 'accounts', 'networth'];
 
 function switchView(view){
   state.view = view;
+  document.body.dataset.view = view;                    // the page glow and accents follow the open tab
   document.querySelectorAll('#tabs .tab').forEach(b => {
     const on = b.dataset.view === view;
     b.classList.toggle('active', on);
@@ -7360,6 +7747,8 @@ function loadData(data, opts = {}){
   Manual.wire();
 
   window.addEventListener('resize', debounce(positionInk, 120));
+  // charts draw text on a canvas, so redraw once the vendored fonts have arrived
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { positionInk(); if (state.data && !$('appView').hidden) renderActive(); });
 
   // 1) finish any Microsoft sign-in redirect first (it has to run before anything else)
   let od = {account: null};
