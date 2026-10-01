@@ -1,0 +1,2136 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Meridian · Long game preview</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23fbc044'/%3E%3Cpath d='M8.5 20.5a7.5 7.5 0 0 1 15 0z' fill='%23301d0d'/%3E%3Crect x='5' y='22' width='22' height='2.6' rx='1.3' fill='%23301d0d'/%3E%3C/svg%3E">
+<script>
+/* theme and screenshot flags before first paint: ?theme wins, then the OS setting, then light */
+(() => {
+  const q = new URLSearchParams(location.search), r = document.documentElement;
+  const saved = k => { try { return localStorage.getItem('meridian-preview-' + k); } catch (e) { return null; } };
+  const ok = v => v === 'light' || v === 'dark';
+  const t = ok(q.get('theme')) ? q.get('theme') : saved('theme');
+  r.dataset.theme = ok(t) ? t : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (ok(t)) r.dataset.themeFixed = '1';
+  r.dataset.palette = (q.get('palette') || saved('palette')) === 'stone' ? 'stone' : 'harbor';
+  if (q.get('shot') === '1') r.classList.add('shot');
+})();
+</script>
+<style>
+@font-face{font-family:"Bricolage Grotesque";src:url(../vendor/fonts/bricolage-grotesque-latin-standard-normal.woff2) format("woff2");font-weight:200 800;font-stretch:75% 100%;font-display:swap}
+
+/* ============ TOKENS ============ */
+:root{
+  color-scheme:light;
+  /* page */
+  --page:oklch(0.985 0.0048 240);
+  --surface-2:oklch(0.962 0.0072 240);
+  --surface-3:oklch(0.935 0.0084 240);
+  --ink:oklch(0.24 0.0132 240);
+  --ink-2:oklch(0.42 0.0132 240);
+  --muted:oklch(0.52 0.0108 240);
+  --hair:oklch(0.905 0.0072 240);
+  --hair-2:oklch(0.86 0.0084 240);
+  /* the horizon band */
+  /* a pale wash, like colored paper. Harbor here; Stone below (the reader picks it under Appearance) */
+  --band:oklch(0.955 0.025 235);
+  --band-lens:oklch(0.905 0.045 235);
+  --band-text:oklch(0.27 0.045 250);
+  --band-text-2:oklch(0.43 0.045 250);
+  --band-mark:oklch(0.31 0.055 250);        /* past line, fan, pins, today */
+  --band-knock:oklch(0.955 0.025 235);     /* glyph inside a filled pin */
+  --accent:oklch(0.78 0.09 235);        /* the accent: grade disc, brand, first move */
+  --accent-ink:oklch(0.25 0.05 250);
+  --sky:oklch(0.935 0.03 235);            /* pale wash for large fills */
+  /* the portfolio, drawn the same way on and off the band */
+  --port:oklch(0.26 0.04 250);
+  --port-wash:oklch(0.78 0.09 235 / 0.28);
+  --plan:oklch(0.52 0.0108 240);
+  /* status: text deltas only, always with a sign and an arrow */
+  --good:oklch(0.50 0.12 150);
+  --bad:oklch(0.52 0.17 28);
+  /* diverging data: gains blue, losses clay red, gray midpoint (validated, see NOTES.md) */
+  --gain:oklch(0.55 0.11 245);
+  --loss:oklch(0.58 0.13 35);
+  --loss-wash:oklch(0.58 0.13 35 / 0.12);
+  --div-mid:oklch(0.95 0.0048 240);
+  --div-gain:oklch(0.80 0.075 240);
+  --div-loss:oklch(0.80 0.08 35);
+  /* account groups (validated, see NOTES.md) */
+  --g-retire:oklch(0.453 0.119 262);
+  --g-broker:oklch(0.642 0.108 195);
+  --g-cash:oklch(0.566 0.119 118);
+  --g-crypto:oklch(0.595 0.2 310);
+  --g-match:oklch(0.54 0.146 42);
+  --g-kids:oklch(0.665 0.153 352);
+  --g-home:oklch(0.574 0.121 60);
+  /* focus */
+  --focus:oklch(0.24 0.0132 240);
+  --halo:oklch(0.78 0.09 235 / 0.5);
+  --shadow:0 1px 2px oklch(0.25 0.04 60 / 0.08),0 10px 28px oklch(0.25 0.04 60 / 0.14);
+  /* type scale (1.25) */
+  --fs-xs:0.8125rem; --fs-s:1rem; --fs-m:1.25rem; --fs-l:1.5625rem; --fs-xl:1.9375rem;
+  --fs-f1:2.4375rem; --fs-f2:3.0625rem; --fs-f3:3.8125rem; --fs-hero:6.5rem;
+  /* space (4pt) */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px; --s9:96px;
+  --gutter:40px; --maxw:1200px;
+  --ease:cubic-bezier(0.25,1,0.5,1);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --page:oklch(0.205 0.0072 240);
+  --surface-2:oklch(0.24 0.0084 240);
+  --surface-3:oklch(0.28 0.0096 240);
+  --ink:oklch(0.94 0.0072 240);
+  --ink-2:oklch(0.80 0.0096 240);
+  --muted:oklch(0.68 0.0096 240);
+  --hair:oklch(0.31 0.0084 240);
+  --hair-2:oklch(0.38 0.0096 240);
+  --band:oklch(0.27 0.035 245);
+  --band-lens:oklch(0.325 0.05 245);
+  --band-text:oklch(0.95 0.015 235);
+  --band-text-2:oklch(0.80 0.03 235);
+  --band-mark:oklch(0.85 0.08 230);
+  --band-knock:oklch(0.27 0.035 245);
+  --accent:oklch(0.80 0.09 232);
+  --accent-ink:oklch(0.24 0.04 250);
+  --sky:oklch(0.29 0.035 245);
+  --port:oklch(0.85 0.08 230);
+  --port-wash:oklch(0.85 0.08 230 / 0.13);
+  --plan:oklch(0.68 0.0096 240);
+  --good:oklch(0.78 0.13 150);
+  --bad:oklch(0.74 0.13 28);
+  --gain:oklch(0.65 0.11 240);
+  --loss:oklch(0.66 0.13 35);
+  --loss-wash:oklch(0.66 0.13 35 / 0.16);
+  --div-mid:oklch(0.265 0.0072 240);
+  --div-gain:oklch(0.45 0.08 240);
+  --div-loss:oklch(0.45 0.09 35);
+  --g-retire:oklch(0.651 0.168 262);
+  --g-broker:oklch(0.64 0.105 195);
+  --g-cash:oklch(0.578 0.127 118);
+  --g-crypto:oklch(0.548 0.159 310);
+  --g-match:oklch(0.648 0.137 42);
+  --g-kids:oklch(0.55 0.158 352);
+  --g-home:oklch(0.577 0.13 60);
+  --focus:oklch(0.80 0.09 232);
+  --halo:oklch(0.80 0.09 232 / 0.22);
+  --shadow:0 1px 2px oklch(0.1 0.01 60 / 0.45),0 12px 30px oklch(0.1 0.01 60 / 0.55);
+}
+
+/* ============ STONE: the second palette (Appearance > Color) ============
+   Swaps the band, the accent and the tint of every neutral. Data colors (gains, losses,
+   account groups) stay the same in both palettes, so a chart never changes meaning. */
+:root[data-palette="stone"]:not([data-theme="dark"]){--page:oklch(0.985 0.004 75);--surface-2:oklch(0.962 0.006 75);--surface-3:oklch(0.935 0.007 75);--ink:oklch(0.24 0.011 75);--ink-2:oklch(0.42 0.011 75);--muted:oklch(0.52 0.009 75);--plan:oklch(0.52 0.009 75);--hair:oklch(0.905 0.006 75);--hair-2:oklch(0.86 0.007 75);--div-mid:oklch(0.95 0.004 75);--band:oklch(0.945 0.008 80);--band-lens:oklch(0.90 0.012 80);--band-text:oklch(0.26 0.012 70);--band-text-2:oklch(0.43 0.012 70);--band-mark:oklch(0.30 0.012 70);--band-knock:oklch(0.945 0.008 80);--accent:oklch(0.84 0.025 75);--accent-ink:oklch(0.26 0.012 70);--sky:oklch(0.935 0.01 80);--port:oklch(0.26 0.012 70);--port-wash:oklch(0.84 0.025 75 / 0.28);--halo:oklch(0.84 0.025 75 / 0.5);--focus:oklch(0.24 0.011 75)}
+:root[data-palette="stone"][data-theme="dark"]{--page:oklch(0.205 0.006 75);--surface-2:oklch(0.24 0.007 75);--surface-3:oklch(0.28 0.008 75);--ink:oklch(0.94 0.006 75);--ink-2:oklch(0.80 0.008 75);--muted:oklch(0.68 0.008 75);--plan:oklch(0.68 0.008 75);--hair:oklch(0.31 0.007 75);--hair-2:oklch(0.38 0.008 75);--div-mid:oklch(0.265 0.006 75);--band:oklch(0.26 0.006 80);--band-lens:oklch(0.31 0.01 80);--band-text:oklch(0.95 0.006 85);--band-text-2:oklch(0.80 0.008 80);--band-mark:oklch(0.86 0.012 80);--band-knock:oklch(0.26 0.006 80);--accent:oklch(0.84 0.02 80);--accent-ink:oklch(0.24 0.01 70);--sky:oklch(0.29 0.008 80);--port:oklch(0.86 0.012 80);--port-wash:oklch(0.86 0.012 80 / 0.13);--halo:oklch(0.84 0.02 80 / 0.22);--focus:oklch(0.84 0.02 80)}
+
+/* ============ BASE ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--page);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:var(--fs-s);line-height:1.5;font-weight:400;font-variation-settings:"opsz" 14;font-kerning:normal;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+:root[data-theme="dark"] body{font-weight:380;letter-spacing:.005em}
+h1,h2,h3,p{margin:0}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit}
+svg{display:block}
+.vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;contain:paint;clip-path:inset(50%);white-space:nowrap;border:0}
+.skip{position:absolute;left:16px;top:-60px;z-index:900;background:var(--ink);color:var(--page);padding:8px 14px;border-radius:8px;text-decoration:none;font-weight:600}
+.skip:focus{top:12px}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.up{color:var(--good)} .dn{color:var(--bad)} .flat{color:var(--ink-2)}
+.muted{color:var(--muted)}
+[data-scroll-x]{position:relative;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}
+[data-scroll-x]::-webkit-scrollbar{display:none}
+
+/* ============ CONTROLS ============ */
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:7px 15px;border-radius:999px;border:1px solid var(--hair-2);background:var(--page);color:var(--ink);font-size:var(--fs-s);font-weight:560;line-height:1.2;cursor:pointer;transition:background-color .15s var(--ease),border-color .15s var(--ease)}
+.btn svg{width:16px;height:16px;flex:none}
+.btn:hover{background:var(--surface-2);border-color:var(--muted)}
+.btn:active{background:var(--surface-3)}
+.btn:focus-visible,.icon-btn:focus-visible,.tab:focus-visible,.seg button:focus-visible,.src:focus-visible,.link:focus-visible,.medal:focus-visible,.tgl:focus-visible{outline:2px solid var(--focus);outline-offset:2px;box-shadow:0 0 0 6px var(--halo)}
+.btn:disabled,.icon-btn:disabled{cursor:not-allowed;color:var(--muted);background:transparent;border-color:var(--hair)}
+.icon-btn{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;border:1px solid transparent;background:transparent;color:var(--ink);cursor:pointer;transition:background-color .15s var(--ease),border-color .15s var(--ease)}
+.icon-btn svg{width:20px;height:20px}
+.icon-btn:hover{background:var(--surface-2);border-color:var(--hair-2)}
+.icon-btn:active{background:var(--surface-3)}
+.icon-btn:disabled svg{opacity:.55}
+.icon-btn.spin svg{animation:spin .7s var(--ease)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tgl:disabled{cursor:not-allowed;color:var(--muted);background:transparent;border-color:var(--hair)}
+.link{display:inline-flex;align-items:center;gap:6px;padding:2px 0;border:0;background:none;color:var(--ink);font-weight:600;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;text-decoration-color:var(--hair-2);cursor:pointer;border-radius:4px;transition:text-decoration-color .15s var(--ease)}
+.link svg{width:15px;height:15px;transition:transform .15s var(--ease)}
+.link:hover{text-decoration-color:currentColor}
+.link:hover svg{transform:translateX(2px)}
+.link:active{color:var(--ink-2)}
+.tgl{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:4px 12px;border-radius:999px;border:1px solid var(--hair-2);background:transparent;color:var(--ink-2);font-size:var(--fs-xs);font-weight:600;cursor:pointer;transition:background-color .15s var(--ease),color .15s var(--ease),border-color .15s var(--ease)}
+.tgl svg{width:14px;height:14px}
+.tgl:hover{background:var(--surface-2);color:var(--ink);border-color:var(--muted)}
+.tgl:active{background:var(--surface-3)}
+.tgl[aria-pressed="true"]{background:var(--ink);color:var(--page);border-color:var(--ink)}
+.seg{display:inline-flex;gap:2px;padding:3px;border:1px solid var(--hair-2);border-radius:999px;background:var(--page)}
+.seg button{min-width:42px;min-height:30px;padding:4px 10px;border:0;border-radius:999px;background:transparent;color:var(--ink-2);font-size:var(--fs-xs);font-weight:650;cursor:pointer;transition:background-color .15s var(--ease),color .15s var(--ease)}
+.seg button:hover{background:var(--surface-2);color:var(--ink)}
+.seg button:active{background:var(--surface-3)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--page)}
+.seg button:disabled{cursor:not-allowed;color:var(--muted);background:transparent}
+.seg button[aria-pressed="true"]:disabled{background:var(--surface-3);color:var(--muted)}
+
+/* ============ TOP BAR ============ */
+.topbar{display:flex;align-items:center;gap:var(--s4);min-height:64px;padding:12px var(--gutter)}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto;font-size:var(--fs-m);font-weight:760;font-variation-settings:"opsz" 24;letter-spacing:-.015em}
+.brand svg{width:30px;height:30px}
+.tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.src{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:6px 14px 6px 12px;border-radius:999px;border:1px solid var(--hair-2);background:var(--page);color:var(--ink-2);font-size:var(--fs-xs);font-weight:560;cursor:pointer;transition:background-color .15s var(--ease),border-color .15s var(--ease)}
+.src b{color:var(--ink);font-weight:680}
+.src:hover{background:var(--surface-2);border-color:var(--muted)}
+.src:active{background:var(--surface-3)}
+.src-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px var(--page),0 0 0 3px var(--band-mark)}
+:root[data-theme="dark"] .src-dot{box-shadow:0 0 0 2px var(--page),0 0 0 3px var(--accent)}
+.tools .btn{min-height:38px}
+.brk{display:none}
+.pop{margin:0;inset:auto;position:fixed;width:min(320px,calc(100vw - 32px));padding:16px 18px;border:1px solid var(--hair-2);border-radius:14px;background:var(--page);color:var(--ink);box-shadow:var(--shadow);font-size:var(--fs-xs);line-height:1.5}
+.pop h3{font-size:var(--fs-s);font-weight:700;margin:0 0 4px}
+.pop p+p{margin-top:6px}
+.pop dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:8px 0 0}
+.pop dt{color:var(--muted)} .pop dd{margin:0;font-weight:600}
+
+/* ============ THE BAND ============ */
+.bandhead{display:none}
+.band{position:relative;background:var(--band);color:var(--band-text)}
+.band-scroll{overflow-x:auto}
+.band svg{font-family:"Bricolage Grotesque",system-ui,sans-serif}
+.b-grid{stroke:var(--band-mark);stroke-opacity:.13;stroke-width:1}
+.b-gridlab{fill:var(--band-text-2);font-size:11.5px;font-weight:560}
+.b-wash{fill:var(--band-mark);fill-opacity:.1}
+.b-line{fill:none;stroke:var(--band-mark);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.b-fan{fill:var(--band-mark);fill-opacity:.14}
+.b-edge{fill:none;stroke:var(--band-mark);stroke-opacity:.5;stroke-width:1}
+.b-plan{fill:none;stroke:var(--band-mark);stroke-width:2;stroke-dasharray:7 5;stroke-linecap:round}
+.b-guide{stroke:var(--band-mark);stroke-opacity:.45;stroke-width:1}
+.b-rail{stroke:var(--band-mark);stroke-width:1.5}
+.b-tick{stroke:var(--band-mark);stroke-opacity:.55;stroke-width:1}
+.b-year{fill:var(--band-text);font-size:12px;font-weight:650}
+.b-age{fill:var(--band-text-2);font-size:11px;font-weight:500}
+.b-today{stroke:var(--band-mark);stroke-width:1.5}
+.b-dot{fill:var(--band-mark);stroke:var(--band);stroke-width:3}
+.b-tlabel{fill:var(--band-text);font-size:13px}
+.b-tlabel .k{font-weight:750}
+.b-tval{fill:var(--band-text);font-size:22px;font-weight:760;letter-spacing:-.015em;font-variation-settings:"opsz" 24}
+.b-cap{fill:var(--band-text);font-size:12.5px}
+.b-cap .k{font-weight:750}
+.b-endlab{fill:var(--band-text);font-size:12px;font-weight:520}
+.b-endlab.is-plan{font-weight:760}
+.b-lens{fill:var(--band-lens)}
+.b-lenslab{fill:var(--band-text);font-size:12px;font-weight:750}
+.b-cross{stroke:var(--band-mark);stroke-width:1;stroke-opacity:.7;pointer-events:none}
+.b-crossdot{fill:var(--band-mark);stroke:var(--band);stroke-width:2;pointer-events:none}
+.b-capture{fill:transparent;cursor:crosshair}
+.pin{cursor:pointer;outline:none}
+.pin .hit{fill:transparent}
+.pin .head{fill:var(--band);stroke:var(--band-mark);stroke-width:1.5;transition:transform .15s var(--ease)}
+.pin .glyph{fill:var(--band-mark)}
+.pin.is-done .head,.bead .head{fill:var(--band-mark);stroke:var(--band);stroke-width:2}
+.pin.is-done .glyph,.bead .glyph{fill:var(--band-knock)}
+.pin .badge-ring{fill:none;stroke:var(--band-mark);stroke-width:1;opacity:.8}
+.pin .pole{stroke:var(--band-mark);stroke-opacity:.55;stroke-width:1}
+.pin .plab{fill:var(--band-text);font-size:12px;font-weight:650}
+.pin.is-done .plab{fill:var(--band-text-2);font-weight:560}
+.pin .ring,.bead .ring{fill:none;stroke:var(--band-mark);stroke-width:2;opacity:0;transition:opacity .15s var(--ease)}
+.pin .scale,.bead .scale{transition:transform .15s var(--ease)}
+.pin:hover .scale,.pin:focus-visible .scale,.pin.is-twin .scale,.bead:hover .scale,.bead.is-twin .scale{transform:scale(1.28)}
+.pin:hover .ring,.pin:focus-visible .ring,.pin.is-twin .ring,.bead:hover .ring,.bead.is-twin .ring{opacity:1}
+.pin.is-twin .plab,.pin:hover .plab{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
+.bead{cursor:pointer;outline:none}
+/* each tab is a lens on the band: the Report card brings the badge pins forward */
+.band .pin .scale,.band .pin .pole{transition:opacity .2s var(--ease)}
+.band.lens-report .pin:not(.has-badge) .scale{opacity:.36}
+.band.lens-report .pin:not(.has-badge) .pole{opacity:.4}
+.band.lens-report .pin:not(.has-badge) .plab{fill:var(--band-text-2);font-weight:440}
+.band.lens-report .pin:not(.has-badge):hover .scale,.band.lens-report .pin:not(.has-badge):focus-visible .scale,.band.lens-report .pin.is-twin .scale{opacity:1}
+.bead .hit{fill:transparent}
+.bead .ghost{fill:var(--band);stroke:var(--band-mark);stroke-width:1.5}
+.b-shelflab{fill:var(--band-text);font-size:12.5px}
+.b-shelflab .k{font-weight:750}
+
+/* the slim horizon that follows you down the page */
+.strip{position:fixed;left:0;right:0;top:0;z-index:300;height:44px;background:var(--band);color:var(--band-text);box-shadow:0 1px 0 oklch(0.25 0.04 60 / .12),0 6px 18px oklch(0.25 0.04 60 / .12);transform:translateY(-110%);transition:transform .22s var(--ease);cursor:pointer}
+.strip.on{transform:none}
+.strip svg{width:100%;height:44px}
+.strip .pin .head{stroke-width:1.25}
+.strip .pin:hover .scale,.strip .pin.is-twin .scale{transform:scale(1.6)}
+.strip .bead:hover .scale,.strip .bead.is-twin .scale{transform:scale(1.5)}
+.s-lab{fill:var(--band-text);font-size:11.5px;font-weight:700}
+.s-lab2{fill:var(--band-text-2);font-size:11.5px;font-weight:520}
+.s-count{fill:var(--band-knock);font-size:10px;font-weight:760;pointer-events:none}
+
+/* ============ TABS ============ */
+.tabs-wrap{padding:0 var(--gutter)}
+.tabs{display:flex;gap:2px;min-width:max-content}
+.tab{position:relative;padding:12px 18px 14px;border:0;border-radius:0 0 14px 14px;background:transparent;color:var(--ink-2);font-size:var(--fs-m);font-weight:620;font-variation-settings:"opsz" 22;letter-spacing:-.005em;cursor:pointer;transition:background-color .15s var(--ease),color .15s var(--ease)}
+.tab:hover{background:var(--surface-2);color:var(--ink)}
+.tab:active{background:var(--surface-3)}
+.tab[aria-selected="true"]{background:var(--band);color:var(--band-text);font-weight:720}
+.tab .soon{display:block;height:0;overflow:hidden}
+
+/* ============ LAYOUT ============ */
+main{max-width:calc(var(--maxw) + 2 * var(--gutter));margin:0 auto;padding:48px var(--gutter) 112px}
+.view[hidden]{display:none}
+.sec{margin-top:88px}
+.sec.tight{margin-top:64px}
+.view>.sec:first-child{margin-top:0}
+.sec-h{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;column-gap:24px;row-gap:6px;margin-bottom:22px}
+.sec-h h2{font-size:var(--fs-xl);line-height:1.15;font-weight:740;font-variation-settings:"opsz" 36;letter-spacing:-.02em}
+.sec-h .sub{grid-column:1;color:var(--muted);max-width:72ch}
+.sec-h .acts{grid-column:2;grid-row:1 / span 2;align-self:end;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.h3{font-size:var(--fs-l);line-height:1.2;font-weight:720;font-variation-settings:"opsz" 28;letter-spacing:-.015em}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0;padding:0;list-style:none;color:var(--ink-2);font-size:var(--fs-xs);font-weight:560}
+.legend li{display:inline-flex;align-items:center;gap:7px}
+.key{display:inline-block;width:22px;height:0;border-top:2px solid var(--port)}
+.key.dash{border-top:2px dashed var(--plan)}
+.key.dot{width:10px;height:10px;border:0;border-radius:50%;background:var(--port);box-shadow:0 0 0 2px var(--page)}
+.key.dia{width:9px;height:9px;border:0;background:var(--ink-2);transform:rotate(45deg)}
+.key.sq{width:10px;height:10px;border:0;border-radius:3px}
+.chart{width:100%}
+.h-main{height:392px}
+.h-sm{height:250px}
+.tbl-wrap{max-height:392px;overflow:auto;border-top:1px solid var(--hair)}
+.dtable{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.dtable th{position:sticky;top:0;background:var(--page);text-align:right;font-size:var(--fs-xs);font-weight:650;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--hair-2)}
+.dtable td{text-align:right;padding:8px 12px;border-bottom:1px solid var(--hair)}
+.dtable th:first-child,.dtable td:first-child{text-align:left;padding-left:0}
+.dtable td.note,.dtable th.note{text-align:left;color:var(--ink-2);max-width:32ch;padding-left:24px}
+
+/* ============ PULSE ============ */
+.now{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);column-gap:56px;align-items:start}
+.eyebrow{color:var(--ink-2);font-size:var(--fs-m);font-weight:520;margin-bottom:6px}
+.wkno{display:inline-block;vertical-align:.18em;margin-right:12px;padding:3px 9px 2px;border-radius:6px;background:var(--band);color:var(--band-text);font-size:var(--fs-xs);font-weight:720;letter-spacing:.01em}
+.hero-fig{font-size:var(--fs-hero);line-height:.9;font-weight:800;font-variation-settings:"opsz" 96;letter-spacing:-.04em;margin-left:-.04em}
+.deltas{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:6px;font-size:var(--fs-m);font-weight:540;line-height:1.3}
+.deltas li{padding-left:1.15em;text-indent:-1.15em}
+.deltas .ar{display:inline-block;text-indent:0;font-weight:760;width:1.15em}
+.deltas .pc{margin-left:.35em}
+.deltas .txt{color:var(--ink)}
+.deltas .pc{color:var(--muted);font-weight:480}
+.now-side{display:grid;align-content:start;padding-left:36px;border-left:1px solid var(--hair)}
+.sign{padding:16px 0}
+.sign:first-child{padding-top:2px}
+.sign+.sign{border-top:1px solid var(--hair)}
+.sign-label{font-weight:650;color:var(--ink-2)}
+.sign-fig{margin:2px 0 6px;font-size:var(--fs-f1);line-height:1.05;font-weight:740;font-variation-settings:"opsz" 48;letter-spacing:-.025em}
+.sign-sub{color:var(--muted);font-size:var(--fs-xs);line-height:1.45;max-width:46ch}
+.sign .link{margin-top:10px}
+.notes{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px 28px;color:var(--ink-2);font-size:var(--fs-xs)}
+.notes li{display:flex;align-items:baseline;gap:9px}
+.notes .key.dia{flex:none;transform:rotate(45deg) translateY(-1px)}
+.notes b{color:var(--ink);font-weight:650}
+.pair{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);column-gap:56px;align-items:start}
+.pair.flip{grid-template-columns:minmax(0,4fr) minmax(0,8fr)}
+.pair.flip .figs{order:-1}
+.figs{display:grid;gap:30px;align-content:start;padding-top:8px}
+.fb-l{font-weight:650;color:var(--ink-2)}
+.fb-v{margin:2px 0 4px;font-size:var(--fs-f1);line-height:1.05;font-weight:740;font-variation-settings:"opsz" 48;letter-spacing:-.025em}
+.fb-s{color:var(--muted);font-size:var(--fs-xs);line-height:1.45}
+.fb-v small{font-size:var(--fs-m);font-weight:600;letter-spacing:0;margin-left:6px;color:var(--ink-2)}
+.climb{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:56px;align-items:start}
+.trail{list-style:none;margin:0;padding:0;position:relative}
+.trail::before{content:"";position:absolute;left:15px;top:69px;bottom:22px;width:1px;background:var(--hair-2)}
+.trail li.next::after{content:"";position:absolute;left:15px;top:40px;height:28px;border-left:1.5px dashed var(--muted)}
+.trail li{position:relative;display:grid;grid-template-columns:32px 84px minmax(0,1fr);column-gap:14px;align-items:center;padding:7px 0;border-radius:10px}
+.trail .pg{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--port);color:var(--page);box-shadow:0 0 0 4px var(--page);transition:transform .15s var(--ease)}
+:root[data-theme="dark"] .trail .pg{color:var(--band-knock)}
+:root[data-theme="dark"] .trail li.next .pg{color:var(--ink)}
+.trail .pg svg{width:17px;height:17px}
+.trail li.next .pg{background:var(--page);color:var(--ink);border:1.5px solid var(--ink)}
+.trail li.is-twin .pg{transform:scale(1.15)}
+.trail .amt{font-size:var(--fs-l);font-weight:740;font-variation-settings:"opsz" 28;letter-spacing:-.02em;line-height:1.1}
+.trail .when{font-size:var(--fs-xs);color:var(--ink-2);line-height:1.35}
+.trail .when b{color:var(--ink);font-weight:650}
+.trail .gapbar{display:block;height:5px;margin-top:5px;border-radius:0 3px 3px 0;background:var(--sky);max-width:100%}
+:root[data-theme="dark"] .trail .gapbar{background:color-mix(in oklch, var(--accent) 35%, transparent)}
+.trail li.next .when{color:var(--ink)}
+.mgrid-wrap{overflow-x:auto}
+.mgrid{width:100%;border-collapse:separate;border-spacing:3px;font-size:var(--fs-xs);font-variant-numeric:tabular-nums}
+.mgrid th{font-weight:620;color:var(--muted);padding:2px 0 6px;text-align:center}
+.mgrid th.yr{position:sticky;left:0;z-index:1;background:var(--page);text-align:left;color:var(--ink-2);padding:0 8px 0 0;font-weight:650}
+.mgrid td{text-align:center;padding:6px 0;border-radius:6px;color:var(--ink);min-width:44px}
+.mgrid td.tot{font-weight:720}
+.mgrid td.is-now{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.mgrid td.na{color:var(--muted);font-weight:500}
+.mgrid tr.cur th.yr{color:var(--ink)}
+.gridkey{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:14px;color:var(--muted);font-size:var(--fs-xs)}
+.gridkey .ramp{display:inline-block;width:160px;height:10px;border-radius:5px}
+.scale-note{flex-basis:100%}
+
+/* ============ REPORT ============ */
+.grade{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:56px;row-gap:16px;align-items:center}
+.grade .sun{grid-row:1 / span 2}
+.grade .ghead{grid-column:2;grid-row:1;align-self:end}
+.grade .comment{grid-column:2;grid-row:2;align-self:start}
+.sun{position:relative;width:228px;height:228px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center}
+.sun .letter{font-size:9.5rem;line-height:1;font-weight:800;font-variation-settings:"opsz" 96;letter-spacing:-.05em;transform:translate(-2px,-6px)}
+.sun .score{position:absolute;left:0;right:0;bottom:30px;text-align:center;font-size:var(--fs-xs);font-weight:720}
+.verdict{font-size:var(--fs-f2);line-height:1;font-weight:790;font-variation-settings:"opsz" 72;letter-spacing:-.03em}
+.grade .meta{margin-top:10px;color:var(--ink-2);font-size:var(--fs-s)}
+.grade .comment{font-size:var(--fs-m);line-height:1.45;max-width:58ch}
+.gpa{grid-column:3;grid-row:1 / span 2;text-align:right;padding-left:32px;border-left:1px solid var(--hair);align-self:stretch;display:grid;align-content:center;gap:2px}
+.gpa .fb-v{font-size:var(--fs-f2)}
+.sky{position:relative}
+.sky svg{width:100%;overflow:visible}
+.sk-col{fill:var(--sky)}
+.sk-roof{stroke:var(--port);stroke-width:2.5;stroke-linecap:round}
+.sk-letter{fill:var(--ink);font-size:20px;font-weight:760}
+.sk-score{fill:var(--muted);font-size:12px;font-weight:560}
+.sk-name{fill:var(--ink-2);font-size:12.5px;font-weight:600}
+.sk-base{stroke:var(--hair-2);stroke-width:1}
+.sk-g{cursor:default}
+.sk-g .sk-col{transition:fill .15s var(--ease)}
+.sk-g:hover .sk-col,.sk-g.is-twin .sk-col{fill:var(--accent)}
+:root[data-theme="dark"] .sk-g:hover .sk-col,:root[data-theme="dark"] .sk-g.is-twin .sk-col{fill:var(--band-lens)}
+.subjects{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:56px;margin-top:36px}
+.subj{display:grid;grid-template-columns:56px minmax(0,1fr);column-gap:18px;padding:22px 0;border-top:1px solid var(--hair);border-radius:2px;transition:background-color .15s var(--ease)}
+.subj.is-twin{background:linear-gradient(90deg,var(--surface-2),transparent 70%)}
+.subj .lg{font-size:var(--fs-f1);line-height:1;font-weight:790;font-variation-settings:"opsz" 48;letter-spacing:-.04em}
+.subj .lg.low{color:var(--loss)}
+.subj .nm{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 12px}
+.subj .nm b{font-size:var(--fs-m);font-weight:700;letter-spacing:-.01em}
+.subj .nm span{color:var(--muted);font-size:var(--fs-xs)}
+.subj .val{margin:6px 0 8px;line-height:1.35}
+.subj .val b{font-size:var(--fs-l);font-weight:740;font-variation-settings:"opsz" 28;letter-spacing:-.02em;margin-right:9px}
+.subj .val span{color:var(--ink-2)}
+.subj .why{color:var(--ink)}
+.subj .bench{margin-top:6px;color:var(--muted);font-size:var(--fs-xs)}
+.subj .note-tip{margin-top:12px;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--sky);color:var(--ink);font-size:var(--fs-xs);font-weight:560}
+.subj .note-tip svg{width:15px;height:15px;flex:none;margin-top:2px}
+.subj.needs .why{color:var(--ink-2)}
+.badges-hint{color:var(--ink-2)}
+.trailrow{display:grid;grid-template-columns:112px minmax(0,1fr);column-gap:8px;align-items:start;margin-top:30px}
+.trailrow .rl{padding-top:16px}
+.trailrow .rl b{display:block;font-weight:720}
+.trailrow .rl span{color:var(--muted);font-size:var(--fs-xs)}
+.medals{position:relative;display:flex;align-items:flex-start;padding:0 0 4px}
+.medals::before{content:"";position:absolute;left:0;right:0;top:28px;height:1.5px;background:var(--hair-2)}
+.medals.ahead::before{background:repeating-linear-gradient(90deg,var(--hair-2) 0 7px,transparent 7px 12px)}
+.medals.earned .todaytick{margin-left:auto}
+.medals.ahead .medal{flex-basis:140px}
+.todaytick{position:relative;flex:none;align-self:stretch;width:58px;display:grid;justify-items:center;align-content:start;color:var(--ink);font-size:var(--fs-xs);font-weight:720;z-index:1}
+.todaytick i{display:block;width:2px;height:44px;margin-top:6px;background:var(--ink);border-radius:1px}
+.todaytick span{margin-top:6px}
+.medal{position:relative;z-index:1;flex:0 1 104px;min-width:0;display:grid;justify-items:center;align-content:start;gap:3px;padding:0 4px 8px;border:0;background:none;text-align:center;cursor:default;border-radius:14px}
+button.medal{cursor:pointer}
+.medal .disc{position:relative;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;margin-bottom:8px;box-shadow:0 0 0 5px var(--page);transition:transform .18s var(--ease),box-shadow .18s var(--ease)}
+.medal .disc svg{position:relative;width:26px;height:26px}
+.medal.is-earned .disc{background:var(--port);color:var(--accent)}
+:root[data-theme="dark"] .medal.is-earned .disc{color:var(--band-knock)}
+.medal.is-ahead .disc{background:var(--page);color:var(--ink);box-shadow:0 0 0 5px var(--page),inset 0 0 0 1.75px var(--ink);overflow:hidden}
+.medal.is-ahead .fill{position:absolute;left:0;right:0;bottom:0;background:var(--sky);border-top:1.5px solid var(--accent-ink)}
+:root[data-theme="dark"] .medal.is-ahead .fill{background:color-mix(in oklch, var(--accent) 22%, transparent);border-top-color:var(--accent)}
+:root[data-theme="dark"] .medal.is-ahead .disc svg{color:var(--ink)}
+.medal .mt{font-size:var(--fs-xs);font-weight:680;line-height:1.3;color:var(--ink)}
+.medal .md{font-size:12px;line-height:1.35;color:var(--muted)}
+.medal .mw{font-size:12px;line-height:1.35;color:var(--ink-2);font-weight:600}
+button.medal:hover .disc,.medal.is-twin .disc{transform:translateY(-3px)}
+button.medal:hover .disc{box-shadow:0 0 0 5px var(--page),0 8px 18px oklch(0.25 0.04 60 / .22)}
+button.medal:active .disc{transform:translateY(0) scale(.96)}
+.medal.is-twin .mt{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
+.more-ahead{margin-top:18px;padding-left:120px}
+.later{display:flex;flex-wrap:wrap;gap:10px 22px;list-style:none;margin:14px 0 0;padding:0}
+.later li{display:flex;align-items:center;gap:8px;font-size:var(--fs-xs);color:var(--ink-2);border-radius:8px}
+.later li b{color:var(--ink);font-weight:650}
+.later .mini{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;box-shadow:inset 0 0 0 1.5px var(--ink);color:var(--ink);flex:none}
+.later .mini svg{width:13px;height:13px}
+.later li.is-twin b{text-decoration:underline;text-underline-offset:3px}
+.weekmoves{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);column-gap:64px;align-items:start}
+.wk-head{font-size:var(--fs-f1);line-height:1.05;font-weight:760;font-variation-settings:"opsz" 48;letter-spacing:-.025em}
+.wk-sub{margin-top:8px;color:var(--ink-2)}
+.facts{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:12px}
+.facts li{display:grid;grid-template-columns:22px minmax(0,1fr);column-gap:10px;align-items:baseline}
+.facts .fi{font-weight:760;text-align:center}
+.facts .fi svg{width:15px;height:15px;display:inline-block;vertical-align:-2px}
+.facts b{font-weight:680}
+.movers-h{margin-top:30px;margin-bottom:10px;font-weight:700}
+.mv{display:grid;grid-template-columns:128px minmax(0,1fr) 72px;column-gap:14px;align-items:center;padding:6px 0;border-top:1px solid var(--hair)}
+.mv-name{display:flex;align-items:center;gap:8px;font-weight:600;min-width:0}
+.mv-name i{width:10px;height:10px;border-radius:3px;flex:none}
+.mv-track{position:relative;height:12px}
+.mv-track::before{content:"";position:absolute;left:50%;top:-4px;bottom:-4px;width:1px;background:var(--hair-2)}
+.mv-bar{position:absolute;top:0;height:12px}
+.mv-val{text-align:right;font-variant-numeric:tabular-nums;font-weight:650}
+.mv-more{margin-top:8px;color:var(--muted);font-size:var(--fs-xs)}
+.moves{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:22px}
+.moves li{display:grid;grid-template-columns:44px minmax(0,1fr);column-gap:16px;align-items:start}
+.moves .no{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;box-shadow:inset 0 0 0 1.75px var(--ink);font-size:var(--fs-m);font-weight:760;font-variation-settings:"opsz" 24}
+.moves li:first-child .no{background:var(--accent);color:var(--accent-ink);box-shadow:none}
+.moves b{display:block;font-size:var(--fs-m);font-weight:700;letter-spacing:-.01em;margin-bottom:2px;line-height:1.3}
+.moves p{color:var(--ink-2)}
+.road{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:56px}
+.road ol{list-style:none;margin:0;padding:0;position:relative}
+.road ol::before{content:"";position:absolute;left:15px;top:20px;bottom:20px;width:0;border-left:1.5px dashed var(--hair-2)}
+.road li{position:relative;display:grid;grid-template-columns:32px 118px minmax(0,1fr);column-gap:14px;align-items:start;padding:12px 0;border-radius:10px}
+.road .pg{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--page);box-shadow:inset 0 0 0 1.5px var(--ink),0 0 0 4px var(--page);color:var(--ink);transition:transform .15s var(--ease)}
+.road .pg svg{width:16px;height:16px}
+.road li.is-twin .pg{transform:scale(1.15);background:var(--accent);color:var(--accent-ink)}
+.road .rw b{display:block;font-weight:720;font-size:var(--fs-m);letter-spacing:-.01em;line-height:1.25}
+.road .rw span{color:var(--muted);font-size:var(--fs-xs)}
+.road .rt b{font-weight:680}
+.road .rt p{color:var(--ink-2);font-size:var(--fs-xs);line-height:1.45;margin-top:2px}
+
+/* ============ STUB VIEWS ============ */
+.stub{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);column-gap:56px;align-items:center}
+.stub h1{font-size:var(--fs-f3);line-height:1;font-weight:800;font-variation-settings:"opsz" 80;letter-spacing:-.035em}
+.stub .lede{margin-top:18px;font-size:var(--fs-m);line-height:1.45;max-width:44ch}
+.stub .note{margin-top:14px;color:var(--muted)}
+.stub .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.stub figure{margin:0}
+.stub figcaption{margin-top:10px;color:var(--muted);font-size:var(--fs-xs)}
+.h-stub{height:260px}
+
+/* ============ TOOLTIP, TOAST, CONFETTI ============ */
+.tip{position:fixed;z-index:800;left:0;top:0;max-width:280px;padding:10px 12px;border-radius:12px;border:1px solid var(--hair-2);background:var(--page);color:var(--ink);box-shadow:var(--shadow);font-size:var(--fs-xs);line-height:1.45;pointer-events:none;opacity:0;transition:opacity .15s var(--ease)}
+.tip.on{opacity:1}
+.tip .t1{font-size:var(--fs-s);font-weight:700;line-height:1.3}
+.tip .t2{color:var(--ink-2)}
+.tip .t3{color:var(--muted);margin-top:2px}
+.tip .tv{font-size:var(--fs-m);font-weight:760;letter-spacing:-.01em}
+.tip .row{display:flex;justify-content:space-between;gap:16px}
+.tip .row b{font-variant-numeric:tabular-nums}
+.toast{position:fixed;left:50%;bottom:28px;z-index:850;display:flex;align-items:center;gap:12px;max-width:min(520px,calc(100vw - 32px));padding:12px 18px 12px 12px;border-radius:999px;background:var(--ink);color:var(--page);box-shadow:var(--shadow);font-weight:600;transform:translate(-50%,16px);opacity:0;pointer-events:none;transition:opacity .2s var(--ease),transform .2s var(--ease)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast .tg{width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:none}
+.toast .tg svg{width:16px;height:16px}
+.confetti{position:fixed;inset:0;z-index:840;pointer-events:none;overflow:hidden}
+.confetti i{position:absolute;display:block;width:8px;height:12px;border-radius:2px}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:1100px){
+  :root{--gutter:28px}
+  .now,.climb,.weekmoves{column-gap:40px}
+}
+@media (max-width:900px){
+  .now{grid-template-columns:1fr}
+  .now-side{padding-left:0;border-left:0;margin-top:28px;grid-template-columns:1fr 1fr;column-gap:28px;border-top:1px solid var(--hair)}
+  .sign+.sign{border-top:0}
+  .pair,.pair.flip,.climb,.weekmoves,.stub,.road{grid-template-columns:minmax(0,1fr)}
+  .pair.flip .figs{order:2}
+  .figs{grid-template-columns:1fr 1fr;gap:24px 28px;padding-top:24px}
+  .climb>*+*,.weekmoves>*+*{margin-top:56px}
+  .stub figure{margin-top:36px}
+  .grade{grid-template-columns:auto minmax(0,1fr);column-gap:36px}
+  .gpa{grid-column:1 / -1;grid-row:3;margin-top:12px;text-align:left;border-left:0;padding-left:0;border-top:1px solid var(--hair);padding-top:18px;grid-template-columns:auto auto 1fr;align-items:baseline;column-gap:16px}
+  .subjects{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:719px){
+  :root{--gutter:16px}
+  .topbar{flex-wrap:wrap;gap:10px 6px;padding-top:12px;padding-bottom:12px}
+  .brand{font-size:var(--fs-m)}
+  .tools{display:contents}
+  #refreshBtn{order:1} #numbersBtn{order:2} #themeBtn{order:3}
+  .brk{display:block;order:4;flex-basis:100%;height:0}
+  .src{order:5}
+  .seg{order:6;flex:1;justify-content:space-between}
+  .seg button{flex:1;min-width:0;padding:4px 6px}
+  .tools .btn .lbl,.src .src-date{display:none}
+  .tools .btn{padding:7px 10px;min-width:38px;justify-content:center}
+  .bandhead{display:block;padding:8px var(--gutter) 18px}
+  .bandhead .eyebrow{font-size:var(--fs-s);margin-bottom:2px}
+  .bandhead .hero-fig{font-size:var(--fs-f2);line-height:1}
+  .bandhead .deltas{margin-top:8px;font-size:var(--fs-s)}
+  .now-main .hero-fig,.now-main .eyebrow{display:none}
+  .now-main .deltas{margin-top:0}
+  .now-side{grid-template-columns:1fr;margin-top:18px}
+  .sign+.sign{border-top:1px solid var(--hair)}
+  .tabs-wrap{padding:0}
+  .tabs{padding:0 var(--gutter)}
+  .tab{font-size:var(--fs-s);padding:10px 14px 12px}
+  main{padding-top:36px}
+  .sec{margin-top:64px}
+  .sec-h{grid-template-columns:minmax(0,1fr)}
+  .sec-h .acts{grid-column:1;grid-row:auto;justify-content:flex-start;margin-top:6px}
+  .sec-h h2{font-size:var(--fs-l)}
+  .hero-fig{font-size:var(--fs-f3)}
+  .h-main{height:300px}
+  .h-sm{height:220px}
+  .figs{grid-template-columns:1fr 1fr;gap:22px 18px}
+  .fb-v,.sign-fig{font-size:var(--fs-xl)}
+  .trail li{grid-template-columns:32px 70px minmax(0,1fr);column-gap:12px}
+  .trail .amt{font-size:var(--fs-m)}
+  .grade{grid-template-columns:128px minmax(0,1fr);column-gap:20px;row-gap:18px}
+  .grade .sun{grid-row:1;width:128px;height:128px}
+  .grade .ghead{grid-column:2;grid-row:1;align-self:center}
+  .grade .comment{grid-column:1 / -1;grid-row:2;font-size:var(--fs-s)}
+  .gpa{grid-row:3;margin-top:0}
+  .sun .letter{font-size:5.5rem;transform:translate(-1px,-5px)}
+  .sun .score{bottom:14px;font-size:12px}
+  .verdict{font-size:var(--fs-xl)}
+  .grade .meta{font-size:var(--fs-xs)}
+  .wk-head{font-size:var(--fs-xl)}
+  .now-main .deltas li.wk{display:none}
+  .mgrid-wrap{margin:0 calc(-1 * var(--gutter));padding:0 var(--gutter)}
+  .road li{grid-template-columns:32px minmax(0,1fr);row-gap:2px}
+  .road .rw,.road .rt{grid-column:2}
+  .road .rw b{display:inline;margin-right:8px}
+  .subj{grid-template-columns:44px minmax(0,1fr);column-gap:12px}
+  .subj .lg{font-size:var(--fs-xl)}
+  .trailrow{grid-template-columns:minmax(0,1fr);margin-top:22px}
+  .trailrow .rl{padding-top:0;margin-bottom:10px;display:flex;gap:8px;align-items:baseline}
+  .trailrow .rl b{display:inline}
+  .medals-scroll{margin:0 calc(-1 * var(--gutter));padding:0 var(--gutter)}
+  .medals{min-width:max-content}
+  .medal{flex:0 0 92px}
+  .medals.ahead .medal{flex-basis:118px}
+  .more-ahead{padding-left:0}
+  .mv{grid-template-columns:96px minmax(0,1fr) 64px;column-gap:10px}
+  .stub h1{font-size:var(--fs-f2)}
+  .toast{bottom:16px}
+}
+
+/* ============ APPEARANCE MENU ============ */
+.pop-appear{width:min(312px,calc(100vw - 32px))}
+.ap-row{display:grid;gap:8px;margin-top:14px}
+.ap-lab{font-size:var(--fs-xs);font-weight:680;color:var(--ink-2)}
+.ap-seg{display:flex;gap:2px;padding:3px;border:1px solid var(--hair-2);border-radius:11px;background:var(--surface-2)}
+.ap-seg button{flex:1;padding:7px 6px;border:0;border-radius:8px;background:transparent;color:var(--ink-2);font:inherit;font-size:var(--fs-xs);font-weight:620;cursor:pointer;transition:background-color .15s var(--ease),color .15s var(--ease)}
+.ap-seg button:hover{color:var(--ink);background:var(--surface-3)}
+.ap-seg button[aria-checked="true"]{background:var(--page);color:var(--ink);box-shadow:0 1px 2px oklch(0.2 0.02 250 / .14)}
+.ap-pal{display:grid;gap:8px}
+.ap-pal button{display:flex;align-items:center;gap:12px;width:100%;padding:8px 10px;border:1px solid var(--hair-2);border-radius:12px;background:var(--page);color:var(--ink);font:inherit;text-align:left;cursor:pointer;transition:background-color .15s var(--ease),border-color .15s var(--ease)}
+.ap-pal button:hover{background:var(--surface-2)}
+.ap-pal button:active{background:var(--surface-3)}
+.ap-pal button[aria-checked="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.ap-seg button:focus-visible,.ap-pal button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.ap-name{display:grid;gap:1px}
+.ap-name b{font-size:var(--fs-s);font-weight:700}
+.ap-name small{font-size:var(--fs-xs);color:var(--muted)}
+.ap-sw{flex:none;width:64px;height:40px;border-radius:8px;background:var(--sw-band);box-shadow:inset 0 0 0 1px oklch(0.3 0.02 250 / .12);overflow:hidden}
+.ap-sw svg{display:block;width:100%;height:100%}
+.ap-sw.harbor{--sw-band:oklch(0.955 0.025 235);--sw-mark:oklch(0.31 0.055 250);--sw-acc:oklch(0.78 0.09 235)}
+.ap-sw.stone{--sw-band:oklch(0.945 0.008 80);--sw-mark:oklch(0.30 0.012 70);--sw-acc:oklch(0.84 0.025 75)}
+:root[data-theme="dark"] .ap-sw.harbor{--sw-band:oklch(0.27 0.035 245);--sw-mark:oklch(0.85 0.08 230);--sw-acc:oklch(0.80 0.09 232)}
+:root[data-theme="dark"] .ap-sw.stone{--sw-band:oklch(0.26 0.006 80);--sw-mark:oklch(0.86 0.012 80);--sw-acc:oklch(0.84 0.02 80)}
+.ap-note{margin-top:14px;font-size:var(--fs-xs)}
+
+/* ============ MOTION OFF ============ */
+.shot *,.shot *::before,.shot *::after{transition:none!important;animation:none!important}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="brand">
+    <svg viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="8" fill="var(--accent)"/><path d="M7.8 19a7.2 7.2 0 0 1 14.4 0z" fill="var(--accent-ink)"/><rect x="4.6" y="20.4" width="20.8" height="2.4" rx="1.2" fill="var(--accent-ink)"/></svg>
+    <span>Meridian</span>
+  </div>
+  <div class="tools">
+    <button class="src" id="srcBtn" type="button" popovertarget="srcPop" aria-label="Data source: demo data. Show details"><span class="src-dot" aria-hidden="true"></span><b>Demo data</b><span class="src-date" id="srcDate"></span></button>
+    <button class="icon-btn" id="refreshBtn" type="button" aria-label="Refresh" title="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 12a8.5 8.5 0 1 1-2.5-6"/><path d="M20.5 3.5v5h-5"/></svg></button>
+    <span class="brk" aria-hidden="true"></span>
+    <div class="seg" id="range" role="group" aria-label="Time range for Pulse"></div>
+    <button class="btn" id="numbersBtn" type="button" popovertarget="numbersPop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span class="lbl">Your numbers</span></button>
+    <button class="icon-btn" id="themeBtn" type="button" popovertarget="appearPop" aria-label="Appearance"></button>
+  </div>
+</header>
+
+<div class="bandhead" id="bandHead"></div>
+
+<section class="band" id="band" aria-labelledby="bandTitle">
+  <h2 class="vh" id="bandTitle">The long game: every week since January 2017, today, and the road to retirement</h2>
+  <p class="vh" id="bandDesc"></p>
+  <div class="band-scroll" id="bandScroll" data-scroll-x><svg id="bandSvg" role="group" aria-describedby="bandDesc"></svg></div>
+</section>
+
+<nav class="tabs-wrap" id="tabsWrap" data-scroll-x aria-label="Lenses on the timeline">
+  <div class="tabs" role="tablist" id="tabs"></div>
+</nav>
+
+<main id="main" tabindex="-1">
+  <section class="view" id="view-pulse" role="tabpanel" aria-labelledby="tab-pulse"></section>
+  <section class="view" id="view-report" role="tabpanel" aria-labelledby="tab-report" hidden></section>
+  <section class="view" id="view-other" role="tabpanel" hidden></section>
+</main>
+
+<div class="strip" id="strip" aria-hidden="true"><svg id="stripSvg"></svg></div>
+<div class="tip" id="tip" role="tooltip" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="pop" id="srcPop" popover>
+  <h3>Demo data</h3>
+  <p>A synthetic household, so every view can be explored before loading the real workbook. Nothing here is saved.</p>
+  <dl id="srcFacts"></dl>
+</div>
+<div class="pop pop-appear" id="appearPop" popover>
+  <h3>Appearance</h3>
+  <div id="appearBody"></div>
+  <p class="muted ap-note">Saved in this browser.</p>
+</div>
+<div class="pop" id="numbersPop" popover>
+  <h3>Your numbers</h3>
+  <p>In the app, this is where you enter what the workbook doesn't have: your birth date, monthly spending, home value, checking.</p>
+  <p class="muted">Not part of this preview.</p>
+</div>
+
+<script src="../vendor/echarts-5.6.0.min.js"></script>
+<script src="kit.js"></script>
+<script>
+(async () => {
+'use strict';
+
+/* ======================================================================
+   SHARED HELPERS
+   ====================================================================== */
+const Q = new URLSearchParams(location.search);
+const ROOT = document.documentElement;
+const SHOT = ROOT.classList.contains('shot');
+const MOTION = !SHOT && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+const FONT = '"Bricolage Grotesque", system-ui, sans-serif';
+const DAY = 864e5;
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+/* DOM builder: text always goes through textContent */
+function h(tag, attrs, ...kids){
+  const e = document.createElement(tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)){
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'text') e.textContent = v;
+    else if (k === 'html') e.innerHTML = v;              // static markup only (icons)
+    else if (k === 'style') e.style.cssText = v;
+    else if (k.startsWith('on') && typeof v === 'function') e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat(3)) if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(String(c)));
+  return e;
+}
+const NS = 'http://www.w3.org/2000/svg';
+function sv(tag, attrs, parent){
+  const e = document.createElementNS(NS, tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)) if (v != null) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+const ICON = {
+  arrow: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 8h10M9 4.5 12.5 8 9 11.5"/></svg>',
+  table: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M2 6.5h12M2 10h12M6.5 6.5v7"/></svg>',
+  chart: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 13.5h12"/><path d="M2.5 11 6 7l2.5 2.5L13.5 4"/></svg>',
+  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.5 1.5M17.6 17.6l1.5 1.5M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.5-1.5M17.6 6.4l1.5-1.5"/></svg>',
+  moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 13.2A8.5 8.5 0 1 1 10.8 3.5a6.6 6.6 0 0 0 9.7 9.7z"/></svg>',
+  check: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 6.5 11.5 12.5 4.5"/></svg>',
+  note: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1.5a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13Zm-.8 3.2v1.7h1.6V4.7Zm0 2.9v4h1.6v-4Z"/></svg>',
+};
+
+/* ======================================================================
+   COLOR: CSS tokens (OKLCH) resolved to sRGB for the canvas charts
+   ====================================================================== */
+const Color = (() => {
+  function oklchToRgb(L, C, H){
+    const hr = H * Math.PI / 180, a = C * Math.cos(hr), b = C * Math.sin(hr);
+    const l_ = L + 0.3963377774 * a + 0.2158037573 * b, m_ = L - 0.1055613458 * a - 0.0638541728 * b, s_ = L - 0.0894841775 * a - 1.2914855480 * b;
+    const l = l_ ** 3, m = m_ ** 3, s = s_ ** 3;
+    const lin = [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s, -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s];
+    return lin.map(x => { x = Math.max(0, Math.min(1, x)); return Math.round((x <= 0.0031308 ? 12.92 * x : 1.055 * Math.pow(x, 1 / 2.4) - 0.055) * 255); });
+  }
+  function parse(v){
+    const m = String(v).match(/oklch\(\s*([\d.]+)(%?)\s+([\d.]+)\s+([\d.]+)\s*(?:\/\s*([\d.]+)(%?))?\s*\)/);
+    if (!m) return null;
+    const L = +m[1] / (m[2] ? 100 : 1), a = m[5] == null ? 1 : +m[5] / (m[6] ? 100 : 1);
+    return {L, C: +m[3], H: +m[4], a};
+  }
+  function css(name){ return getComputedStyle(ROOT).getPropertyValue(name).trim(); }
+  function rgb(name){
+    const p = parse(css(name));
+    if (!p) return css(name);
+    const [r, g, b] = oklchToRgb(p.L, p.C, p.H);
+    return p.a < 1 ? `rgba(${r},${g},${b},${p.a})` : '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+  }
+  function alpha(name, a){ const p = parse(css(name)); const [r, g, b] = oklchToRgb(p.L, p.C, p.H); return `rgba(${r},${g},${b},${a})`; }
+  /* a step between two OKLCH tokens, as a CSS color (for the month grid) */
+  function mix(nameA, nameB, t){
+    const A = parse(css(nameA)), B = parse(css(nameB));
+    const H = t < 0.001 ? A.H : B.H;
+    return `oklch(${(A.L + (B.L - A.L) * t).toFixed(4)} ${(A.C + (B.C - A.C) * t).toFixed(4)} ${H})`;
+  }
+  /* everything the charts need, for the current theme */
+  function theme(){
+    const t = {};
+    for (const k of ['page', 'surface-2', 'ink', 'ink-2', 'muted', 'hair', 'hair-2', 'port', 'port-wash', 'plan', 'gain', 'loss', 'loss-wash', 'good', 'bad', 'accent', 'band', 'sky'])
+      t[k.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = rgb('--' + k);
+    t.groups = {};
+    for (const g of ['retire', 'broker', 'cash', 'crypto', 'match', 'kids', 'home']) t.groups[g] = rgb('--g-' + g);
+    return t;
+  }
+  return {rgb, alpha, mix, theme, css};
+})();
+
+/* ======================================================================
+   GLYPHS: one small family (16-unit box, filled) shared by the band pins,
+   the badge medallions, the milestone trail and the road ahead
+   ====================================================================== */
+const GLYPH = {
+  peak: '<path d="M1 13.5 5.8 4.5l2.8 4.7 1.9-2.6 4.5 6.9Z"/>',
+  tree: '<path d="M8 1.3l4.4 5.9H10l3.6 4.6H9v2.9H7v-2.9H2.4L6 7.2H3.6Z"/>',
+  trophy: '<path d="M4.2 2h7.6v3.6a3.8 3.8 0 0 1-7.6 0Z"/><path d="M11.8 3h2.1v1.6a2.6 2.6 0 0 1-2.6 2.6V6.1a1.6 1.6 0 0 0 1.6-1.5V4h-1.1ZM4.2 3H2.1v1.6a2.6 2.6 0 0 0 2.6 2.6V6.1a1.6 1.6 0 0 1-1.6-1.5V4h1.1Z"/><path d="M7.1 9.2h1.8v2.2H7.1ZM4.6 11.4h6.8v2.3H4.6Z"/>',
+  percent: '<path fill-rule="evenodd" d="M4.6 2.1a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Zm0 1.4a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2ZM11.4 8.9a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Zm0 1.4a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Z"/><path d="m11.7 2.3 1.9 1.7-9.3 9.8-1.9-1.7Z"/>',
+  coins: '<path d="M8 1.8c3.3 0 5.4.9 5.4 2.1S11.3 6 8 6 2.6 5.1 2.6 3.9 4.7 1.8 8 1.8Z"/><path d="M2.6 5.4c.9 1.1 2.9 1.8 5.4 1.8s4.5-.7 5.4-1.8v2c-.9 1.1-2.9 1.8-5.4 1.8s-4.5-.7-5.4-1.8Z"/><path d="M2.6 8.8c.9 1.1 2.9 1.8 5.4 1.8s4.5-.7 5.4-1.8v2c-.9 1.1-2.9 1.8-5.4 1.8s-4.5-.7-5.4-1.8Z"/>',
+  calendar: '<path d="M4.6 1.3H6v3H4.6ZM10 1.3h1.4v3H10Z"/><path fill-rule="evenodd" d="M2 3.4h12v11.2H2Zm1.4 3.2v6.6h9.2V6.6Zm2 2.9 1-1 1.2 1.1 2.4-2.4 1 1-3.4 3.4Z"/>',
+  umbrella: '<path d="M1.4 8.6a6.6 6.6 0 0 1 13.2 0ZM7.4 1h1.2v1.3H7.4Z"/><path d="M7.3 8.6h1.4v3.8a2.3 2.3 0 0 1-4.6 0v-.6h1.4v.6a.9.9 0 0 0 1.8 0Z"/>',
+  house: '<path d="M8 1.6 15 7.9h-1.9v6.6H9.7v-4.1H6.3v4.1H2.9V7.9H1Z"/>',
+  key: '<path fill-rule="evenodd" d="M5.2 4.3a3.7 3.7 0 1 1 0 7.4 3.7 3.7 0 0 1 0-7.4Zm0 2.3a1.4 1.4 0 1 0 0 2.8 1.4 1.4 0 0 0 0-2.8Z"/><path d="M8.6 7.2H15v1.6h-1.2V11h-1.6V8.8h-1.1v1.6H9.6V8.8h-1Z"/>',
+  trend: '<path d="m1.4 11.6 4.8-4.8 2.6 2.6 3.3-3.3-1.7-1.7H15V9l-1.7-1.7-4.5 4.5-2.6-2.6L2.8 13Z"/>',
+  sail: '<path d="M8.3 1.3v8.9H14ZM7.1 3.4v6.8H2.6ZM1.2 11.4h13.6L13 14.4H3Z"/>',
+  sun: '<path d="M3.2 11.2a4.8 4.8 0 0 1 9.6 0ZM.8 12.4h14.4v1.4H.8ZM7.3 2.2h1.4v2.7H7.3ZM2.3 5.2l1-1 1.9 1.9-1 1ZM13.7 5.2l-1-1-1.9 1.9 1 1Z"/>',
+  cap: '<path d="M8 2.4 15.4 6 8 9.6.6 6Z"/><path d="M3.8 8.1v3.2c1.2 1.6 7.2 1.6 8.4 0V8.1L8 10.2ZM13.4 6.7h1.2v4.5h-1.2Z"/>',
+  star: '<path d="M8 1.3l1.7 4.65 4.96.19-3.9 3.06 1.35 4.76L8 11.2l-4.11 2.76 1.35-4.76-3.9-3.06 4.96-.19Z"/>',
+  flag: '<path d="M2.8 1.4h1.6v13.4H2.8ZM4.4 1.9h9.2l-2.1 3.2 2.1 3.2H4.4Z"/>',
+  envelope: '<path fill-rule="evenodd" d="M1.4 3.6h13.2v9H1.4Zm1 1 5.6 4.1 5.6-4.1v1.5L8 10.2 2.4 6.1Z"/>',
+  dot: '<circle cx="8" cy="8" r="3.2"/>',
+};
+const glyphSvg = (name, cls) => `<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"${cls ? ` class="${cls}"` : ''}>${GLYPH[name] || GLYPH.dot}</svg>`;
+function glyphInto(g, name, size){           // into an SVG group, centered at 0,0
+  const k = size / 16;
+  const inner = sv('g', {class: 'glyph', transform: `translate(${-size / 2} ${-size / 2}) scale(${k})`}, g);
+  inner.innerHTML = GLYPH[name] || GLYPH.dot;
+  return inner;
+}
+
+/* ======================================================================
+   DATA: everything the views need, derived from the kit (no drawing here)
+   ====================================================================== */
+const Data = (() => {
+  let K;          // {M, d, vm}
+  const MON = {Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11};
+  const parseWhen = w => { const m = w && String(w).match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{4})/); return m ? new Date(+m[2], MON[m[1]], 15) : null; };
+  const slug = v => String(v).toLowerCase().replace(/½/g, 'half').replace(/[^a-z0-9]+/g, '');
+  const badgeKey = b => `badge-${slug(b.group)}-${slug(b.token)}`;
+  const GROUP_GLYPH = {nw: 'tree', paw: 'tree', nw40: 'tree', pct: 'trophy', save: 'percent', '401k': 'coins', streak: 'calendar', ef3: 'umbrella', ef6: 'umbrella',
+                       home: 'house', mort50: 'key', mort: 'key', debt: 'key', plan: 'trend', beat: 'trend', beat5: 'trend', coast: 'sail', fi: 'sun', kids: 'cap', pension: 'star'};
+  const badgeGlyph = b => b.group.startsWith('port') ? 'peak' : b.group.startsWith('college') ? 'cap' : GROUP_GLYPH[b.group] || 'dot';
+  function roadGlyph(r){
+    if (r.kind === 'port') return 'peak';
+    if (r.kind === 'nw') return 'tree';
+    if (r.kind === 'kids') return 'cap';
+    if (r.kind === 'fi') return 'sun';
+    if (r.kind === 'home') return 'key';
+    if (/pension/i.test(r.title)) return 'star';
+    if (/social security/i.test(r.title)) return 'envelope';
+    if (/retire/i.test(r.title)) return 'flag';
+    return 'star';
+  }
+  function roadShort(r){
+    if (r.kind === 'port') return r.title.replace(/ portfolio$/, '');
+    if (/halfway/i.test(r.title)) return 'Mortgage ½';
+    if (/paid off/i.test(r.title)) return 'Mortgage free';
+    if (/pension/i.test(r.title)) return 'Pension';
+    if (/social security/i.test(r.title)) return 'Social Security';
+    if (/^retirement$/i.test(r.title)) return 'Retire';
+    return r.title;
+  }
+  const badgeShort = b => /saving streak/.test(b.title) ? b.title.replace(' saving streak', ' streak') : b.title.replace(/ for your age$/, '');
+  /* which badge ahead is the same event as a road item (same month, same kind of thing) */
+  const TWIN_KIND = {port1000000: 'port', port2000000: 'port', nw: 'nw', fi: 'fi', mort50: 'home', mort: 'home'};
+
+  function init(k){ K = k; }
+
+  /* the projection fan: today's portfolio plus the plan's monthly saving, compounded at a low,
+     a plan and a high rate, out to the sheet's retirement date. An estimate, labeled as one. */
+  function fan(vm){
+    const {M, d} = K, H = M.Household, sp = H.sheetPlan(d);
+    if (!sp.retireDate) return null;
+    const plan = Math.min(H.planRate(d) || 0.07, 0.07);
+    const contrib = H.planContrib(d) || 0;
+    const t0 = vm.asOf, start = vm.portfolio.value;
+    const n = Math.max(1, M.monthsBetween(M.monthStart(t0), sp.retireDate));
+    const line = rate => {
+      const rm = Math.pow(1 + rate, 1 / 12) - 1, pts = [];
+      for (let i = 0; i <= n; i++){
+        const g = Math.pow(1 + rm, i), v = start * g + (rm > 0 ? contrib * (g - 1) / rm : contrib * i);
+        const dt = i === 0 ? t0 : i === n ? sp.retireDate : M.addMonths(M.monthStart(t0), i);
+        pts.push([dt.getTime(), v]);
+      }
+      return {rate, pts, end: pts[pts.length - 1][1]};
+    };
+    const L = [0.05, plan, 0.09].map(line);
+    const at = (ln, ms) => {                               // value on one fan line at a time
+      const p = ln.pts;
+      if (ms <= p[0][0]) return p[0][1];
+      for (let i = 1; i < p.length; i++) if (ms <= p[i][0]){ const f = (ms - p[i - 1][0]) / (p[i][0] - p[i - 1][0]); return p[i - 1][1] + (p[i][1] - p[i - 1][1]) * f; }
+      return p[p.length - 1][1];
+    };
+    return {retire: sp.retireDate, contrib, low: L[0], plan: L[1], high: L[2], at};
+  }
+
+  /* pins on the rail: $100k marks behind today; road items and dated badges ahead */
+  function pins(vm, fanM){
+    const {M} = K, F = M.Fmt, out = [];
+    const earned = vm.report.badges.earned, ahead = vm.report.badges.ahead;
+    const portEarned = earned.find(b => b.group === 'port');
+    vm.milestones.crossed.forEach(m => {
+      const keys = ['mile-' + m.amount];
+      if (portEarned && portEarned.rank === m.amount) keys.push(badgeKey(portEarned));
+      out.push({keys, date: m.date, state: 'done', glyph: 'peak', label: F.k(m.amount), prio: 1,
+                title: `${F.k(m.amount)} portfolio`, line: `Crossed ${F.date(m.date)}`,
+                sub: m.days != null ? `${m.days.toLocaleString()} days after the last $100k` : 'The first $100k mark in the workbook'});
+    });
+    const used = new Set();
+    vm.report.road.forEach(r => {
+      const keys = [`road-${slug(r.kind)}-${r.date.getFullYear()}${r.date.getMonth()}`];
+      const twin = ahead.find(b => !used.has(b) && TWIN_KIND[b.group] === r.kind && parseWhen(b.when) && Math.abs(parseWhen(b.when) - r.date) < 50 * DAY);
+      if (twin){ used.add(twin); keys.push(badgeKey(twin)); }
+      out.push({keys, date: r.date, state: 'ahead', glyph: roadGlyph(r), label: roadShort(r), prio: 0, road: r, badge: twin || null,
+                title: r.title, line: null, sub: r.sub.replace(/≈\s*/g, 'about ')});
+    });
+    ahead.forEach(b => {
+      if (used.has(b)) return;
+      const dt = parseWhen(b.when);
+      if (!dt) return;
+      out.push({keys: [badgeKey(b)], date: dt, state: 'ahead', glyph: badgeGlyph(b), label: badgeShort(b), prio: 2, badge: b,
+                title: b.title, line: null, sub: b.desc});
+    });
+    const end = fanM ? fanM.retire : null;
+    return out.sort((a, b) => a.date - b.date).map(p => ({...p, afterRetire: end && p.date > end}));
+  }
+
+  function build(range){
+    const {M, d} = K;
+    const vm = MeridianKit.buildVM(M, d, range);
+    const all = range === 'ALL' ? vm : MeridianKit.buildVM(M, d, 'ALL');
+    const fanM = fan(all);
+    const road = all.report.road;
+    const R = all.R;
+    const ageAt = dt => R.age ? Math.floor((dt - R.age.birth) / (365.25 * DAY) + 0.01) : null;
+    const lastRoad = road.length ? road[road.length - 1].date : null;
+    const first = d.rows[0].date;
+    const endDate = new Date(Math.max(fanM ? fanM.retire.getTime() : 0, lastRoad ? lastRoad.getTime() : 0, all.asOf.getTime() + 10 * 365.25 * DAY));
+    const band = {
+      t0: new Date(first.getFullYear(), 0, 1).getTime(),
+      t1: new Date(endDate.getFullYear() + 1, 0, 1).getTime(),
+      rows: d.rows, asOf: all.asOf, value: all.portfolio.value,
+      fan: fanM, pins: pins(all, fanM),
+      shelf: all.report.badges.earned.map(b => ({keys: [badgeKey(b)], glyph: badgeGlyph(b), title: b.title, sub: b.desc, badge: b})),
+      notes: d.notes || [], ageAt,
+    };
+    return {vm, all, band, range, badgeKey, badgeGlyph, roadGlyph, parseWhen, ageAt};
+  }
+
+  return {init, build, badgeKey, badgeGlyph, roadGlyph};
+})();
+
+/* ======================================================================
+   TOOLTIP and TWINS (hovering a pin lights up its badge, and back)
+   ====================================================================== */
+const Tip = (() => {
+  const el = () => $('#tip');
+  function show(nodes, rect, prefer = 'above'){
+    const t = el();
+    t.textContent = '';
+    t.append(...[].concat(nodes));
+    t.hidden = false;
+    const r = t.getBoundingClientRect();
+    let left, top;
+    if (prefer === 'side'){                                 // beside a crosshair: right of it, or left near the edge
+      left = rect.left + 16;
+      if (left + r.width > innerWidth - 8) left = rect.left - 16 - r.width;
+      top = rect.top - r.height / 2;
+    } else {
+      left = rect.left + rect.width / 2 - r.width / 2;
+      top = prefer === 'above' ? rect.top - r.height - 12 : rect.bottom + 12;
+      if (top < 8) top = rect.bottom + 12;
+      if (top + r.height > innerHeight - 8) top = Math.max(8, rect.top - r.height - 12);
+    }
+    left = Math.max(8, Math.min(innerWidth - r.width - 8, left));
+    top = Math.max(8, Math.min(innerHeight - r.height - 8, top));
+    t.style.transform = `translate(${Math.round(left)}px, ${Math.round(top)}px)`;
+    t.classList.add('on');
+  }
+  function hide(){ const t = el(); t.classList.remove('on'); t.hidden = true; }
+  addEventListener('scroll', hide, {passive: true});
+  document.addEventListener('scroll', e => { if (e.target !== document) hide(); }, {passive: true, capture: true});
+  return {show, hide};
+})();
+
+const Twins = (() => {
+  let lit = [];
+  const keysOf = el => (el.getAttribute('data-twin') || '').split(/\s+/).filter(Boolean);
+  function on(el){
+    off();
+    const ks = keysOf(el);
+    if (!ks.length) return;
+    lit = $$('[data-twin]').filter(e => keysOf(e).some(k => ks.includes(k)));
+    lit.forEach(e => e.classList.add('is-twin'));
+  }
+  function off(){ lit.forEach(e => e.classList.remove('is-twin')); lit = []; }
+  document.addEventListener('pointerover', e => { const t = e.target.closest && e.target.closest('[data-twin]'); if (t) on(t); });
+  document.addEventListener('pointerout', e => { const t = e.target.closest && e.target.closest('[data-twin]'); if (t && !(e.relatedTarget && t.contains(e.relatedTarget))) off(); });
+  document.addEventListener('focusin', e => { const t = e.target.closest && e.target.closest('[data-twin]'); if (t) on(t); });
+  document.addEventListener('focusout', () => off());
+  return {on, off, keysOf};
+})();
+
+/* ======================================================================
+   DRAW: the horizon band (and its slim twin, the strip)
+   ====================================================================== */
+const Band = (() => {
+  let ctx = null;
+
+  function pinTip(p, F, ageAt){
+    const nodes = [h('div', {class: 't1', text: p.title})];
+    const when = p.state === 'done' ? p.line : `${F.month(p.date)} · ${inWords(p.date)}` + (ageAt(p.date) != null ? ` · age ${ageAt(p.date)}` : '');
+    nodes.push(h('div', {class: 't2', text: when}));
+    if (p.sub) nodes.push(h('div', {class: 't3', text: p.sub}));
+    if (p.badge) nodes.push(h('div', {class: 't2', style: 'margin-top:6px;font-weight:650', text: `Badge ahead · ${F.pct(p.badge.progress, 0)} of the way`}));
+    if (p.state === 'done' && p.keys.some(k => k.startsWith('badge-'))) nodes.push(h('div', {class: 't2', style: 'margin-top:6px;font-weight:650', text: 'Badge earned'}));
+    return nodes;
+  }
+  function inWords(dt){
+    const n = (dt.getFullYear() - TODAY.getFullYear()) * 12 + dt.getMonth() - TODAY.getMonth();
+    return n < 12 ? `in ${Math.max(1, n)} mo` : `in ${Math.round(n / 12)} yr`;
+  }
+
+  /* draw a pin head (plus hit area, twin ring and glyph) centered at 0,0 of group g */
+  function head(g, r, glyph, ghost){
+    sv('circle', {class: 'hit', r: r + 6}, g);
+    const sc = sv('g', {class: 'scale'}, g);
+    sv('circle', {class: 'ring', r: r + 4}, sc);
+    sv('circle', {class: 'head', r}, sc);
+    if (glyph) glyphInto(sc, glyph, Math.round(r * 1.3));
+    return sc;
+  }
+
+  function render(model, opts){
+    const {F} = opts;
+    const svg = $('#bandSvg'), wrap = $('#bandScroll');
+    const vw = wrap.clientWidth || innerWidth;
+    const phone = innerWidth < 720;
+    const W = Math.max(vw, 1040);
+    const H = phone ? 304 : 336;
+    const P = {l: phone ? 20 : 40, r: phone ? 24 : 40};
+    const top = phone ? 18 : 22, rail = phone ? 210 : 236;
+    const rowsY = phone ? [236, 254, 272] : [263, 282, 301];
+    const yearY = H - 12;
+    svg.textContent = '';
+    svg.setAttribute('width', W); svg.setAttribute('height', H); svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const m = model.band, fanM = m.fan;
+    const X = ms => P.l + (ms - m.t0) / (m.t1 - m.t0) * (W - P.l - P.r);
+    const totals = m.rows.map(r => r.total);
+    const vmin = Math.min(...totals) / 1.16;
+    const vmax = Math.max(fanM ? fanM.high.end : 0, m.value * 2.2) * 1.1;
+    const l0 = Math.log(vmin), l1 = Math.log(vmax);
+    const Y = v => top + (1 - (Math.log(Math.max(v, vmin)) - l0) / (l1 - l0)) * (rail - top);
+    const xT = X(m.asOf.getTime()), yT = Y(m.value);
+    const layer = name => sv('g', {class: name}, svg);
+    const L = {lens: layer('l-lens'), grid: layer('l-grid'), past: layer('l-past'), fan: layer('l-fan'), axis: layer('l-axis'),
+               labels: layer('l-labels'), capture: layer('l-capture'), cross: layer('l-cross'), shelf: layer('l-shelf'), pins: layer('l-pins')};
+
+    /* the range lens: which part of the past the Pulse charts show */
+    if (model.range !== 'ALL'){
+      const from = model.vm.portfolio.since.from.getTime();
+      sv('rect', {class: 'b-lens', x: X(from), y: top - 8, width: Math.max(2, xT - X(from)), height: rail - top + 8}, L.lens);
+      const lab = sv('text', {class: 'b-lenslab', x: X(from) - 6, y: rail - 8, 'text-anchor': 'end'}, L.lens);
+      lab.textContent = {YTD: 'This year', '1Y': 'The last year', '3Y': 'The last 3 years', '5Y': 'The last 5 years'}[model.range] + ', shown below';
+    }
+
+    /* doubling gridlines, labeled at the far right where the timeline is quiet */
+    const money = v => v >= 1e6 ? '$' + (v / 1e6) + 'M' : '$' + Math.round(v / 1e3) + 'k';
+    for (let v = 125e3; v < vmax; v *= 2){
+      if (v < vmin * 1.08) continue;
+      const y = Y(v);
+      sv('line', {class: 'b-grid', x1: P.l, x2: W - P.r + 30, y1: y, y2: y}, L.grid);
+      const t = sv('text', {class: 'b-gridlab', x: W - 10, y: y - 4, 'text-anchor': 'end'}, L.grid);
+      t.textContent = money(v);
+    }
+
+    /* the past: one line, broken across the gap in the weekly rows, with a wash down to the rail */
+    const segs = [];
+    m.rows.forEach((r, i) => { if (!i || r.bigGap) segs.push([]); segs[segs.length - 1].push([X(r.date.getTime()), Y(r.total)]); });
+    segs.forEach(sg => {
+      if (sg.length < 2) return;
+      const d = 'M' + sg.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L');
+      sv('path', {class: 'b-wash', d: d + `L${sg[sg.length - 1][0].toFixed(1)} ${rail}L${sg[0][0].toFixed(1)} ${rail}Z`}, L.past);
+      sv('path', {class: 'b-line', d}, L.past);
+    });
+
+    /* the future: the fan (5% to 9%) with the plan's 7% dashed through it */
+    let endLabels = [];
+    if (fanM){
+      const pts = ln => ln.pts.map(p => [X(p[0]), Y(p[1])]);
+      const hi = pts(fanM.high), lo = pts(fanM.low), pl = pts(fanM.plan);
+      const path = arr => 'M' + arr.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L');
+      sv('path', {class: 'b-fan', d: path(hi) + 'L' + lo.slice().reverse().map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L') + 'Z'}, L.fan);
+      sv('path', {class: 'b-edge', d: path(hi)}, L.fan);
+      sv('path', {class: 'b-edge', d: path(lo)}, L.fan);
+      sv('path', {class: 'b-plan', d: path(pl)}, L.fan);
+      const xR = X(fanM.retire.getTime());
+      sv('line', {class: 'b-guide', x1: xR, x2: xR, y1: rail, y2: hi[hi.length - 1][1] - 10}, L.fan);
+      endLabels = [[fanM.high, false], [fanM.plan, true], [fanM.low, false]].map(([ln, isPlan]) => ({y: Y(ln.end), text: `${Math.round(ln.rate * 100)}% · ${F.k(ln.end)}`, isPlan}));
+      for (let i = 1; i < endLabels.length; i++) if (endLabels[i].y - endLabels[i - 1].y < 15) endLabels[i].y = endLabels[i - 1].y + 15;
+      endLabels.forEach(e => { const t = sv('text', {class: 'b-endlab' + (e.isPlan ? ' is-plan' : ''), x: xR + 9, y: e.y + 4}, L.labels); t.textContent = e.text; });
+      /* say what the fan is, above its widest stretch */
+      const mid = m.asOf.getTime() + (fanM.retire - m.asOf) * (phone ? 0.3 : 0.42);
+      const cap = sv('text', {class: 'b-cap', x: X(mid), y: Y(fanM.at(fanM.high, mid)) - 16, 'text-anchor': 'middle'}, L.labels);
+      const k1 = sv('tspan', {class: 'k'}, cap); k1.textContent = 'Estimate ';
+      const k2 = sv('tspan', null, cap); k2.textContent = `5%, 7% or 9% a year, adding ${F.usd(fanM.contrib)} a month`;
+    }
+
+    /* today */
+    sv('line', {class: 'b-today', x1: xT, x2: xT, y1: top - 10, y2: rail}, L.axis);
+
+    /* the rail: years as mile markers */
+    sv('line', {class: 'b-rail', x1: P.l - 14, x2: W - P.r + 14, y1: rail, y2: rail}, L.axis);
+    const y0 = new Date(m.t0).getFullYear(), y1 = new Date(m.t1).getFullYear();
+    let lastEnd = -1e9;
+    for (let y = y0; y <= y1; y++){
+      const x = X(new Date(y, 0, 1).getTime()), major = y % 5 === 0 || y === y0;
+      sv('line', {class: 'b-tick', x1: x, x2: x, y1: rail, y2: rail - (major ? 7 : 4)}, L.axis);
+      if (major && y < y1){
+        const first = y === y0;
+        const t = sv('text', {class: 'b-year', x, y: yearY, 'text-anchor': first ? 'start' : 'middle'}, L.axis);
+        t.textContent = String(y);
+        const a = m.ageAt(new Date(y, 6, 1));
+        if (a != null && !first){ const ts = sv('tspan', {class: 'b-age', dx: 5}, t); ts.textContent = 'age ' + a; }
+        const bb = t.getBBox();
+        if (bb.x < lastEnd + 10){ t.remove(); continue; }
+        lastEnd = bb.x + bb.width;
+      }
+    }
+
+    /* pins with hanging flags: labels packed into rows, most important first */
+    const measure = sv('text', {class: 'pin', visibility: 'hidden'}, svg);
+    const ml = sv('tspan', {class: 'plab'}, measure);
+    const widthOf = s => { ml.textContent = s; return ml.getComputedTextLength(); };
+    const R = 9;
+    const placed = [[], [], []];
+    const order = m.pins.map((p, i) => ({p, i, x: X(p.date.getTime()), w: widthOf(p.label)})).sort((a, b) => a.p.prio - b.p.prio || a.p.date - b.p.date);
+    const fits = (row, a, b) => placed[row].every(([c, d]) => b + 6 < c || a > d + 6);
+    order.forEach(o => {
+      o.row = -1;
+      for (let row = 0; row < 3 && o.row < 0; row++){
+        let a = o.x - 3, b = o.x + 5 + o.w, flip = false;
+        if (b > W - 6){ a = o.x - 5 - o.w; b = o.x + 3; flip = true; }
+        if (fits(row, a, b)){ placed[row].push([a, b]); o.row = row; o.flip = flip; }
+      }
+    });
+    order.sort((a, b) => b.p.state.localeCompare(a.p.state) || a.x - b.x);   // ahead first, so filled pins sit on top
+    order.forEach(o => {
+      const p = o.p;
+      const g = sv('g', {class: 'pin ' + (p.state === 'done' ? 'is-done' : 'is-ahead') + (p.keys.some(k => k.startsWith('badge-')) ? ' has-badge' : ''), transform: `translate(${o.x.toFixed(1)} ${rail})`,
+                         tabindex: 0, role: 'img', 'data-twin': p.keys.join(' '),
+                         'aria-label': `${p.title}, ${p.state === 'done' ? p.line : F.month(p.date)}. ${p.sub || ''}`}, L.pins);
+      if (o.row >= 0){
+        const ly = rowsY[o.row];
+        sv('line', {class: 'pole', x1: 0, x2: 0, y1: R + 1, y2: ly - rail + 3}, g);
+        const t = sv('text', {class: 'plab', x: o.flip ? -5 : 5, y: ly - rail, 'text-anchor': o.flip ? 'end' : 'start'}, g);
+        t.textContent = p.label;
+      }
+      const sc = head(g, R, p.glyph);
+      g.addEventListener('pointerenter', () => Tip.show(pinTip(p, F, m.ageAt), g.querySelector('.head').getBoundingClientRect()));
+      g.addEventListener('pointerleave', Tip.hide);
+      g.addEventListener('focus', () => Tip.show(pinTip(p, F, m.ageAt), g.querySelector('.head').getBoundingClientRect()));
+      g.addEventListener('blur', Tip.hide);
+    });
+    measure.remove();
+
+    /* today's label, and the shelf of badges earned so far, hanging just behind today */
+    const tl = sv('text', {class: 'b-tlabel', x: xT + 12, y: top + 6}, L.labels);
+    const k = sv('tspan', {class: 'k'}, tl); k.textContent = 'Today ';
+    const dd = sv('tspan', null, tl); dd.textContent = F.date(m.asOf);
+    if (!phone){ const tv = sv('text', {class: 'b-tval', x: xT + 11, y: top + 32}, L.labels); tv.textContent = F.usd(m.value); }
+    sv('circle', {class: 'b-dot', cx: xT, cy: yT, r: 6}, L.labels);
+
+    const per = Math.ceil(m.shelf.length / 2), gap = 23;
+    /* behind today when there is room; a young record (today near the start) hangs them just after it */
+    const sl = sv('text', {class: 'b-shelflab', x: xT - 12, y: top + 6, 'text-anchor': 'end'}, L.shelf);
+    const sk = sv('tspan', {class: 'k'}, sl); sk.textContent = `${m.shelf.length} ${m.shelf.length === 1 ? 'badge' : 'badges'} `;
+    const s2 = sv('tspan', null, sl); s2.textContent = 'earned';
+    const shelfW = Math.max(sl.getComputedTextLength(), 21 + (per - 1) * gap + gap / 2 + 10);
+    const behind = xT - 12 - shelfW > P.l;
+    const sy = behind ? top : top + 52, dir = behind ? -1 : 1;
+    if (!behind){ sl.setAttribute('x', xT + 12); sl.setAttribute('y', sy + 6); sl.setAttribute('text-anchor', 'start'); }
+    m.shelf.forEach((b, i) => {
+      const row = i < per ? 0 : 1, col = row ? i - per : i;
+      const cx = xT + dir * (21 + col * gap + (row ? gap / 2 : 0)), cy = sy + 28 + row * 23;
+      const g = sv('g', {class: 'bead', transform: `translate(${cx} ${cy})`, tabindex: 0, role: 'img', 'data-twin': b.keys.join(' '), 'aria-label': `Badge earned: ${b.title}. ${b.sub}`}, L.shelf);
+      const mv = sv('g', {class: 'bead-move'}, g);
+      head(mv, 9.5, b.glyph);
+      const tipOf = () => [h('div', {class: 't1', text: b.title}), h('div', {class: 't3', text: b.sub}), h('div', {class: 't2', style: 'margin-top:6px;font-weight:650', text: 'Badge earned'})];
+      g.addEventListener('pointerenter', () => Tip.show(tipOf(), g.querySelector('.head').getBoundingClientRect()));
+      g.addEventListener('pointerleave', Tip.hide);
+      g.addEventListener('focus', () => Tip.show(tipOf(), g.querySelector('.head').getBoundingClientRect()));
+      g.addEventListener('blur', Tip.hide);
+    });
+
+    /* where the record starts, if there's room before the shelf */
+    const st = sv('text', {class: 'b-cap', x: P.l, y: top + 6}, L.labels);
+    const st1 = sv('tspan', {class: 'k', x: P.l}, st); st1.textContent = F.date(m.rows[0].date);
+    const st2 = sv('tspan', {x: P.l, dy: 16}, st); st2.textContent = `first of ${m.rows.length} weeks`;
+    const room = behind ? xT - 12 - shelfW : xT - 10;
+    if (st.getBBox().x + st.getBBox().width > room - 16) st.remove();
+
+    /* hover anywhere on the timeline: the value that week, or the estimate that month */
+    const cap = sv('rect', {class: 'b-capture', x: P.l, y: top - 10, width: W - P.l - P.r, height: rail - top + 10}, L.capture);
+    const cross = sv('line', {class: 'b-cross', y1: top - 10, y2: rail, visibility: 'hidden'}, L.cross);
+    const dots = [0, 1, 2].map(() => sv('circle', {class: 'b-crossdot', r: 4.5, visibility: 'hidden'}, L.cross));
+    const rowsT = m.rows.map(r => r.date.getTime());
+    const nearest = ms => { let lo = 0, hi = rowsT.length - 1; while (hi - lo > 1){ const mid = (lo + hi) >> 1; if (rowsT[mid] < ms) lo = mid; else hi = mid; } return Math.abs(rowsT[lo] - ms) < Math.abs(rowsT[hi] - ms) ? lo : hi; };
+    const move = e => {
+      const box = svg.getBoundingClientRect();
+      const x = (e.clientX - box.left) * (W / box.width);
+      const ms = m.t0 + (x - P.l) / (W - P.l - P.r) * (m.t1 - m.t0);
+      dots.forEach(d => d.setAttribute('visibility', 'hidden'));
+      let nodes, cx = x;
+      if (ms <= m.asOf.getTime()){
+        const i = nearest(ms), r = m.rows[i];
+        if (r.bigGap && Math.abs(rowsT[i] - ms) > 14 * DAY){ cross.setAttribute('visibility', 'hidden'); Tip.hide(); return; }
+        cx = X(rowsT[i]);
+        dots[0].setAttribute('cx', cx); dots[0].setAttribute('cy', Y(r.total)); dots[0].setAttribute('visibility', 'visible');
+        nodes = [h('div', {class: 't2', text: 'Week of ' + F.date(r.date)}), h('div', {class: 'tv', text: F.usd(r.total)})];
+        const note = m.notes.find(n => Math.abs(n.date - r.date) <= 4 * DAY);
+        if (note) nodes.push(h('div', {class: 't3', style: 'margin-top:4px', text: 'Note: ' + note.text}));
+      } else if (fanM && ms <= fanM.retire.getTime()){
+        const lines = [fanM.high, fanM.plan, fanM.low];
+        lines.forEach((ln, j) => { dots[j].setAttribute('cx', x); dots[j].setAttribute('cy', Y(fanM.at(ln, ms))); dots[j].setAttribute('visibility', 'visible'); });
+        const dt = new Date(ms);
+        nodes = [h('div', {class: 't2', text: `${F.month(dt)} · an estimate` + (m.ageAt(dt) != null ? ` · age ${m.ageAt(dt)}` : '')}),
+                 ...lines.map(ln => h('div', {class: 'row'}, h('span', {text: `At ${Math.round(ln.rate * 100)}% a year`}), h('b', {text: F.k(fanM.at(ln, ms))})))];
+      } else { cross.setAttribute('visibility', 'hidden'); Tip.hide(); return; }
+      cross.setAttribute('x1', cx); cross.setAttribute('x2', cx); cross.setAttribute('visibility', 'visible');
+      const bx = box.left + cx * (box.width / W), by = box.top + ((top + rail) / 2) * (box.height / H);
+      Tip.show(nodes, {left: bx, top: by, width: 0, height: 0, right: bx, bottom: by}, 'side');
+    };
+    cap.addEventListener('pointermove', move);
+    cap.addEventListener('pointerleave', () => { cross.setAttribute('visibility', 'hidden'); dots.forEach(d => d.setAttribute('visibility', 'hidden')); Tip.hide(); });
+
+    /* one tab stop for the whole timeline; the arrow keys walk the pins in time order */
+    const stops = [...svg.querySelectorAll('.pin, .bead')].map(el => ({el, x: el.getBoundingClientRect().left})).sort((a, b) => a.x - b.x).map(o => o.el);
+    stops.forEach(el => el.setAttribute('tabindex', '-1'));
+    const first = stops.find(el => el.classList.contains('is-ahead')) || stops[0];
+    if (first) first.setAttribute('tabindex', '0');
+    svg.onkeydown = e => {
+      const i = stops.indexOf(document.activeElement);
+      if (i < 0) return;
+      const n = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? i + 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? i - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? stops.length - 1 : e.key === 'Escape' ? -2 : null;
+      if (n == null) return;
+      e.preventDefault();
+      if (n === -2){ Tip.hide(); return; }
+      const next = stops[Math.max(0, Math.min(stops.length - 1, n))];
+      stops.forEach(el => el.setAttribute('tabindex', '-1'));
+      next.setAttribute('tabindex', '0');
+      next.focus();
+      const sc = $('#bandScroll'), r = next.getBoundingClientRect(), b = sc.getBoundingClientRect();
+      if (r.left < b.left + 40 || r.right > b.right - 40) sc.scrollLeft += r.left - (b.left + b.width / 2);
+    };
+
+    ctx = {X, xT, W, phone};
+    return ctx;
+  }
+
+  /* the slim strip: the same timeline, compressed, pinned to the top once the band scrolls away */
+  function renderStrip(model, opts){
+    const {F} = opts;
+    const svg = $('#stripSvg');
+    const W = svg.clientWidth || innerWidth, H = 44;
+    svg.textContent = '';
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const m = model.band, fanM = m.fan;
+    const phone = innerWidth < 720;
+    const P = {l: phone ? 60 : 150, r: phone ? 14 : 24};
+    const X = ms => P.l + (ms - m.t0) / (m.t1 - m.t0) * (W - P.l - P.r);
+    const totals = m.rows.map(r => r.total);
+    const vmin = Math.min(...totals) / 1.35, vmax = Math.max(fanM ? fanM.high.end : 0, m.value * 2.2) * 1.18;
+    const top = 6, rail = 31;
+    const Y = v => top + (1 - (Math.log(v) - Math.log(vmin)) / (Math.log(vmax) - Math.log(vmin))) * (rail - top - 2);
+    const lab = sv('text', {class: 's-lab', x: phone ? 12 : 22, y: 27}, svg);
+    lab.textContent = phone ? F.k(m.value) : 'Meridian';
+    if (!phone){ const t2 = sv('tspan', {class: 's-lab2', dx: 8}, lab); t2.textContent = F.k(m.value); }
+    const segs = [];
+    m.rows.forEach((r, i) => { if (!i || r.bigGap) segs.push([]); segs[segs.length - 1].push([X(r.date.getTime()), Y(r.total)]); });
+    segs.forEach(sg => sv('path', {class: 'b-line', style: 'stroke-width:1.5', d: 'M' + sg.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L')}, svg));
+    if (fanM){
+      const P2 = ln => ln.pts.filter((_, i) => i % 3 === 0 || i === ln.pts.length - 1).map(p => [X(p[0]), Y(p[1])]);
+      const hi = P2(fanM.high), lo = P2(fanM.low);
+      sv('path', {class: 'b-fan', d: 'M' + hi.map(p => p.join(' ')).join('L') + 'L' + lo.reverse().map(p => p.join(' ')).join('L') + 'Z'}, svg);
+      sv('path', {class: 'b-plan', style: 'stroke-width:1.25;stroke-dasharray:4 3', d: 'M' + P2(fanM.plan).map(p => p.join(' ')).join('L')}, svg);
+    }
+    sv('line', {class: 'b-rail', x1: P.l - 6, x2: W - P.r + 6, y1: rail, y2: rail}, svg);
+    const xT = X(m.asOf.getTime());
+    sv('line', {class: 'b-today', x1: xT, x2: xT, y1: 3, y2: rail}, svg);
+    m.pins.forEach(p => {
+      const g = sv('g', {class: 'pin ' + (p.state === 'done' ? 'is-done' : 'is-ahead'), transform: `translate(${X(p.date.getTime()).toFixed(1)} ${rail})`, 'data-twin': p.keys.join(' ')}, svg);
+      head(g, 4, null);
+      g.addEventListener('pointerenter', () => Tip.show(pinTip(p, F, m.ageAt), g.querySelector('.head').getBoundingClientRect(), 'below'));
+      g.addEventListener('pointerleave', Tip.hide);
+    });
+    /* earned badges ride along as one counter just behind today; any earned badge lights it */
+    if (m.shelf.length){
+      const g = sv('g', {class: 'bead', transform: `translate(${xT - 13} 13)`, 'data-twin': m.shelf.flatMap(b => b.keys).join(' ')}, svg);
+      const sc = head(g, 8, null);
+      const n = sv('text', {class: 's-count', x: 0, y: 3.8, 'text-anchor': 'middle'}, sc); n.textContent = String(m.shelf.length);
+      g.addEventListener('pointerenter', () => Tip.show([h('div', {class: 't1', text: `${m.shelf.length} badges earned`}), h('div', {class: 't3', text: m.shelf.map(b => b.title).join(', ')})], g.querySelector('.head').getBoundingClientRect(), 'below'));
+      g.addEventListener('pointerleave', Tip.hide);
+    }
+  }
+
+  return {render, renderStrip, get ctx(){ return ctx; }};
+})();
+
+/* ======================================================================
+   DRAW: ECharts, with one shared grammar
+   ====================================================================== */
+const Charts = (() => {
+  const inst = new Map();
+  function mount(id, option){
+    const el = document.getElementById(id);
+    if (!el) return null;
+    let c = inst.get(id);
+    if (c && c.getDom() !== el){ c.dispose(); c = null; }
+    if (!c){ c = echarts.init(el, null, {renderer: 'canvas'}); inst.set(id, c); }
+    c.setOption(option, true);
+    return c;
+  }
+  function disposeAll(){ inst.forEach(c => c.dispose()); inst.clear(); }
+  function resizeAll(){ inst.forEach(c => { if (c.getDom().offsetParent) c.resize(); }); }
+  const base = t => ({
+    animation: MOTION, animationDuration: 380, animationEasing: 'quarticOut',
+    textStyle: {fontFamily: FONT, color: t.muted},
+    tooltip: {trigger: 'axis', confine: true, backgroundColor: t.page, borderColor: t.hair2, borderWidth: 1, padding: [10, 12],
+              textStyle: {color: t.ink, fontFamily: FONT, fontSize: 13},
+              extraCssText: 'border-radius:12px;box-shadow:0 10px 28px rgba(40,25,10,.16);',
+              axisPointer: {type: 'line', lineStyle: {color: t.muted, width: 1, type: 'solid'}}},
+  });
+  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  /* years on long spans; months (with the year at January) on short ones */
+  const timeAxis = (t, short, step = 1) => ({type: 'time', axisLine: {lineStyle: {color: t.hair2}}, axisTick: {show: false}, splitLine: {show: false},
+                          axisLabel: {color: t.muted, fontSize: 12, fontFamily: FONT, hideOverlap: true,
+                                      formatter: v => { const dt = new Date(v); return dt.getMonth() === 0 && dt.getDate() <= 7 ? (dt.getFullYear() % step ? '' : String(dt.getFullYear())) : short ? MON[dt.getMonth()] : ''; }}});
+  /* how many years between labels, so they never touch */
+  const yearStep = (el, spanMs) => { const perYear = (el ? el.clientWidth - 60 : 600) / Math.max(1, spanMs / (365.25 * 864e5)); return perYear < 26 ? 5 : perYear < 52 ? 2 : 1; };
+  const valAxis = (t, fmt) => ({type: 'value', scale: true, axisLine: {show: false}, axisTick: {show: false},
+                                splitLine: {lineStyle: {color: t.hair, width: 1}}, axisLabel: {color: t.muted, fontSize: 12, fontFamily: FONT, formatter: fmt}});
+  return {mount, disposeAll, resizeAll, base, timeAxis, valAxis, yearStep, get: id => inst.get(id)};
+})();
+
+/* table twins for charts (the no-hover way to read every value) */
+const Tables = new Map();
+function tableToggle(chartId){
+  const b = h('button', {class: 'tgl', type: 'button', 'aria-pressed': 'false', 'aria-controls': chartId, html: ICON.table + '<span>Table</span>'});
+  b.addEventListener('click', () => {
+    const on = b.getAttribute('aria-pressed') !== 'true';
+    b.setAttribute('aria-pressed', String(on));
+    b.innerHTML = (on ? ICON.chart + '<span>Chart</span>' : ICON.table + '<span>Table</span>');
+    const box = document.getElementById(chartId), wrap = document.getElementById('tbl-' + chartId);
+    if (on){
+      const spec = Tables.get(chartId);
+      wrap.textContent = '';
+      wrap.append(h('table', {class: 'dtable'}, h('thead', null, h('tr', null, spec.cols.map((c, i) => h('th', {scope: 'col', class: spec.noteCol === i ? 'note' : null, text: c})))),
+        h('tbody', null, spec.rows.map(r => h('tr', null, r.map((v, i) => h('td', {class: spec.noteCol === i ? 'note' : null, text: v})))))));
+      box.hidden = true; wrap.hidden = false;
+    } else { wrap.hidden = true; box.hidden = false; const c = Charts.get(chartId); if (c) c.resize(); }
+  });
+  return b;
+}
+
+/* ======================================================================
+   VIEWS
+   ====================================================================== */
+const {M, d} = await MeridianKit.load({sparse: Q.get('sparse') === '1', src: '../v3.html'});   // ?sparse=1: the short sparse demo, to check the empty and ungraded states
+const F = M.Fmt;
+const TODAY = new Date();
+Data.init({M, d});
+const TABS = [['pulse', 'Pulse'], ['report', 'Report card'], ['accounts', 'Accounts'], ['networth', 'Net worth'], ['saving', 'Saving'], ['plan', 'Plan'], ['lab', 'Lab']];
+const RANGES = [['1Y', '1Y'], ['3Y', '3Y'], ['5Y', '5Y'], ['YTD', 'YTD'], ['ALL', 'All']];
+const state = {view: ['pulse', 'report', 'accounts', 'networth', 'saving', 'plan', 'lab'].includes(Q.get('view')) ? Q.get('view') : 'pulse', range: 'ALL', model: null};
+const word = v => v > 0 ? 'Up' : v < 0 ? 'Down' : 'Flat';
+const arrow = v => v > 0 ? '↑' : v < 0 ? '↓' : '·';
+const dir = v => v > 0 ? 'up' : v < 0 ? 'dn' : 'flat';
+const minus = s => String(s).replace('-', '−');
+const SP = (v, dp) => minus(F.signedPct(v, dp));          // the app's signed percent, with a true minus
+
+function deltaLine(v, text, pc, cls){
+  return h('li', {class: cls || null}, h('span', {class: 'ar ' + dir(v), 'aria-hidden': 'true', text: arrow(v)}), h('span', {class: 'txt', text}), pc ? h('span', {class: 'pc', text: pc}) : null);
+}
+function secHead(title, sub, ...acts){
+  return h('div', {class: 'sec-h'}, h('h2', {text: title}), sub ? h('p', {class: 'sub', text: sub}) : null, acts.length ? h('div', {class: 'acts'}, acts) : null);
+}
+function figBlock(label, value, cls, sub, small){
+  return h('div', {class: 'fb'}, h('p', {class: 'fb-l', text: label}), h('p', {class: 'fb-v ' + (cls || '')}, value, small ? h('small', {text: small}) : null), h('p', {class: 'fb-s', text: sub}));
+}
+
+/* ---------------- PULSE ---------------- */
+const Pulse = {
+  render(){
+    const root = $('#view-pulse');
+    const {vm, all} = state.model;
+    const t = Color.theme();
+    root.textContent = '';
+    const P = vm.portfolio, wk = P.week, since = P.since, tg = P.target;
+
+    /* 1. where things stand this week */
+    const nw = all.netWorth;
+    const nwParts = nw.items.map(it => `${it.kind === 'debt' ? 'minus ' : ''}${it.name.toLowerCase().replace('investment ', '')} ${F.k(it.value)}`);
+    const now = h('section', {class: 'sec now', 'aria-label': 'This week'},
+      h('div', {class: 'now-main'},
+        h('p', {class: 'eyebrow'}, h('span', {class: 'wkno', title: `Week ${d.rows.length} since ${F.date(d.rows[0].date)}`, text: `Week ${d.rows.length}`}), 'Portfolio, week ending ' + F.date(vm.asOf)),
+        h('p', {class: 'hero-fig', text: F.usd(P.value)}),
+        h('ul', {class: 'deltas'},
+          deltaLine(wk.delta, `${word(wk.delta)} ${F.usd(Math.abs(wk.delta))} this week`, `(${SP(wk.pct, 2)})`, 'wk'),
+          deltaLine(since.delta, `${word(since.delta)} ${F.usd(Math.abs(since.delta))} since ${F.month(since.from)}`, `(${SP(since.pct, 1)})`))),
+      h('div', {class: 'now-side'},
+        tg ? h('div', {class: 'sign'},
+          h('p', {class: 'sign-label', text: 'Target path'}),
+          h('p', {class: 'sign-fig ' + dir(tg.diff), text: F.signed(Math.round(tg.diff))}),
+          h('p', {class: 'sign-sub', text: `${tg.diff >= 0 ? 'Ahead of' : 'Behind'} the ${F.usd(tg.value)} your weekly target path expected by ${F.day(tg.date)}.`})) : null,
+        h('div', {class: 'sign'},
+          h('p', {class: 'sign-label', text: 'Net worth'}),
+          h('p', {class: 'sign-fig', text: F.k(nw.net)}),
+          h('p', {class: 'sign-sub', text: capFirst(nwParts.join(', ')) + '.'}),
+          h('button', {class: 'link', type: 'button', onclick: () => go('networth'), html: '<span>Open net worth</span>' + ICON.arrow}))));
+    root.append(now);
+
+    /* 2. the main chart */
+    const pace = vm.portfolio.targetPace;
+    const legend = h('ul', {class: 'legend', 'aria-label': 'Legend'},
+      h('li', null, h('i', {class: 'key'}), 'Portfolio'),
+      vm.series.target.length > 1 ? h('li', null, h('i', {class: 'key dash'}), 'Target path') : null,
+      h('li', null, h('i', {class: 'key dot'}), '$100k mark'),
+      vm.notes.length ? h('li', null, h('i', {class: 'key dia'}), 'Your note') : null);
+    const mainSec = h('section', {class: 'sec tight'},
+      secHead('Portfolio over time',
+        `${vm.weeksInView} weeks, ${F.month(since.from)} to ${F.month(vm.asOf)}.` + (vm.series.target.length > 1 ? ` The dashed line is your sheet's target path${pace ? `; it grows about ${Math.round(pace * 100)}% a year from here, so treat it as a near-term guide` : ''}.` : ''),
+        legend, tableToggle('c-main')),
+      h('div', {class: 'chart h-main', id: 'c-main', role: 'img', 'aria-label': `Portfolio value from ${F.month(since.from)} to ${F.month(vm.asOf)}, with the target path, each $100k mark and your notes`}),
+      h('div', {class: 'tbl-wrap', id: 'tbl-c-main', hidden: true}),
+      vm.notes.length ? h('ul', {class: 'notes', 'aria-label': 'Your notes'}, vm.notes.map(n => h('li', null, h('i', {class: 'key dia', 'aria-hidden': 'true'}), h('b', {text: F.date(n.date)}), h('span', {text: n.text})))) : null);
+    root.append(mainSec);
+
+    /* 3. the four measures, each beside the chart it belongs with */
+    const T = vm.tiles;
+    const sc = vm.scorecard;
+    const weekSec = h('section', {class: 'sec pair'},
+      h('div', null,
+        secHead('Weekly change', 'Each week against the one before, new saving included.' + (sc ? ` ${sc.up} of ${sc.n} weeks rose.` : ''),
+          h('ul', {class: 'legend', 'aria-label': 'Legend'}, h('li', null, h('i', {class: 'key sq', style: 'background:var(--gain)'}), 'Up week'), h('li', null, h('i', {class: 'key sq', style: 'background:var(--loss)'}), 'Down week')),
+          tableToggle('c-weekly')),
+        h('div', {class: 'chart h-sm', id: 'c-weekly', role: 'img', 'aria-label': 'Weekly change in dollars, gains above zero and losses below'}),
+        h('div', {class: 'tbl-wrap', id: 'tbl-c-weekly', hidden: true})),
+      h('div', {class: 'figs'},
+        T.d4 ? figBlock('4-week change', F.signed(T.d4.delta), dir(T.d4.delta), `${SP(T.d4.pct, 2)} over 4 weeks`) : figBlock('4-week change', 'Not yet', 'flat', 'Needs 4 weeks of history'),
+        T.d52 ? figBlock('52-week change', F.signed(T.d52.delta), dir(T.d52.delta), `${SP(T.d52.pct)} over 52 weeks`) : figBlock('52-week change', 'Not yet', 'flat', 'Needs a year of history')));
+    const worst = vm.series.drawdown.filter(p => p[1] != null).reduce((a, b) => b[1] < a[1] ? b : a, [0, 0]);
+    const ddSec = h('section', {class: 'sec pair flip'},
+      h('div', {class: 'figs'},
+        figBlock('Below the high', T.dd.now < -0.0005 ? minus(F.pct(T.dd.now)) : 'At the high', T.dd.now < -0.0005 ? 'flat' : 'up',
+                 T.dd.now < -0.0005 ? `The high is ${F.usd(T.dd.athValue)}, from ${F.date(T.dd.athDate)}: ${F.k(T.dd.athValue - P.value)} to go.` : `A new high this week: ${F.usd(T.dd.athValue)}.`),
+        figBlock('Growth rate', SP(T.growth.cagr52), dir(T.growth.cagr52), `Trailing 52 weeks, new saving included. ${SP(T.growth.cagrAll)} a year over the whole range.`, 'a year')),
+      h('div', null,
+        secHead('Drawdown from the high', worst[1] < -5 ? `How far below its running high the portfolio sat. The deepest dip: ${minus(worst[1].toFixed(1))}% in ${F.month(new Date(worst[0]))}.` : 'How far below its running high the portfolio sat.', tableToggle('c-dd')),
+        h('div', {class: 'chart h-sm', id: 'c-dd', role: 'img', 'aria-label': 'Percent below the running all-time high over time'}),
+        h('div', {class: 'tbl-wrap', id: 'tbl-c-dd', hidden: true})));
+    root.append(weekSec, ddSec);
+
+    /* 4. milestones as a trail, and the months as a grid */
+    const Mi = all.milestones;
+    const maxDays = Math.max(...Mi.crossed.map(m => m.days || 0), 1);
+    const trail = h('ol', {class: 'trail', 'aria-label': 'Every $100k crossed, newest first'},
+      h('li', {class: 'next', 'data-twin': 'road-port-' + nextRoadKey(all)},
+        h('span', {class: 'pg', html: glyphSvg('peak')}),
+        h('span', {class: 'amt', text: F.k(Mi.next)}),
+        h('span', {class: 'when'}, h('b', {text: `${F.usd(Mi.toGo)} to go`}), h('br'), Mi.eta ? `around ${F.month(Mi.eta)} at your pace` : 'pace unclear')),
+      Mi.crossed.slice().reverse().map(m => h('li', {'data-twin': 'mile-' + m.amount},
+        h('span', {class: 'pg', html: glyphSvg('peak')}),
+        h('span', {class: 'amt', text: F.k(m.amount)}),
+        h('span', {class: 'when'}, h('b', {text: F.date(m.date)}), ' ', m.days != null ? `· ${m.days.toLocaleString()} days after ${F.k(m.amount - 1e5)}` : '· the first mark in the workbook',
+          m.days != null ? h('i', {class: 'gapbar', style: `width:${(m.days / maxDays * 100).toFixed(1)}%`, 'aria-hidden': 'true'}) : null))));
+    const grid = monthGrid(all.monthGrid, t);
+    const climb = h('section', {class: 'sec climb'},
+      h('div', null, secHead('Milestones', `${Mi.crossed.length} crossed. The bars show how long each $100k took.`), trail),
+      h('div', null, secHead('Month by month', 'Change from one month-end to the next, new saving included.'), grid.wrap, grid.scale));
+    root.append(climb);
+
+    this.charts(t);
+  },
+
+  charts(t){
+    const {vm, all} = state.model;
+    const P = vm.portfolio;
+    const short = state.range === '1Y' || state.range === 'YTD';
+    const step = Charts.yearStep($('#c-main'), vm.asOf - P.since.from);
+    /* main: portfolio (ink over an accent wash, like the band), target path dashed, $100k marks, notes */
+    const rows = d.rows.filter(r => r.date >= P.since.from);
+    const nearest = dt => rows.reduce((a, b) => Math.abs(b.date - dt) < Math.abs(a.date - dt) ? b : a, rows[0]);
+    const miles = all.milestones.crossed.filter(m => m.date >= P.since.from);
+    const tgt = vm.series.target;
+    const tgtMap = new Map(tgt.map(p => [p[0], p[1]]));
+    const noteAt = ms => vm.notes.find(n => Math.abs(n.date.getTime() - ms) <= 4 * DAY);
+    const el = $('#c-main');
+    const span = (vm.asOf - P.since.from) || 1, pxPerMs = (el.clientWidth - 70) / span;
+    let lastX = -1e9;
+    const sameWeek = m => miles.some(o => o !== m && o.amount > m.amount && Math.abs(o.date - m.date) < 4 * DAY);
+    const mileData = miles.map(m => {
+      const r = nearest(m.date), x = (m.date - P.since.from) * pxPerMs, show = !sameWeek(m) && x - lastX > 46;
+      if (show) lastX = x;
+      return {name: F.k(m.amount), coord: [m.date.getTime(), r.total], symbol: 'circle', symbolSize: 11,
+              itemStyle: {color: t.port, borderColor: t.page, borderWidth: 2},
+              label: {show, position: 'top', distance: 7, formatter: F.k(m.amount), color: t.ink2, fontSize: 12, fontWeight: 650, fontFamily: FONT}};
+    });
+    const noteData = vm.notes.map(n => ({name: 'note', coord: [n.date.getTime(), nearest(n.date).total], symbol: 'diamond', symbolSize: 15,
+                                         itemStyle: {color: t.ink2, borderColor: t.page, borderWidth: 2}, label: {show: false}}));
+    Charts.mount('c-main', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, formatter: ps => {
+        const list = (Array.isArray(ps) ? ps : [ps]).filter(p => p.value && p.value[1] != null);
+        if (!list.length) return '';
+        const ms = list[0].value[0];
+        const port = list.find(p => p.seriesName === 'Portfolio'), tp = list.find(p => p.seriesName === 'Target path');
+        let html = `<div style="color:${t.muted};font-size:12px;margin-bottom:3px">Week of ${esc(F.date(new Date(ms)))}</div>`;
+        if (port) html += `<div style="font-size:18px;font-weight:760;letter-spacing:-.01em">${esc(F.usd(port.value[1]))}</div>`;
+        if (tp) html += `<div style="display:flex;gap:8px;align-items:center;color:${t.ink2}"><span style="display:inline-block;width:14px;border-top:2px dashed ${t.plan}"></span>Target path ${esc(F.usd(tp.value[1]))}</div>`;
+        if (port && tp) html += `<div style="color:${t.ink2}">${esc(F.signed(Math.round(port.value[1] - tp.value[1])))} vs the target</div>`;
+        const n = noteAt(ms);
+        if (n) html += `<div style="margin-top:6px;max-width:230px;white-space:normal;color:${t.ink}">Your note: ${esc(n.text)}</div>`;
+        return html;
+      }},
+      grid: {left: 4, right: 18, top: 28, bottom: 6, containLabel: true},
+      xAxis: Charts.timeAxis(t, short, step),
+      yAxis: Charts.valAxis(t, axisMoney),
+      series: [
+        {name: 'Portfolio', type: 'line', data: vm.series.total, showSymbol: false, connectNulls: false, z: 3,
+         lineStyle: {width: 2, color: t.port}, itemStyle: {color: t.port}, areaStyle: {color: t.portWash}, emphasis: {disabled: true},
+         markPoint: {animation: false, data: [...mileData, ...noteData]}},
+        {name: 'Target path', type: 'line', data: tgt, showSymbol: false, z: 2, lineStyle: {width: 1.5, type: [6, 5], color: t.plan}, itemStyle: {color: t.plan}, emphasis: {disabled: true}},
+      ],
+    });
+    Tables.set('c-main', {cols: ['Week', 'Portfolio'].concat(tgt.length > 1 ? ['Target path', 'vs target'] : []).concat(vm.notes.length ? ['Note'] : []),
+      noteCol: vm.notes.length ? (tgt.length > 1 ? 4 : 2) : -1,
+      rows: rows.slice(-104).reverse().map(r => {
+        const ms = r.date.getTime(), tv = tgtMap.get(ms), out = [F.date(r.date), F.usd(r.total)];
+        if (tgt.length > 1) out.push(tv != null ? F.usd(tv) : '', tv != null ? F.signed(Math.round(r.total - tv)) : '');
+        if (vm.notes.length){ const n = noteAt(ms); out.push(n ? n.text : ''); }
+        return out;
+      })});
+
+    /* weekly change: gains blue, losses clay red, the best and worst weeks labeled */
+    const wk = vm.series.weekly;
+    const best = wk.reduce((a, b) => b[1] > a[1] ? b : a, wk[0]), worstW = wk.reduce((a, b) => b[1] < a[1] ? b : a, wk[0]);
+    const big = wk.length > 120;
+    Charts.mount('c-weekly', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, formatter: ps => { const p = [].concat(ps)[0]; if (!p) return ''; return `<div style="color:${t.muted};font-size:12px">Week of ${esc(F.date(new Date(p.value[0])))}</div><div style="font-size:16px;font-weight:720">${esc(F.signed(p.value[1]))}</div>`; }},
+      grid: {left: 4, right: 12, top: 26, bottom: 6, containLabel: true},
+      xAxis: Charts.timeAxis(t, short, step),
+      yAxis: {...Charts.valAxis(t, v => v === 0 ? '0' : F.signed(v, F.k)), scale: false},
+      series: [{name: 'Weekly change', type: 'bar', barMaxWidth: 24, barCategoryGap: big ? '0%' : '30%',
+        data: wk.map(w => ({value: w, itemStyle: {color: w[1] >= 0 ? t.gain : t.loss, borderRadius: big ? 0 : (w[1] >= 0 ? [4, 4, 0, 0] : [0, 0, 4, 4])}})),
+        markPoint: {animation: false, symbol: 'circle', symbolSize: 1, itemStyle: {color: 'transparent'},
+          label: {color: t.ink2, fontSize: 12, fontWeight: 650, fontFamily: FONT},
+          data: [{coord: best, value: best[1], label: {position: 'top', distance: 6, formatter: 'Best ' + F.signed(best[1], F.k)}},
+                 {coord: worstW, value: worstW[1], label: {position: 'bottom', distance: 6, formatter: 'Worst ' + F.signed(worstW[1], F.k)}}]}}],
+    });
+    Tables.set('c-weekly', {cols: ['Week', 'Change'], rows: wk.slice(-104).reverse().map(w => [F.date(new Date(w[0])), F.signed(w[1])])});
+
+    /* drawdown: the loss side of the scale, the deepest dip labeled */
+    const dd = vm.series.drawdown;
+    const worst = dd.filter(p => p[1] != null).reduce((a, b) => b[1] < a[1] ? b : a, [0, 0]);
+    Charts.mount('c-dd', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, formatter: ps => { const p = [].concat(ps).find(x => x.value && x.value[1] != null); if (!p) return ''; const v = p.value[1]; return `<div style="color:${t.muted};font-size:12px">Week of ${esc(F.date(new Date(p.value[0])))}</div><div style="font-size:16px;font-weight:720">${v > -0.05 ? 'At the high' : esc(minus(v.toFixed(1))) + '% below the high'}</div>`; }},
+      grid: {left: 4, right: 12, top: 26, bottom: 6, containLabel: true},
+      xAxis: Charts.timeAxis(t, short, step),
+      yAxis: {...Charts.valAxis(t, v => v === 0 ? '0%' : minus(v) + '%'), max: 0, scale: false},
+      series: [{name: 'Below the high', type: 'line', data: dd, showSymbol: false, connectNulls: false,
+        lineStyle: {width: 2, color: t.loss}, itemStyle: {color: t.loss}, areaStyle: {color: t.lossWash}, emphasis: {disabled: true},
+        markPoint: worst[1] < -1 ? {animation: false, symbol: 'circle', symbolSize: 9, itemStyle: {color: t.loss, borderColor: t.page, borderWidth: 2},
+          label: {position: 'right', distance: 8, color: t.ink2, fontSize: 12, fontWeight: 650, fontFamily: FONT, formatter: `${minus(worst[1].toFixed(1))}%, ${F.month(new Date(worst[0]))}`},
+          data: [{coord: worst}]} : undefined}],
+    });
+    Tables.set('c-dd', {cols: ['Week', 'Below the high'], rows: dd.filter(p => p[1] != null).slice(-104).reverse().map(p => [F.date(new Date(p[0])), p[1] > -0.05 ? 'At the high' : minus(p[1].toFixed(1)) + '%'])});
+  },
+};
+function nextRoadKey(all){
+  const r = all.report.road.find(x => x.kind === 'port' && x.title.startsWith(F.k(all.milestones.next)));
+  return r ? `${r.date.getFullYear()}${r.date.getMonth()}` : '';
+}
+function capFirst(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+function esc(v){ return String(v).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[c]); }
+
+/* month by month: an HTML table so every number reads without hovering; diverging warm/cool */
+function monthGrid(years, t){
+  const CAP = 0.08;
+  const tint = pct => pct == null ? '' : Math.abs(pct) < 0.0025 ? Color.mix('--div-mid', '--div-mid', 0) :
+    Color.mix('--div-mid', pct > 0 ? '--div-gain' : '--div-loss', Math.min(1, Math.abs(pct) / CAP));
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const thisYear = years[years.length - 1].year, lastRow = d.rows[d.rows.length - 1];
+  const table = h('table', {class: 'mgrid'},
+    h('thead', null, h('tr', null, h('th', {class: 'yr', scope: 'col'}, h('span', {class: 'vh', text: 'Year'})), MONTHS.map(m => h('th', {scope: 'col', text: m})), h('th', {scope: 'col', text: 'Year'}))),
+    h('tbody', null, years.slice().reverse().map(y => h('tr', {class: y.year === thisYear ? 'cur' : null},
+      h('th', {class: 'yr', scope: 'row', text: String(y.year)}),
+      y.months.map((c, i) => { const now = y.year === lastRow.date.getFullYear() && i === lastRow.date.getMonth();
+        return c ? h('td', {class: now ? 'is-now' : null, style: `background:${tint(c.pct)}`, title: `${MONTHS[i]} ${y.year}${now ? ' so far' : ''}: ${F.signed(c.delta)} (${SP(c.pct, 2)})`, text: minus(SP(c.pct, 1))}) : h('td', {class: 'na'}, h('span', {class: 'vh', text: 'no data'})); }),
+      y.total ? h('td', {class: 'tot', style: `background:${tint(y.total.pct / 4)}`, title: `${y.year}${y.year === thisYear ? ' so far' : ''}: ${F.signed(y.total.delta)}`, text: minus(SP(y.total.pct, 1))})
+              : h('td', {class: 'tot na', title: 'A partial year or a gap in the data', text: 'partial'})))));
+  const rs = d.rows, gi = rs.findIndex(r => r.bigGap);
+  const scale = h('p', {class: 'gridkey'}, h('span', {text: '−8%'}),
+    h('span', {class: 'ramp', 'aria-hidden': 'true', style: `background:linear-gradient(90deg, ${Color.mix('--div-mid', '--div-loss', 1)}, ${Color.mix('--div-mid', '--div-mid', 0)} 50%, ${Color.mix('--div-mid', '--div-gain', 1)})`}),
+    h('span', {text: '+8%'}), h('span', {class: 'scale-note', text: gi > 0 ? `Blank: no weekly rows (${F.month(rs[gi - 1].date)} to ${F.month(rs[gi].date)}). Hover a month for dollars.` : 'Hover a month for dollars.'}));
+  return {wrap: h('div', {class: 'mgrid-wrap', 'data-scroll-x': ''}, table), scale};
+}
+
+/* ---------------- REPORT CARD ---------------- */
+const Report = {
+  render(){
+    const root = $('#view-report');
+    const {all} = state.model;
+    const t = Color.theme();
+    const rc = all.report, o = rc.overall, R = all.R;
+    root.textContent = '';
+
+    /* 1. the grade, as the sun */
+    const counts = ['a', 'b', 'c', 'd', 'f'].filter(k => rc.gradeCounts[k]).map(k => `${rc.gradeCounts[k]} ${k.toUpperCase()}${rc.gradeCounts[k] > 1 ? '’s' : ''}`).join(' · ');
+    root.append(h('section', {class: 'sec grade', 'aria-label': 'Overall grade'},
+      h('div', {class: 'sun', role: 'img', 'aria-label': o ? `Overall grade ${o.letter}, ${o.score} out of 100` : 'Overall grade: incomplete'},
+        h('span', {class: 'letter', 'aria-hidden': 'true', text: o ? o.letter : '?'}), h('span', {class: 'score', 'aria-hidden': 'true', text: o ? `${o.score} / 100` : 'incomplete'})),
+      h('div', {class: 'ghead'},
+        h('p', {class: 'verdict', text: rc.verdict}),
+        h('p', {class: 'meta', text: `Week ending ${F.date(R.hold.last.date)}` + (rc.age != null ? ` · age ${rc.age}` : '') + ` · ${rc.graded} of ${rc.subjects.length} subjects graded`})),
+      h('p', {class: 'comment', text: o ? rc.comment : 'A grade needs at least three subjects. Each subject below says what it needs.'}),
+      h('div', {class: 'gpa'},
+        h('p', {class: 'fb-l', text: 'Grade point average'}),
+        h('p', {class: 'fb-v', text: o ? o.gpa.toFixed(2) : 'None yet'}),
+        h('p', {class: 'fb-s', text: counts ? counts + ' · 4.0 scale' : 'No subjects graded yet'}))));
+
+    /* 2. subjects: the skyline (width = weight, height = score), then every subject in full */
+    const sky = h('div', {class: 'sky', id: 'sky'});
+    const list = h('div', {class: 'subjects'}, rc.subjects.map(s => {
+      const graded = s.exact != null;
+      const low = graded && s.exact < 80;
+      return h('article', {class: 'subj' + (graded ? '' : ' needs') + (low ? ' low' : ''), 'data-twin': 'subj-' + s.key, 'aria-label': s.name},
+        h('div', {class: 'lg' + (low ? ' low' : ''), 'aria-label': graded ? `Grade ${s.letter}` : 'Not graded yet', text: graded ? s.letter : '?'}),
+        h('div', null,
+          h('div', {class: 'nm'}, h('b', {text: s.name}), h('span', {text: graded ? `${s.score} / 100 · ${s.weight}% of the grade` : `${s.weight}% of the grade · not graded yet`})),
+          graded ? h('p', {class: 'val'}, h('b', {text: s.value}), h('span', {text: s.unit})) : null,
+          h('p', {class: 'why', text: graded ? s.why : `Needs ${s.need}.`}),
+          graded && s.bench ? h('p', {class: 'bench', text: s.bench}) : null,
+          graded && s.tip && s.tip.text ? h('p', {class: 'note-tip', html: ICON.note}, h('span', {text: s.tip.text})) : null));
+    }));
+    root.append(h('section', {class: 'sec'},
+      secHead('Subjects', 'Each is scored 0 to 100 against a published rule of thumb, then weighted into the grade. Wider columns count more.'),
+      sky, list));
+    this.skyline(t);
+
+    /* 3. badges: behind today, and ahead */
+    const B = rc.badges, near = B.ahead.slice(0, 8), later = B.ahead.slice(8);
+    const earnedRow = h('div', {class: 'medals earned'},
+      B.earned.map(b => h('button', {class: 'medal is-earned', type: 'button', 'data-twin': Data.badgeKey(b), title: b.desc,
+          'aria-label': `${b.title}, earned. ${b.desc}. Celebrate again`, onclick: e => celebrate(b, e.currentTarget)},
+        h('span', {class: 'disc', html: glyphSvg(Data.badgeGlyph(b))}), h('span', {class: 'mt', text: b.title}))),
+      h('div', {class: 'todaytick', 'aria-hidden': 'true'}, h('i'), h('span', {text: 'Today'})));
+    const aheadRow = h('div', {class: 'medals ahead'},
+      h('div', {class: 'todaytick', 'aria-hidden': 'true'}, h('i'), h('span', {text: 'Today'})),
+      near.map(b => h('div', {class: 'medal is-ahead', tabindex: 0, role: 'group', 'data-twin': Data.badgeKey(b),
+          'aria-label': `${b.title}: ${F.pct(b.progress, 0)} of the way. ${b.desc}.${b.when ? ' ' + b.when + '.' : ''}`},
+        h('span', {class: 'disc'}, h('span', {class: 'fill', style: `height:${(b.progress * 100).toFixed(1)}%`}), h('span', {html: glyphSvg(Data.badgeGlyph(b))})),
+        h('span', {class: 'mt', text: b.title}),
+        h('span', {class: 'mw', text: b.when || 'No date yet'}),
+        h('span', {class: 'md', text: `${F.pct(b.progress, 0)} of the way`}))));
+    const laterList = later.length ? h('div', {class: 'more-ahead'},
+      h('button', {class: 'tgl', type: 'button', 'aria-expanded': 'false', 'aria-controls': 'laterList', onclick: e => {
+        const b = e.currentTarget, open = b.getAttribute('aria-expanded') !== 'true';
+        b.setAttribute('aria-expanded', String(open)); $('#laterList').hidden = !open; b.lastChild.textContent = open ? 'Hide the ones further out' : `${later.length} more, further out`;
+      }, html: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg><span></span>'}),
+      h('ul', {class: 'later', id: 'laterList', hidden: true}, later.map(b => h('li', {'data-twin': Data.badgeKey(b), tabindex: 0},
+        h('span', {class: 'mini', html: glyphSvg(Data.badgeGlyph(b))}), h('span', null, h('b', {text: b.title}), ' · ', b.when || `${F.pct(b.progress, 0)} of the way`))))) : null;
+    if (laterList) laterList.querySelector('.tgl span').textContent = `${later.length} more, further out`;
+    root.append(h('section', {class: 'sec', id: 'badges'},
+      secHead('Badges', `${B.earned.length} earned, ${B.ahead.length} to look forward to, closest first. Dates assume your plan's return and saving.`),
+      h('p', {class: 'badges-hint', text: 'Every badge is also a pin on the timeline above. Tap one you have earned to celebrate it again.'}),
+      h('div', {class: 'trailrow'}, h('div', {class: 'rl'}, h('b', {text: 'Behind today'}), h('span', {text: `${B.earned.length} earned`})), h('div', {class: 'medals-scroll', 'data-scroll-x': ''}, earnedRow)),
+      h('div', {class: 'trailrow'}, h('div', {class: 'rl'}, h('b', {text: 'Ahead'}), h('span', {text: 'closest first'})), h('div', {class: 'medals-scroll', 'data-scroll-x': ''}, aheadRow)),
+      laterList));
+
+    /* 4 and 5. this week, and the next best moves */
+    root.append(h('section', {class: 'sec weekmoves'}, this.week(t, all), this.moves(rc)));
+
+    /* the road ahead: the band's future, as a list */
+    if (rc.road.length) root.append(this.road(all));
+  },
+
+  skyline(t){
+    const box = $('#sky');
+    const subs = state.model.all.report.subjects;
+    const W = box.clientWidth || 1100, phone = innerWidth < 720;
+    const totalW = subs.reduce((a, s) => a + s.weight, 0);
+    box.textContent = '';
+    const tipFor = (s, graded) => [h('div', {class: 't1', text: `${s.name} · ${graded ? s.letter : 'not graded'}`}), h('div', {class: 't2', text: graded ? `${s.score} / 100 · ${s.weight}% of the grade` : `${s.weight}% of the grade`}), graded ? h('div', {class: 't3', text: `${s.value} ${s.unit}`}) : null].filter(Boolean);
+    if (W < 560){
+      /* narrow screens: the same idea turned sideways (thickness = weight, length = score) */
+      const nameW = 142, unit = 300 / totalW, gapY = 4;
+      const H = subs.reduce((a, s) => a + Math.max(18, s.weight * unit), 0) + gapY * (subs.length - 1) + 2;
+      const svg = sv('svg', {viewBox: `0 0 ${W} ${H}`, height: H, role: 'img', 'aria-label': 'Each subject as a bar: thickness is its weight in the grade, length is its score'});
+      box.append(svg);
+      const X = v => nameW + v / 100 * (W - nameW - 40);
+      let y = 0;
+      subs.forEach(s => {
+        const hg = Math.max(18, s.weight * unit), graded = s.exact != null, sc = graded ? s.score : 0;
+        const g = sv('g', {class: 'sk-g', 'data-twin': 'subj-' + s.key}, svg);
+        sv('rect', {class: 'sk-col', x: nameW, y, width: Math.max(0, X(sc) - nameW), height: hg, rx: 3}, g);
+        if (graded) sv('line', {class: 'sk-roof', x1: X(sc), x2: X(sc), y1: y + 1.5, y2: y + hg - 1.5}, g);
+        const nm = sv('text', {class: 'sk-name', x: nameW - 10, y: y + hg / 2 + 4.5, 'text-anchor': 'end'}, g); nm.textContent = s.name;
+        const lt = sv('text', {class: 'sk-letter', x: X(sc) + 7, y: y + hg / 2 + 6, style: 'font-size:16px'}, g); lt.textContent = graded ? s.letter : '?';
+        g.addEventListener('pointerenter', () => Tip.show(tipFor(s, graded), g.querySelector('.sk-col').getBoundingClientRect()));
+        g.addEventListener('pointerleave', Tip.hide);
+        y += hg + gapY;
+      });
+      sv('line', {class: 'sk-base', x1: nameW - 0.5, x2: nameW - 0.5, y1: 0, y2: H}, svg);
+      return;
+    }
+    const Hs = phone ? 150 : 176, nameH = phone ? 44 : 40, H = Hs + nameH + 30;
+    const svg = sv('svg', {viewBox: `0 0 ${W} ${H}`, height: H, role: 'img', 'aria-label': 'Each subject as a column: width is its weight in the grade, height is its score'});
+    box.append(svg);
+    const gap = phone ? 3 : 6;
+    const avail = W - gap * (subs.length - 1);
+    const base = 30 + Hs, Y = v => base - v / 100 * Hs;
+    let x = 0;
+    subs.forEach(s => {
+      const w = s.weight / totalW * avail, graded = s.exact != null, sc = graded ? s.score : 0;
+      const g = sv('g', {class: 'sk-g', 'data-twin': 'subj-' + s.key}, svg);
+      sv('rect', {class: 'sk-col', x, y: Y(sc), width: w, height: Math.max(0, base - Y(sc)), rx: 3}, g);
+      if (graded) sv('line', {class: 'sk-roof', x1: x + 1.5, x2: x + w - 1.5, y1: Y(sc), y2: Y(sc)}, g);
+      const lt = sv('text', {class: 'sk-letter', x: x + w / 2, y: Y(sc) - 10, 'text-anchor': 'middle'}, g);
+      lt.textContent = graded ? s.letter : '?';
+      if (w > 64 && graded){ const ts = sv('tspan', {class: 'sk-score', dx: 5}, lt); ts.textContent = String(s.score); }
+      const words = s.name.split(' ');
+      const nm = sv('text', {class: 'sk-name', x: x + w / 2, y: base + 18, 'text-anchor': 'middle'}, g);
+      const lines = [];
+      words.forEach(wd => { const cur = lines[lines.length - 1]; if (cur && (cur + ' ' + wd).length * 6.6 < w - 4) lines[lines.length - 1] = cur + ' ' + wd; else lines.push(wd); });
+      lines.slice(0, 2).forEach((ln, i) => { const ts = sv('tspan', {x: x + w / 2, dy: i ? 15 : 0}, nm); ts.textContent = ln; });
+      g.addEventListener('pointerenter', () => Tip.show(tipFor(s, graded), g.querySelector('.sk-col').getBoundingClientRect()));
+      g.addEventListener('pointerleave', Tip.hide);
+      x += w + gap;
+    });
+    sv('line', {class: 'sk-base', x1: 0, x2: W, y1: base + 0.5, y2: base + 0.5}, svg);
+  },
+
+  week(t, all){
+    const W = all.week, box = h('div', {'aria-label': 'This week'});
+    if (!W){ box.append(secHead('This week'), h('p', {text: 'Not enough weeks yet.'})); return box; }
+    const b = s => h('b', {text: s});
+    const facts = [];
+    const fact = (kind, ...parts) => facts.push(h('li', null, h('span', {class: 'fi ' + (kind === 'up' ? 'up' : kind === 'dn' ? 'dn' : ''), 'aria-hidden': 'true',
+      html: kind === 'hi' ? glyphSvg('peak') : kind === 'up' ? '↑' : kind === 'dn' ? '↓' : '•'}), h('span', null, parts)));
+    if (W.rank && W.of >= 8){
+      if (W.rank === 1) fact('up', b('Best week'), ` of the past ${W.of}.`);
+      else if (W.rank === W.of) fact('dn', b('Weakest week'), ` of the past ${W.of}.`);
+      else fact(W.delta >= W.median ? 'up' : 'dn', 'Better than ', b(F.pct(W.beat, 0)), ` of the past ${W.of} weeks; a typical week is ${F.signed(W.median, F.k)}.`);
+    }
+    if (W.streak >= 2) fact(W.delta > 0 ? 'up' : 'dn', b(`${W.streak} ${W.delta > 0 ? 'up' : 'down'} weeks`), ' in a row.');
+    else if (W.before >= 2) fact(W.delta > 0 ? 'up' : 'dn', W.delta > 0 ? 'Snapped a ' : 'Ended a ', b(`${W.before}-week ${W.delta > 0 ? 'losing' : 'winning'} streak`), '.');
+    if (W.atHigh) fact('up', b('A new all-time high.'));
+    else fact(null, b(F.pct(-W.ddNow, 1)), ` below the all-time high of ${F.k(W.ath.v)} from ${F.date(W.ath.date)}: ${F.k(W.ath.v - W.last.total)} to go.`);
+    if (W.vsTarget != null){
+      const parts = [b(F.k(Math.abs(W.vsTarget)) + (W.vsTarget >= 0 ? ' ahead of' : ' behind')), ' your target path'];
+      if (W.vsTargetPrev != null){ const mv = W.vsTarget - W.vsTargetPrev; parts.push(Math.abs(mv) < 50 ? ', about where it was last week' : `, ${F.k(Math.abs(mv))} ${mv > 0 ? 'better' : 'worse'} than last week`); }
+      fact(W.vsTarget >= 0 ? 'up' : 'dn', ...parts, '.');
+    }
+    if (W.nwDelta != null && Math.abs(W.nwDelta - W.delta) >= 1) fact(dir(W.nwDelta), 'Net worth ', b(F.signed(W.nwDelta)), ' once loan paydown is counted.');
+    const my = [];
+    if (W.mtd != null) my.push('Month to date ', b(F.signed(W.mtd, F.k)));
+    if (W.ytd != null) my.push(my.length ? ' · year to date ' : 'Year to date ', b(F.signed(W.ytd, F.k)));
+    if (my.length) fact(null, ...my, '.');
+    if (W.weeksToNext != null && W.weeksToNext < 520){
+      const when = new Date(W.last.date.getTime() + W.weeksToNext * 7 * DAY);
+      fact('hi', 'Next milestone ', b(F.k(W.next)), `: ${F.k(W.next - W.last.total)} away, around ${F.month(when)} at your 52-week pace.`);
+    }
+    const head = W.delta === 0 ? 'Flat this week' : `${W.delta > 0 ? 'Up' : 'Down'} ${F.usd(Math.abs(W.delta))} ${W.weeks > 1 ? `over ${W.weeks} weeks` : 'this week'}`;
+    box.append(h('h2', {class: 'vh', text: 'This week'}),
+      h('p', {class: 'wk-head'}, h('span', {class: dir(W.delta), 'aria-hidden': 'true', text: arrow(W.delta) + ' '}), head),
+      h('p', {class: 'wk-sub', text: `${SP(W.pct, 2)} · portfolio ${F.usd(W.last.total)} · week ending ${F.date(W.last.date)}`}),
+      h('ul', {class: 'facts'}, facts));
+    /* biggest movers, each account in its group's color, the bar on the gain or loss side */
+    const top = W.movers.slice(0, 5), max = Math.max(...top.map(x => Math.abs(x.d)), 1);
+    const mv = h('div', {'aria-label': 'Biggest movers this week'}, h('p', {class: 'movers-h', text: 'Biggest movers this week'}),
+      top.map(x => h('div', {class: 'mv'},
+        h('span', {class: 'mv-name'}, h('i', {style: `background:${t.groups[x.group]}`, 'aria-hidden': 'true'}), h('span', {text: x.label})),
+        h('span', {class: 'mv-track', 'aria-hidden': 'true'}, h('span', {class: 'mv-bar', style: `${x.d >= 0 ? 'left:50%;border-radius:0 4px 4px 0' : 'right:50%;border-radius:4px 0 0 4px'};width:${(Math.abs(x.d) / max * 50).toFixed(1)}%;background:${t.groups[x.group]}`})),
+        h('span', {class: 'mv-val ' + dir(x.d), text: F.signed(x.d)}))),
+      W.movers.length > top.length ? h('p', {class: 'mv-more', text: `${W.movers.length - top.length} more account${W.movers.length - top.length > 1 ? 's' : ''} moved less.`}) : null);
+    const groupsShown = [...new Set(top.map(x => x.group))];
+    mv.append(h('ul', {class: 'legend', style: 'margin-top:12px'}, groupsShown.map(g => h('li', null, h('i', {class: 'key sq', style: `background:${t.groups[g]}`}), M.GROUPS.find(x => x.key === g).label))));
+    box.append(mv);
+    return box;
+  },
+
+  moves(rc){
+    return h('div', {'aria-label': 'Next best moves'},
+      h('h2', {class: 'h3', style: 'margin-bottom:18px', text: 'Next best moves'}),
+      rc.moves.length ? h('ol', {class: 'moves'}, rc.moves.map((m, i) => h('li', null, h('span', {class: 'no', 'aria-hidden': 'true', text: String(i + 1)}), h('div', null, h('b', {text: m.title}), h('p', {text: m.text})))))
+                      : h('p', {text: 'Nothing pressing. Keep doing what you are doing.'}));
+  },
+
+  road(all){
+    const items = all.report.road, R = all.R;
+    const ageAt = dt => R.age ? Math.floor((dt - R.age.birth) / (365.25 * DAY) + 0.01) : null;
+    const inWords = dt => { const n = (dt.getFullYear() - TODAY.getFullYear()) * 12 + dt.getMonth() - TODAY.getMonth(); return n < 12 ? `in ${Math.max(1, n)} mo` : `in ${Math.round(n / 12)} yr`; };
+    const half = Math.ceil(items.length / 2);
+    const col = part => h('ol', null, part.map(x => h('li', {'data-twin': `road-${String(x.kind).toLowerCase().replace(/[^a-z0-9]+/g, '')}-${x.date.getFullYear()}${x.date.getMonth()}`, tabindex: 0},
+      h('span', {class: 'pg', html: glyphSvg(Data.roadGlyph(x))}),
+      h('span', {class: 'rw'}, h('b', {text: F.month(x.date)}), h('span', {text: inWords(x.date) + (ageAt(x.date) != null ? ` · age ${ageAt(x.date)}` : '')})),
+      h('span', {class: 'rt'}, h('b', {text: x.title}), h('p', {text: x.sub.replace(/≈\s*/g, 'about ')})))));
+    const pace = `at ${Math.round(Math.min(M.Household.planRate(d) || 0.07, 0.07) * 100)}% and ${F.usd(M.Household.planContrib(d))}/mo`;
+    return h('section', {class: 'sec'},
+      secHead('The road ahead', `What's coming, nearest first. Portfolio dates assume your plan ${pace}; the rest come from your loan, the kids' birthdays and your plan.`),
+      h('div', {class: 'road'}, col(items.slice(0, half)), col(items.slice(half))));
+  },
+};
+
+/* ---------------- THE OTHER FIVE LENSES (not in this preview) ---------------- */
+const OTHER = {
+  accounts: {title: 'Accounts', lede: 'The horizon split into your accounts: retirement, brokerage, cash and crypto as layers under the line, each in its own color, with this week\'s movers pinned at today.'},
+  networth: {title: 'Net worth', lede: 'A second line above the portfolio for everything you own less what you owe, with the mortgage paying down underneath and pins where the loan passes halfway and hits zero.'},
+  saving: {title: 'Saving', lede: 'Every month\'s saving as ticks along the past, this year\'s 401(k) limit as the goal ahead, and the streak counting toward its next badge.'},
+  plan: {title: 'Plan', lede: 'Drag the fan: change the return, the monthly saving or the retirement date, and watch every pin ahead slide to its new date.'},
+  lab: {title: 'Lab', lede: 'Side trails off the main one: work optional, paying extra on the mortgage versus investing, and other what-ifs, each drawn as its own fan.'},
+};
+const Other = {
+  render(key){
+    const root = $('#view-other');
+    const o = OTHER[key], t = Color.theme();
+    root.setAttribute('aria-labelledby', 'tab-' + key);
+    root.textContent = '';
+    root.append(h('section', {class: 'sec stub'},
+      h('div', null,
+        h('h1', {text: o.title}),
+        h('p', {class: 'lede', text: o.lede}),
+        h('p', {class: 'note', text: 'Not in this preview. Pulse and Report card are fully designed.'}),
+        h('div', {class: 'acts'}, h('button', {class: 'btn', type: 'button', onclick: () => go('pulse'), html: '<span>Open Pulse</span>' + ICON.arrow}), h('button', {class: 'btn', type: 'button', onclick: () => go('report'), html: '<span>Open Report card</span>' + ICON.arrow}))),
+      h('figure', null, h('div', {class: 'chart h-stub', id: 'c-stub', role: 'img', 'aria-label': `A first look at the ${o.title} lens`}), h('figcaption', {id: 'stubCap'}))));
+    this.sketch(key, t);
+  },
+  /* a small real-data sketch of what each lens adds */
+  sketch(key, t){
+    const {all} = state.model, cap = $('#stubCap');
+    const narrow = ($('#c-stub').clientWidth || 600) < 560;          // the legend wraps to two lines
+    const opt = {...Charts.base(t), grid: {left: 4, right: 12, top: narrow && key === 'saving' ? 60 : 34, bottom: 4, containLabel: true}, xAxis: Charts.timeAxis(t), yAxis: Charts.valAxis(t, axisMoney)};
+    /* legends mirror the mark: a short line for lines, a square for areas and bars */
+    const lg = (names, kind) => ({top: 0, left: 0, itemGap: 16, textStyle: {color: t.ink2, fontFamily: FONT, fontSize: 12},
+      ...(kind === 'line' ? {icon: 'rect', itemWidth: 18, itemHeight: 2.5} : {icon: 'roundRect', itemWidth: 11, itemHeight: 11}), data: names});
+    const row = (name, color, val, dashed) => `<div style="display:flex;justify-content:space-between;gap:14px;align-items:center"><span><span style="display:inline-block;width:14px;border-top:2px ${dashed ? 'dashed' : 'solid'} ${color};vertical-align:middle;margin-right:7px"></span>${esc(name)}</span><b>${esc(val)}</b></div>`;
+    const head = ms => `<div style="color:${t.muted};font-size:12px;margin-bottom:3px">${esc(F.month(new Date(ms)))}</div>`;
+    const xFor = (a, b, short) => Charts.timeAxis(t, short, Charts.yearStep($('#c-stub'), b - a));
+    if (key === 'accounts'){
+      const G = M.GROUPS, s = all.series.byGroup.filter((_, i, a) => i % 4 === 0 || i === a.length - 1);
+      Charts.mount('c-stub', {...opt, legend: lg(G.map(g => g.label), 'area'), xAxis: xFor(s[0].ts, s[s.length - 1].ts),
+        tooltip: {...opt.tooltip, formatter: ps => { const l = [].concat(ps); if (!l.length) return ''; return head(l[0].value[0]) + l.slice().reverse().map(p => row(p.seriesName, p.color, F.k(p.value[1]))).join(''); }},
+        yAxis: {...opt.yAxis, scale: false, min: 0},
+        series: G.map(g => ({name: g.label, type: 'line', stack: 'all', showSymbol: false, lineStyle: {width: 1.5, color: t.groups[g.key]}, itemStyle: {color: t.groups[g.key]}, areaStyle: {color: t.groups[g.key], opacity: .45}, emphasis: {disabled: true},
+          data: s.map(p => [p.ts, p[g.key]])}))});
+      cap.textContent = 'Your four account groups, stacked, every month since 2017.';
+    } else if (key === 'networth'){
+      const nws = M.Household.netWorthSeries(d, d.rows).filter((_, i, a) => i % 3 === 0 || i === a.length - 1);
+      Charts.mount('c-stub', {...opt, legend: lg(['Net worth', 'Portfolio'], 'line'), xAxis: xFor(nws[0].date.getTime(), nws[nws.length - 1].date.getTime()),
+        tooltip: {...opt.tooltip, formatter: ps => { const l = [].concat(ps); if (!l.length) return ''; return head(l[0].value[0]) + l.map(p => row(p.seriesName, p.color, F.k(p.value[1]))).join(''); }},
+        series: [{name: 'Net worth', type: 'line', showSymbol: false, data: nws.map(p => [p.date.getTime(), Math.round(p.net)]), lineStyle: {width: 2, color: t.ink2}, itemStyle: {color: t.ink2}, emphasis: {disabled: true}},
+                 {name: 'Portfolio', type: 'line', showSymbol: false, data: nws.map(p => [p.date.getTime(), p.portfolio]), lineStyle: {width: 2, color: t.port}, itemStyle: {color: t.port}, areaStyle: {color: t.portWash}, emphasis: {disabled: true}}]});
+      cap.textContent = 'Net worth (with home equity) against the portfolio, since the home was bought.';
+    } else if (key === 'saving'){
+      const cm = M.Household.contribMonths(d);
+      const G = [['retire', 'Retirement accounts'], ['match', 'Employer match'], ['broker', 'Brokerage'], ['cash', 'Savings'], ['kids', "Kids' 529s"]];
+      Charts.mount('c-stub', {...opt, legend: lg(G.map(g => g[1]), 'bar'), xAxis: xFor(cm[0].date.getTime(), cm[cm.length - 1].date.getTime(), true),
+        tooltip: {...opt.tooltip, axisPointer: {type: 'shadow', shadowStyle: {color: t.hair}}, formatter: ps => { const l = [].concat(ps).filter(p => p.value[1]); if (!l.length) return ''; const m0 = cm.find(m => m.date.getTime() === l[0].value[0]);
+          return head(l[0].value[0]).replace('</div>', (m0 && m0.planned ? ' · planned' : '') + '</div>') + l.slice().reverse().map(p => row(p.seriesName, p.color, F.usd(p.value[1]))).join(''); }},
+        yAxis: {...opt.yAxis, scale: false},
+        series: G.map(([k, name]) => ({name, type: 'bar', stack: 'm', barMaxWidth: 18, itemStyle: {color: t.groups[k], borderColor: t.page, borderWidth: 1}, emphasis: {disabled: true},
+          data: cm.map(m => ({value: [m.date.getTime(), Math.round((m.byGroup || {})[k] || 0)], itemStyle: {opacity: m.planned ? .4 : 1}}))}))});
+      cap.textContent = 'Money saved each month, by where it went. Lighter bars are planned months still ahead.';
+    } else {
+      /* the fan from the band, large: 5% to 9% as a wash, the plan's 7% dashed through it */
+      const fanM = state.model.band.fan;
+      if (!fanM){ cap.textContent = 'Needs a plan in the workbook.'; return; }
+      const thin = ln => ln.pts.filter((_, i, a) => i % 3 === 0 || i === a.length - 1);
+      const lo = thin(fanM.low), hi = thin(fanM.high), pl = thin(fanM.plan);
+      const fiRoad = all.report.road.find(r => r.kind === 'fi');
+      Charts.mount('c-stub', {...opt, xAxis: {...Charts.timeAxis(t, false, 1), minInterval: 4 * 365.25 * DAY},
+        legend: lg(['7% a year, the plan', '5% to 9% a year'], 'line'),
+        tooltip: {...opt.tooltip, formatter: ps => { const l = [].concat(ps); if (!l.length) return ''; const i = l[0].dataIndex;
+          return head(l[0].value[0]) + row('At 9%', t.port, F.k(hi[i][1])) + row('At 7%', t.port, F.k(pl[i][1]), true) + row('At 5%', t.port, F.k(lo[i][1])) + `<div style="color:${t.muted};font-size:12px;margin-top:4px">An estimate</div>`; }},
+        series: [
+          {name: '5% to 9% a year', type: 'line', stack: 'fan', data: lo, showSymbol: false, lineStyle: {width: 1, color: t.port, opacity: .6}, itemStyle: {color: t.port}, emphasis: {disabled: true}},
+          {name: 'fanband', type: 'line', stack: 'fan', data: hi.map((p, i) => [p[0], p[1] - lo[i][1]]), showSymbol: false, lineStyle: {width: 1, color: t.port, opacity: .6}, itemStyle: {color: t.port}, areaStyle: {color: t.portWash, opacity: 1}, emphasis: {disabled: true}},
+          {name: '7% a year, the plan', type: 'line', data: pl, showSymbol: false, lineStyle: {width: 2, type: [7, 5], color: t.port}, itemStyle: {color: t.port}, emphasis: {disabled: true},
+           markLine: key === 'lab' && fiRoad ? {silent: true, symbol: 'none', lineStyle: {color: t.muted, width: 1, type: 'solid'},
+             label: {color: t.ink2, fontFamily: FONT, fontSize: 12, fontWeight: 600, formatter: 'Work optional, ' + F.month(fiRoad.date), position: 'insideEndTop'}, data: [{xAxis: fiRoad.date.getTime()}]} : undefined},
+        ]});
+      cap.textContent = key === 'plan' ? "The fan from the band, drawn large: the plan's 7% between 5% and 9%. An estimate." : 'The same fan, with the work-optional date from the road ahead. An estimate.';
+    }
+  },
+};
+/* axis ticks: $250k, $1M, $1.5M (no trailing zeros) */
+function axisMoney(v){ return Math.abs(v) >= 1e6 ? (v < 0 ? '−' : '') + '$' + (+(Math.abs(v) / 1e6).toFixed(2)) + 'M' : F.k(v); }
+
+/* ======================================================================
+   CELEBRATION: earning a badge moves its pin behind today, with accent and ink confetti
+   ====================================================================== */
+function toast(nodes){
+  const el = $('#toast');
+  el.textContent = '';
+  el.append(...[].concat(nodes));
+  el.classList.add('on');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('on'), 4200);
+}
+function celebrate(b, from){
+  toast([h('span', {class: 'tg', html: glyphSvg(Data.badgeGlyph(b))}), h('span', {text: `Earned: ${b.title}. ${b.desc}.`})]);
+  const key = Data.badgeKey(b);
+  const beads = $$('.bead').filter(e => Twins.keysOf(e).includes(key));
+  if (!MOTION) return;
+  /* the pin's trip: from just ahead of today, across the line, into its place on the shelf */
+  beads.forEach(bd => {
+    const mv = bd.querySelector('.bead-move') || bd;
+    const tr = bd.getAttribute('transform').match(/translate\(([\d.-]+)/);
+    const ctx = Band.ctx, strip = bd.closest('#stripSvg');
+    const dx = strip ? 18 : Math.max(40, (ctx ? ctx.xT : 0) + 34 - (tr ? +tr[1] : 0));
+    mv.animate([{transform: `translate(${dx}px, 0) scale(.8)`, opacity: .35}, {transform: 'translate(0, 0) scale(1.25)', opacity: 1, offset: .75}, {transform: 'none', opacity: 1}],
+               {duration: 500, easing: 'cubic-bezier(0.25,1,0.5,1)'});
+  });
+  confetti(from);
+}
+function confetti(from){
+  const r = from.getBoundingClientRect(), ox = r.left + r.width / 2, oy = r.top + Math.min(r.height, 60) / 2;
+  /* accent and ink, like the band: a few pieces are tiny pins */
+  const cols = [Color.rgb('--accent'), Color.rgb('--accent-ink'), Color.rgb('--accent'), Color.rgb('--gain'), Color.rgb('--accent-ink')];
+  const box = h('div', {class: 'confetti', 'aria-hidden': 'true'});
+  for (let i = 0; i < 72; i++){
+    const p = h('i', {style: `left:${ox}px;top:${oy}px;background:${cols[i % cols.length]}`});
+    if (i % 4 === 0){ p.style.width = '9px'; p.style.height = '9px'; p.style.borderRadius = '50%'; }
+    else if (i % 4 === 1){ p.style.width = '5px'; p.style.height = '14px'; }
+    box.append(p);
+    const ang = -Math.PI / 2 + (Math.random() - .5) * Math.PI * 1.1, sp = 120 + Math.random() * 190;
+    const dx = Math.cos(ang) * sp, up = Math.sin(ang) * sp, fall = 180 + Math.random() * 260, spin = (Math.random() - .5) * 720;
+    p.animate([{transform: 'translate(-50%,-50%) rotate(0)', opacity: 1},
+               {transform: `translate(calc(-50% + ${dx * .8}px), calc(-50% + ${up}px)) rotate(${spin * .4}deg)`, opacity: 1, offset: .35},
+               {transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${up + fall}px)) rotate(${spin}deg)`, opacity: 0}],
+              {duration: 1100 + Math.random() * 600, easing: 'cubic-bezier(0.2,0.7,0.3,1)', fill: 'forwards'});
+  }
+  document.body.append(box);
+  setTimeout(() => box.remove(), 1900);
+}
+
+/* ======================================================================
+   APP SHELL
+   ====================================================================== */
+function renderShell(){
+  const {all} = state.model;
+  $('#srcDate').textContent = '· ' + F.date(all.asOf);
+  $('#srcBtn').setAttribute('aria-label', `Data source: demo data, as of ${F.date(all.asOf)}. Show details`);
+  const f = $('#srcFacts'); f.textContent = '';
+  f.append(h('dt', {text: 'As of'}), h('dd', {text: F.date(all.asOf)}), h('dt', {text: 'Weeks'}), h('dd', {text: `${d.rows.length} since ${F.month(d.rows[0].date)}`}), h('dt', {text: 'Saved'}), h('dd', {text: 'Nothing'}));
+  /* range */
+  const rg = $('#range'); rg.textContent = '';
+  const applies = state.view === 'pulse' || state.view === 'accounts' || state.view === 'networth';
+  rg.title = applies ? '' : 'The range applies to Pulse, Accounts and Net worth';
+  RANGES.forEach(([k, lab]) => rg.append(h('button', {type: 'button', 'aria-pressed': String(state.range === k), disabled: !applies, onclick: () => setRange(k), text: lab})));
+  /* theme */
+  const dark = ROOT.dataset.theme === 'dark';
+  const tb = $('#themeBtn');
+  tb.innerHTML = dark ? ICON.sun : ICON.moon;
+  tb.setAttribute('aria-label', `Appearance: ${dark ? 'dark' : 'light'} theme, ${ROOT.dataset.palette === 'stone' ? 'Stone' : 'Harbor'} color`);
+  tb.title = 'Appearance';
+  /* tabs */
+  const tabs = $('#tabs'); tabs.textContent = '';
+  TABS.forEach(([k, lab]) => tabs.append(h('button', {class: 'tab', role: 'tab', id: 'tab-' + k, type: 'button', 'aria-selected': String(state.view === k), tabindex: state.view === k ? 0 : -1,
+    'aria-controls': k === 'pulse' ? 'view-pulse' : k === 'report' ? 'view-report' : 'view-other', onclick: () => go(k), text: lab})));
+  /* the phone's headline, above the band */
+  const P = all.portfolio;
+  const bh = $('#bandHead'); bh.textContent = '';
+  bh.append(h('p', {class: 'eyebrow', text: 'Portfolio, ' + F.date(all.asOf)}), h('p', {class: 'hero-fig', text: F.usd(P.value)}),
+    h('ul', {class: 'deltas'}, deltaLine(P.week.delta, `${word(P.week.delta)} ${F.usd(Math.abs(P.week.delta))} this week`, `(${SP(P.week.pct, 2)})`)));
+  $('#bandDesc').textContent = `Portfolio from ${F.date(d.rows[0].date)} to ${F.usd(P.value)} today. ${all.milestones.crossed.length} $100k marks crossed and ${all.report.badges.earned.length} badges earned.` +
+    (state.model.band.fan ? ` An estimate from here to retirement in ${F.month(state.model.band.fan.retire)}: ${F.k(state.model.band.fan.low.end)} to ${F.k(state.model.band.fan.high.end)}.` : '') +
+    ' Use the arrow keys to move from pin to pin.';
+}
+
+function renderBand(){
+  Band.render(state.model, {F});
+  const ctx = Band.ctx, sc = $('#bandScroll');
+  if (sc.scrollWidth > sc.clientWidth) sc.scrollLeft = Math.max(0, ctx.xT - sc.clientWidth * (ctx.phone ? 0.47 : 0.3));
+  Band.renderStrip(state.model, {F});
+}
+
+function renderView(){
+  Tip.hide();
+  Charts.disposeAll();
+  const v = state.view;
+  $('#band').classList.toggle('lens-report', v === 'report');
+  $('#view-pulse').hidden = v !== 'pulse';
+  $('#view-report').hidden = v !== 'report';
+  $('#view-other').hidden = v === 'pulse' || v === 'report';
+  if (v === 'pulse') Pulse.render();
+  else if (v === 'report') Report.render();
+  else Other.render(v);
+}
+
+function go(v){
+  if (v === state.view) return;
+  state.view = v;
+  const u = new URL(location.href); u.searchParams.set('view', v); history.replaceState(null, '', u);
+  renderShell();
+  renderView();
+  const tab = $('#tab-' + v);
+  if (tab){ tab.focus({preventScroll: true}); revealTab(tab); }
+}
+/* on phones the tabs scroll sideways: keep the active one in view, with a little of its neighbor showing */
+function revealTab(tab){
+  const w = $('#tabsWrap');
+  if (!tab || w.scrollWidth <= w.clientWidth) return;
+  const l = tab.offsetLeft, r = l + tab.offsetWidth;
+  if (r > w.scrollLeft + w.clientWidth - 24) w.scrollLeft = r - w.clientWidth + 56;
+  else if (l < w.scrollLeft + 24) w.scrollLeft = Math.max(0, l - 56);
+}
+function setRange(r){
+  if (r === state.range) return;
+  state.range = r;
+  state.model = Data.build(r);
+  renderShell();
+  renderBand();
+  renderView();
+}
+function setTheme(t){
+  ROOT.dataset.theme = t;
+  renderShell();
+  renderBand();
+  renderView();
+  updateFavicon();
+  if ($('#appearPop').matches(':popover-open')) renderAppearance();
+}
+
+/* ======================================================================
+   APPEARANCE: light, dark or match the system, and the Harbor or Stone
+   palette. Both are saved in this browser (?theme= and ?palette= win).
+   ====================================================================== */
+const Pref = {
+  get(k){ try { return localStorage.getItem('meridian-preview-' + k); } catch (e){ return null; } },
+  set(k, v){ try { if (v == null) localStorage.removeItem('meridian-preview-' + k); else localStorage.setItem('meridian-preview-' + k, v); } catch (e){} },
+};
+const THEME_MODES = [['light', 'Light'], ['dark', 'Dark'], ['auto', 'Match system']];
+const PALETTES = [['harbor', 'Harbor', 'Pale sky blue'], ['stone', 'Stone', 'Warm gray, almost no color']];
+const SWATCH = '<svg viewBox="0 0 64 40" aria-hidden="true"><path d="M5 31c7-2 10-8 16-9s10 1 15-4 9-5 13-7" fill="none" stroke="var(--sw-mark)" stroke-width="2" stroke-linecap="round"/><path d="M49 11 60 6" fill="none" stroke="var(--sw-mark)" stroke-width="1.5" stroke-dasharray="3 3" stroke-linecap="round"/><circle cx="49" cy="11" r="4.5" fill="var(--sw-acc)" stroke="var(--sw-mark)" stroke-width="1.5"/></svg>';
+let themeMode = ['light', 'dark'].includes(Q.get('theme')) ? Q.get('theme') : ['light', 'dark'].includes(Pref.get('theme')) ? Pref.get('theme') : 'auto';
+
+function dropParam(k){
+  const u = new URL(location.href);
+  if (u.searchParams.has(k)){ u.searchParams.delete(k); history.replaceState(null, '', u); }
+}
+function radioGroup(labelId, items, current, pick){
+  const g = h('div', {role: 'radiogroup', 'aria-labelledby': labelId});
+  items.forEach(([k, ...rest]) => g.append(h('button', {type: 'button', role: 'radio', 'aria-checked': String(k === current), tabindex: k === current ? 0 : -1,
+    'data-k': k, onclick: () => pick(k)}, rest[rest.length - 1])));
+  g.addEventListener('keydown', e => {
+    const d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
+    if (!d) return;
+    e.preventDefault();
+    const i = items.findIndex(([k]) => k === current);
+    pick(items[(i + d + items.length) % items.length][0]);
+    const b = $(`#appearBody [role="radiogroup"][aria-labelledby="${labelId}"] [aria-checked="true"]`); if (b) b.focus();
+  });
+  return g;
+}
+function renderAppearance(){
+  const box = $('#appearBody'), pal = ROOT.dataset.palette;
+  box.textContent = '';
+  const seg = radioGroup('apThemeLab', THEME_MODES.map(([k, lab]) => [k, lab]), themeMode, setThemeMode);
+  seg.className = 'ap-seg';
+  const pals = radioGroup('apColorLab', PALETTES.map(([k, lab, sub]) => [k,
+    [h('span', {class: 'ap-sw ' + k, html: SWATCH}), h('span', {class: 'ap-name'}, h('b', {text: lab}), h('small', {text: sub}))]]), pal, setPalette);
+  pals.className = 'ap-pal';
+  box.append(h('div', {class: 'ap-row'}, h('span', {class: 'ap-lab', id: 'apThemeLab', text: 'Theme'}), seg),
+             h('div', {class: 'ap-row'}, h('span', {class: 'ap-lab', id: 'apColorLab', text: 'Color'}), pals));
+}
+function setThemeMode(m){
+  themeMode = m;
+  Pref.set('theme', m === 'auto' ? null : m);
+  dropParam('theme');
+  if (m === 'auto') delete ROOT.dataset.themeFixed; else ROOT.dataset.themeFixed = '1';
+  setTheme(m === 'auto' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : m);
+  renderAppearance();
+}
+function setPalette(k){
+  if (k === ROOT.dataset.palette) return;
+  ROOT.dataset.palette = k;
+  Pref.set('palette', k);
+  dropParam('palette');
+  renderShell();
+  renderBand();
+  renderView();
+  updateFavicon();
+  renderAppearance();
+}
+/* the tab icon follows the palette */
+function updateFavicon(){
+  const a = Color.rgb('--accent'), i = Color.rgb('--accent-ink');
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='${a}'/><path d='M8.5 20.5a7.5 7.5 0 0 1 15 0z' fill='${i}'/><rect x='5' y='22' width='22' height='2.6' rx='1.3' fill='${i}'/></svg>`;
+  const link = document.querySelector('link[rel="icon"]');
+  if (link) link.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
+}
+
+/* tabs: arrow keys move between them */
+$('#tabs').addEventListener('keydown', e => {
+  const i = TABS.findIndex(([k]) => k === state.view);
+  const n = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? TABS.length - 1 : null;
+  if (n == null) return;
+  e.preventDefault();
+  go(TABS[(n + TABS.length) % TABS.length][0]);
+});
+/* refresh: the demo never changes, so it just confirms */
+$('#refreshBtn').addEventListener('click', () => {
+  const b = $('#refreshBtn');
+  b.disabled = true; b.classList.add('spin');
+  setTimeout(() => { b.classList.remove('spin'); b.disabled = false; toast([h('span', {class: 'tg', html: ICON.check}), h('span', {text: `Up to date: demo data as of ${F.date(state.model.all.asOf)}.`})]); }, MOTION ? 700 : 0);
+});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => { if (!ROOT.dataset.themeFixed) setTheme(e.matches ? 'dark' : 'light'); });
+/* popovers sit under their buttons */
+[['srcBtn', 'srcPop'], ['numbersBtn', 'numbersPop'], ['themeBtn', 'appearPop']].forEach(([b, p]) => {
+  const pop = document.getElementById(p);
+  pop.addEventListener('toggle', e => {
+    if (e.newState !== 'open') return;
+    if (p === 'appearPop') renderAppearance();
+    const r = document.getElementById(b).getBoundingClientRect(), w = pop.offsetWidth;
+    pop.style.left = Math.max(12, Math.min(innerWidth - w - 12, r.right - w)) + 'px';
+    pop.style.top = (r.bottom + 8) + 'px';
+  });
+});
+/* the strip appears once the band has scrolled away */
+const strip = $('#strip');
+strip.addEventListener('click', e => { if (e.target.closest('.pin,.bead')) return; scrollTo({top: 0, behavior: MOTION ? 'smooth' : 'auto'}); });
+if (!SHOT && 'IntersectionObserver' in window){
+  new IntersectionObserver(([en]) => strip.classList.toggle('on', !en.isIntersecting && en.boundingClientRect.top < 0), {threshold: 0}).observe($('#band'));
+}
+let lastW = innerWidth;
+addEventListener('resize', () => {
+  clearTimeout(window.__rz);
+  window.__rz = setTimeout(() => {
+    if (innerWidth === lastW){ Charts.resizeAll(); return; }
+    lastW = innerWidth;
+    renderBand();
+    if (state.view === 'report') Report.skyline(Color.theme());
+    if (state.view === 'pulse') Pulse.charts(Color.theme()); else Charts.resizeAll();
+  }, 120);
+});
+
+/* ======================================================================
+   GO
+   ====================================================================== */
+await document.fonts.ready;
+await document.fonts.load('700 16px "Bricolage Grotesque"');
+state.model = Data.build(state.range);
+renderShell();
+renderBand();
+renderView();
+updateFavicon();
+revealTab($('#tab-' + state.view));
+window.__ready = true;
+})().catch(err => { console.error('Long game preview failed to render:', err); });
+</script>
+</body>
+</html>
