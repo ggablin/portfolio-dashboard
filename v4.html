@@ -1018,6 +1018,23 @@ body.welcome .tools>:not(#themeBtn){display:none}
   .dlg-hint{grid-column:1}
 }
 
+/* ============ REPORT CARD MEMORY ============ */
+.gpa .since{margin-top:18px;padding-top:16px;border-top:1px solid var(--hair)}
+.since-v{margin:2px 0 4px;font-size:var(--fs-l);line-height:1.1;font-weight:740;font-variation-settings:"opsz" 28;letter-spacing:-.02em}
+.subj .nm .trend{font-weight:700}
+.hw{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:56px}
+.hw label{display:grid;grid-template-columns:24px minmax(0,1fr);column-gap:14px;align-items:start;padding:15px 0;border-top:1px solid var(--hair);cursor:pointer}
+.hw input{width:22px;height:22px;margin:1px 0 0;accent-color:var(--ink);cursor:pointer}
+.hw .t{display:block;font-weight:650}
+.hw small{display:block;margin-top:2px;color:var(--muted);font-size:var(--fs-xs);line-height:1.45}
+.hw label.done .t{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+@media (max-width:1020px){
+  .gpa .since{grid-column:1 / -1;margin-top:12px}
+}
+@media (max-width:900px){
+  .hw{grid-template-columns:minmax(0,1fr)}
+}
+
 /* ============ MOTION OFF ============ */
 .shot *,.shot *::before,.shot *::after{transition:none!important;animation:none!important}
 @media (prefers-reduced-motion:reduce){
@@ -4557,6 +4574,7 @@ const Report = {
     const {all} = state.model;
     const t = Color.theme();
     const rc = all.report, o = rc.overall, R = all.R;
+    const prev = M.Report.remember(d, R);     // keeps this week's grades in this browser; returns the week before (null for the demo)
     root.textContent = '';
 
     /* printed pages have no top bar, so say what this is */
@@ -4575,6 +4593,7 @@ const Report = {
         h('p', {class: 'fb-l', text: 'Grade point average'}),
         h('p', {class: 'fb-v', text: o ? o.gpa.toFixed(2) : 'None yet'}),
         h('p', {class: 'fb-s', text: counts ? counts + ' · 4.0 scale' : 'No subjects graded yet'}),
+        this.since(o, prev),
         h('button', {class: 'btn rc-print', type: 'button', onclick: () => window.print(), html: ICON.print + '<span>Print or save as PDF</span>'}))));
 
     /* 2. subjects: the skyline (width = weight, height = score), then every subject in full */
@@ -4585,14 +4604,14 @@ const Report = {
       return h('article', {class: 'subj' + (graded ? '' : ' needs') + (low ? ' low' : ''), 'data-twin': 'subj-' + s.key, 'aria-label': s.name},
         h('div', {class: 'lg' + (low ? ' low' : ''), 'aria-label': graded ? `Grade ${s.letter}` : 'Not graded yet', text: graded ? s.letter : '?'}),
         h('div', null,
-          h('div', {class: 'nm'}, h('b', {text: s.name}), h('span', {text: graded ? `${s.score} / 100 · ${s.weight}% of the grade` : `${s.weight}% of the grade · not graded yet`})),
+          h('div', {class: 'nm'}, h('b', {text: s.name}), h('span', null, graded ? `${s.score} / 100` : `${s.weight}% of the grade · not graded yet`, graded ? this.trend(s, prev) : null, graded ? ` · ${s.weight}% of the grade` : null)),
           graded ? h('p', {class: 'val'}, h('b', {text: s.value}), h('span', {text: s.unit})) : null,
           h('p', {class: 'why'}, graded ? s.why : `Needs ${s.need}.`, !graded && s.needAction && d.source !== 'demo' ? [' ', numLink(s.needAction.text, s.needAction.label)] : null),
           graded && s.bench ? h('p', {class: 'bench', text: s.bench}) : null,
           graded && s.tip && s.tip.text ? h('p', {class: 'note-tip', html: ICON.note}, h('span', null, s.tip.text, s.tip.action && d.source !== 'demo' ? [' ', numLink(s.tip.action.text, s.tip.action.label)] : null)) : null));
     }));
     root.append(h('section', {class: 'sec'},
-      secHead('Subjects', 'Each is scored 0 to 100 against a published rule of thumb, then weighted into the grade. Wider columns count more.'),
+      secHead('Subjects', 'Each is scored 0 to 100 against a published rule of thumb, then weighted into the grade. Wider columns count more.' + (prev ? ` Arrows show the change since the week of ${F.day(prev.date)}.` : '')),
       sky, list));
     this.skyline(t);
 
@@ -4641,6 +4660,7 @@ const Report = {
     /* the road ahead: the band's future, as a list */
     if (rc.road.length) root.append(this.road(all));
 
+    root.append(Homework.section());
     root.append(Method.section(R));
   },
 
@@ -4749,10 +4769,29 @@ const Report = {
     return box;
   },
 
-  moves(rc){
+  /* how the grade moved since the last week this browser remembers */
+  since(o, prev){
+    if (!o || !prev) return null;
+    const dl = Math.round((o.exact - prev.s) * 10) / 10;
+    return h('div', {class: 'since'},
+      h('p', {class: 'fb-l', text: `Since the week of ${F.day(prev.date)}`}),
+      h('p', {class: 'since-v ' + dir(dl), text: dl ? `${arrow(dl)} ${Math.abs(dl).toFixed(1)} points` : 'No change'}),
+      h('p', {class: 'fb-s', text: prev.l === o.letter ? `Still ${o.letter}` : `${prev.l} to ${o.letter}`}));
+  },
+  trend(s, prev){
+    if (!prev || !prev.sub || typeof prev.sub[s.key] !== 'number') return null;
+    const dl = Math.round(s.exact - prev.sub[s.key]);
+    return dl ? h('b', {class: 'trend ' + dir(dl), title: `${dl > 0 ? 'Up' : 'Down'} ${Math.abs(dl)} since the week of ${F.day(prev.date)}`, text: ` ${arrow(dl)} ${Math.abs(dl)}`}) : null;
+  },
+  /* the next best moves count the homework that is left, so redraw them when a box is ticked */
+  refreshMoves(){
+    const old = $('#view-report [aria-label="Next best moves"]');
+    if (old) old.replaceWith(this.moves(state.model.all.report, M.Report.moves(d, state.model.all.R)));
+  },
+  moves(rc, list = rc.moves){
     return h('div', {'aria-label': 'Next best moves'},
       h('h2', {class: 'h3', style: 'margin-bottom:18px', text: 'Next best moves'}),
-      rc.moves.length ? h('ol', {class: 'moves'}, rc.moves.map((m, i) => h('li', null, h('span', {class: 'no', 'aria-hidden': 'true', text: String(i + 1)}), h('div', null, h('b', {text: m.title}), h('p', null, m.text, m.action && d.source !== 'demo' ? [' ', numLink(m.action.text, m.action.label)] : null)))))
+      list.length ? h('ol', {class: 'moves'}, list.map((m, i) => h('li', null, h('span', {class: 'no', 'aria-hidden': 'true', text: String(i + 1)}), h('div', null, h('b', {text: m.title}), h('p', null, m.text, m.action && d.source !== 'demo' ? [' ', numLink(m.action.text, m.action.label)] : null)))))
                       : h('p', {text: 'Nothing pressing. Keep doing what you are doing.'}));
   },
 
@@ -6049,7 +6088,9 @@ const Method = {
           h('p', {class: 'prose', text: 'Each subject turns one number from your workbook into a 0 to 100 score by comparing it with a published rule of thumb. The overall grade is the weighted average; a subject that can’t be graded yet is left out and the rest are reweighted. Letters follow the school scale: 97 A+, 93 A, 90 A−, 87 B+, 83 B, 80 B−, 77 C+, 73 C, 70 C−, 67 D+, 63 D, 60 D−, lower is F.'}),
           table,
           h('p', {class: 'prose', text: 'Percentiles are estimated from each age group’s median and average, assuming the usual lopsided (log-normal) shape of wealth, so treat them as approximate. Sources:'}),
-          h('ul', {class: 'src-list'}, sources.map(([text, url]) => h('li', null, url ? h('a', {href: url, target: '_blank', rel: 'noopener noreferrer', text}) : text))))));
+          h('ul', {class: 'src-list'}, sources.map(([text, url]) => h('li', null, url ? h('a', {href: url, target: '_blank', rel: 'noopener noreferrer', text}) : text))),
+          d.source !== 'demo' ? h('p', {class: 'prose'}, 'Each week’s grades are remembered in this browser (not in your workbook), so the card can show what changed. ',
+            h('button', {class: 'link', type: 'button', text: 'Clear the grade history', onclick: () => { Prefs.set('rc-history', null); if (state.view === 'report') renderView(); }})) : null)));
   },
 };
 
@@ -6075,6 +6116,56 @@ const Print = {
 addEventListener('beforeprint', () => Print.prep());
 addEventListener('afterprint', () => Print.done());
 
+/* ---------------- HOMEWORK: protection the workbook can't see ---------------- */
+const Homework = {
+  section(){
+    const items = M.Report.homework(d), mine = d.source !== 'demo', done = mine ? M.Report.hwDone() : {};
+    const chip = h('span', {class: 'chip'});
+    const paint = () => {
+      const n = items.filter(x => done[x.id]).length;
+      chip.textContent = n === items.length ? 'All done' : `${n} of ${items.length} done`;
+      chip.className = 'chip' + (n === items.length ? ' live' : '');
+    };
+    const list = h('div', {class: 'hw'}, items.map(x => {
+      const cb = h('input', {type: 'checkbox', checked: !!done[x.id]});
+      const lab = h('label', {class: done[x.id] ? 'done' : null}, cb, h('span', null, h('span', {class: 't', text: x.text}), h('small', {text: x.sub})));
+      cb.addEventListener('change', () => {
+        if (cb.checked) done[x.id] = true; else delete done[x.id];
+        lab.classList.toggle('done', cb.checked);
+        paint();
+        if (mine){ Prefs.set('rc-homework', done); Report.refreshMoves(); }       // "Do the homework" in the next best moves counts what is left
+      });
+      return lab;
+    }));
+    paint();
+    return h('section', {class: 'sec tight keep', 'aria-label': 'Homework'},
+      secHead('Homework', 'Protection your spreadsheet can’t see. Not graded.' + (mine ? ' Your ticks are saved in this browser.' : ' Ticks aren’t saved in the demo.'), chip),
+      list);
+  },
+};
+
+/* a badge earned since the last time this browser saw the card gets a toast, the pin's trip and confetti, once.
+   The "seen" list is v3's, so a badge v3 already celebrated is not celebrated again. */
+function celebrateNew(){
+  if (!d || d.source === 'demo') return;
+  const earned = state.model.all.report.badges.earned;
+  const ids = earned.map(b => b.group + ':' + b.title);
+  const seen = Prefs.get('rc-seen', null);
+  Prefs.set('rc-seen', ids);
+  if (!Array.isArray(seen)) return;                       // first visit: nothing to compare with
+  const fresh = earned.filter(b => !seen.includes(b.group + ':' + b.title));
+  if (!fresh.length) return;
+  requestAnimationFrame(() => {
+    const first = fresh[0], key = Data.badgeKey(first);
+    const from = $$('.bead').find(e => Twins.keysOf(e).includes(key)) || $('#band');
+    if (fresh.length === 1){ celebrate(first, from); return; }
+    toast([h('span', {class: 'tg', html: glyphSvg(Data.badgeGlyph(first))}), h('span', {text: `New badges: ${joinList(fresh.map(b => b.title))}.`})]);
+    if (!MOTION) return;
+    fresh.forEach(flyBeads);
+    confetti(from);
+  });
+}
+
 const OWN = {pulse: Pulse, report: Report, accounts: Accounts, networth: NetWorth, saving: Saving, plan: Plan, lab: Lab};
 
 /* axis ticks: $250k, $1M, $1.5M (no trailing zeros) */
@@ -6092,13 +6183,10 @@ function toast(nodes, opts = {}){
   clearTimeout(el._t);
   el._t = setTimeout(() => el.classList.remove('on'), opts.ms || 4200);
 }
-function celebrate(b, from){
-  toast([h('span', {class: 'tg', html: glyphSvg(Data.badgeGlyph(b))}), h('span', {text: `Earned: ${b.title}. ${b.desc}.`})]);
+/* the pin's trip: from just ahead of today, across the line, into its place on the shelf */
+function flyBeads(b){
   const key = Data.badgeKey(b);
-  const beads = $$('.bead').filter(e => Twins.keysOf(e).includes(key));
-  if (!MOTION) return;
-  /* the pin's trip: from just ahead of today, across the line, into its place on the shelf */
-  beads.forEach(bd => {
+  $$('.bead').filter(e => Twins.keysOf(e).includes(key)).forEach(bd => {
     const mv = bd.querySelector('.bead-move') || bd;
     const tr = bd.getAttribute('transform').match(/translate\(([\d.-]+)/);
     const ctx = Band.ctx, strip = bd.closest('#stripSvg');
@@ -6106,6 +6194,11 @@ function celebrate(b, from){
     mv.animate([{transform: `translate(${dx}px, 0) scale(.8)`, opacity: .35}, {transform: 'translate(0, 0) scale(1.25)', opacity: 1, offset: .75}, {transform: 'none', opacity: 1}],
                {duration: 500, easing: 'cubic-bezier(0.25,1,0.5,1)'});
   });
+}
+function celebrate(b, from){
+  toast([h('span', {class: 'tg', html: glyphSvg(Data.badgeGlyph(b))}), h('span', {text: `Earned: ${b.title}. ${b.desc}.`})]);
+  if (!MOTION) return;
+  flyBeads(b);
   confetti(from);
 }
 function confetti(from){
@@ -6399,6 +6492,7 @@ function useData(next){
     planDefaults(); state.whatIf = {};
     leaveWelcome();
     renderShell(); renderBand(); renderView();
+    try { celebrateNew(); } catch (e){ console.warn(e); }
   } catch (err){
     const swapped = d !== was.d;
     d = was.d; M.state.data = was.d; state.range = was.range; state.model = was.model;
