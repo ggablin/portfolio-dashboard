@@ -1339,7 +1339,7 @@ select.inp{appearance:auto;-webkit-appearance:auto}
 
     <div class="card span-12" id="saveEmpty" hidden data-card>
       <div class="card-head"><div class="card-title">Nothing to show yet</div></div>
-      <div class="card-sub">This tab reads the Average Savings sheet (every deposit, by month) and the paycheck blocks on the Amortization sheet. Neither was found in this file.</div>
+      <div class="card-sub">This tab reads the Contributions sheet (every deposit, by month) and the paycheck blocks on the Retirement Plan sheet. Neither was found in this file.</div>
     </div>
 
     <div class="tiles" data-card id="saveTiles">
@@ -1354,7 +1354,7 @@ select.inp{appearance:auto;-webkit-appearance:auto}
         <div class="card-title">Contributions by month</div>
         <div class="card-actions"><button class="tbtn" data-tbl="c-contrib" aria-pressed="false">Table</button></div>
       </div>
-      <div class="card-sub" id="contribSub">Every deposit logged in your Average Savings sheet · faded months are planned, not made yet</div>
+      <div class="card-sub" id="contribSub">Every deposit logged in your Contributions sheet · faded months are planned, not made yet</div>
       <div class="chart h-stack" id="c-contrib" role="img" aria-label="Monthly contributions stacked by where the money went"></div>
       <div class="tbl-wrap" id="tbl-c-contrib" hidden></div>
     </div>
@@ -1954,16 +1954,19 @@ const Parse = (() => {
 
   /* ---------- Sheet1: this year's growth attribution ---------- */
   function attribution(ws){
+    // the first block on the sheet is this year: accounts from row 3 down to its "Totals" row
+    const tot = find(ws, /^totals?$/i, 2, 40, 0, 0);
+    const tr = tot ? tot.r : 12;
     const items = [];
-    for (let r = 2; r <= 10; r++){
+    for (let r = 2; r < tr; r++){
       const name = cell(ws, r, 0);
-      if (!name) continue;
+      if (!name || (typeof cell(ws, r, 1) !== 'number' && typeof cell(ws, r, 6) !== 'number')) continue;
       items.push({name: String(name), begin:num(ws,r,1), contribs:num(ws,r,2),
                   divs:num(ws,r,3), fees:num(ws,r,4), growth:num(ws,r,5), ending:num(ws,r,6)});
     }
     if (!items.length) return null;
-    const totals = {begin:num(ws,12,1), contribs:num(ws,12,2), divs:num(ws,12,3),
-                    fees:num(ws,12,4), growth:num(ws,12,5), ending:num(ws,12,6)};
+    const totals = {begin:num(ws,tr,1), contribs:num(ws,tr,2), divs:num(ws,tr,3),
+                    fees:num(ws,tr,4), growth:num(ws,tr,5), ending:num(ws,tr,6)};
     return {items, totals};
   }
 
@@ -2301,18 +2304,18 @@ const Parse = (() => {
       if (!ws) return null;
       try { return fn(ws); } catch(e){ console.warn(label + ' parse error:', e); return null; }
     };
-    const amort = sheet(wb, /^amortization$/i);
+    const amort = sheet(wb, /^(amortization|retirement plan)$/i);
     return {
       rows,
       projection: soft(projection, wbal, 'Projection'),
       target:     soft(targetPath, wbal, 'Target path'),
       notes:      soft(sheetNotes, wbal, 'Notes') || [],
-      attr:       soft(attribution, sheet(wb, /^sheet1$/i), 'Attribution'),
+      attr:       soft(attribution, sheet(wb, /^(sheet1|growth by account)$/i), 'Attribution'),
       plan:       soft(amortPlan, amort, 'Plan'),
       k401:       soft(k401Blocks, amort, '401(k) blocks'),
-      forecast:   soft(forecast, sheet(wb, /^annual forecast$/i), 'Annual forecast'),
+      forecast:   soft(forecast, sheet(wb, /^(annual forecast|forecast 2022)$/i), 'Annual forecast'),
       pension:    soft(pension, sheet(wb, /^pension/i), 'Pension'),
-      contrib:    soft(contributions, sheet(wb, /^average savings$/i), 'Contributions'),
+      contrib:    soft(contributions, sheet(wb, /^(average savings|contributions)$/i), 'Contributions'),
       accounts:   soft(accountSheet, findAccountSheet(wb), 'Account list'),
       mortgage:   soft(mortgageTerms, sheet(wb, /^mortgage/i), 'Mortgage terms'),
       budget:     soft(budget, sheet(wb, /^budget$/i), 'Budget'),
@@ -3013,7 +3016,7 @@ const Household = (() => {
 
   /* ---------- 401(k) blocks: this year's pacing, and paycheck history ---------- */
   /* TSP deposits share the 401(k)'s IRS limit: the limit is per person across every workplace plan, Roth or
-     traditional. Logged so far on the Average Savings sheet, plus the rest of the year at the same monthly pace. */
+     traditional. Logged so far on the Contributions sheet, plus the rest of the year at the same monthly pace. */
   function tspYear(d, year, today){
     const months = contribMonths(d).filter(m => m.year === year);
     const amt = m => sum(m.items.filter(it => it.key === 'tsp').map(it => it.amount));
@@ -3231,7 +3234,7 @@ const Household = (() => {
         if (proj.length){
           const f = proj[0];
           const pts = [{date: new Date(f.year, 0, 1), value: f.begin}].concat(proj.map(r => ({date: new Date(r.year, 11, 31), value: r.estEnd})));
-          lines.push({key:'amort', label:'Amortization plan', assumes: `${fmtRate(f.estRate || 0.075)} return`,
+          lines.push({key:'amort', label:'Retirement Plan', assumes: `${fmtRate(f.estRate || 0.075)} return`,
                       built: `rebased to Jan ${f.year}`, pts});
         }
       }
@@ -3389,13 +3392,13 @@ const Report = (() => {
 
   /* ---------- subjects: each scores 0–100 against a rule of thumb ---------- */
   const needAge = {need: 'your age', needAction: {text: 'Add your birth date', label: 'Your birth date'}};
-  const needPay = {need: 'your pay, from the paycheck rows on the Amortization sheet'};
+  const needPay = {need: 'your pay, from the paycheck rows on the Retirement Plan sheet'};
   const needSpend = {need: 'your monthly spending', needAction: {text: 'Add monthly spending', label: 'Monthly spending'}};
 
   function subjSaving(d, c){
     const s = {key: 'save', name: 'Savings rate', weight: 20};
     const R = Household.savingsRate(d), S = Household.contribSummary(d);
-    if (!R || R.rate == null || !S.nDone) return {...s, need: 'this year’s paychecks (Amortization sheet) and deposits (Average Savings sheet)'};
+    if (!R || R.rate == null || !S.nDone) return {...s, need: 'this year’s paychecks (Retirement Plan sheet) and deposits (Contributions sheet)'};
     const saved = R.saved + c.adj.saveMonthly * S.nDone, rate = saved / R.income;
     const pct = Fmt.pct(rate, 0), lastM = MONTH_ABBR[S.done[S.done.length-1].m];
     const perPoint = R.income / S.nDone / 100;
@@ -3519,7 +3522,7 @@ const Report = (() => {
     const s = {key: 'track', name: 'On plan', weight: 10};
     const H = Household.planHistory(d);
     const pick = ['target', 'amort', 'forecast'].map(k => H.expected.find(e => e.key === k && e.value > 0)).find(Boolean);
-    if (!pick) return {...s, need: 'a plan in the workbook: a weekly target path, the Amortization plan or the Annual Forecast'};
+    if (!pick) return {...s, need: 'a plan in the workbook: a weekly target path, the Retirement Plan or the Annual Forecast'};
     const ratio = H.actual / pick.value, gap = H.actual - pick.value;
     const beat = H.returns.filter(r => r.actual > r.assumed).length;
     const name = pick.key === 'target' ? 'your weekly target path' : 'your ' + pick.label;
@@ -3807,7 +3810,7 @@ const Report = (() => {
     return out.filter(b => b.earned).concat(out.filter(b => !b.earned).sort((a, b) => b.progress - a.progress));
   }
 
-  /* months in a row with money saved, from the Average Savings log (ending last month or this one) */
+  /* months in a row with money saved, from the Contributions log (ending last month or this one) */
   function savingStreak(d){
     const months = Household.contribMonths(d).filter(m => !m.planned);
     if (!months.length) return null;
@@ -4488,13 +4491,13 @@ function renderYearTable(){
     tr.appendChild(elx('td', null, y.worst ? Fmt.signed(y.worst.d, Fmt.k) : '—'));
     tr.appendChild(elx('td', null, y.maxDD < -0.0005 ? (y.maxDD * 100).toFixed(1).replace('-', '−') + '%' : '—'));
     tbody.appendChild(tr);
-    if (y.cSource === 'log' && y.isCurrent) notes.push(`${y.year} contributions come from your Average Savings log (kids' 529s left out, since they aren't in the portfolio)`);
+    if (y.cSource === 'log' && y.isCurrent) notes.push(`${y.year} contributions come from your Contributions log (kids' 529s left out, since they aren't in the portfolio)`);
   });
   table.appendChild(thead); table.appendChild(tbody);
   const withContrib = rows.filter(y => y.cSource === 'plan').map(y => y.year);
   const note = $('yearNote');
   note.textContent = (withContrib.length
-    ? `Contributions for ${withContrib.join(', ')} are the actuals on your Amortization sheet. `
+    ? `Contributions for ${withContrib.join(', ')} are the actuals on your Retirement Plan sheet. `
     : '') + (notes.length ? notes.join('. ') + '. ' : '') +
     'Years without contribution data show the total change only. “Market” is the change minus what you added, so money you withdrew counts against it.';
 }
@@ -5284,7 +5287,7 @@ function renderContribChart(S){
   });
   const fixed = state.data.contrib && state.data.contrib.fixedYears.length
     ? ` · the second block in the sheet is labeled ${state.data.contrib.fixedYears[0].was}, so it's read as ${state.data.contrib.fixedYears[0].now}` : '';
-  $('contribSub').textContent = 'Every deposit logged in your Average Savings sheet' +
+  $('contribSub').textContent = 'Every deposit logged in your Contributions sheet' +
     (planned ? ` · the faded ${planned === 1 ? 'month is' : planned + ' months are'} planned, not made yet` : '') + fixed;
 }
 
@@ -5308,7 +5311,7 @@ function renderRate(R, S){
   const body = $('rateBody');
   body.textContent = '';
   if (!R || R.rate == null){
-    $('rateSub').textContent = 'Needs this year’s paycheck rows on the Amortization sheet';
+    $('rateSub').textContent = 'Needs this year’s paycheck rows on the Retirement Plan sheet';
     return;
   }
   $('rateSub').textContent = R.household ? 'Everything saved ÷ household pay, this year so far'
@@ -5377,7 +5380,7 @@ function renderPaycheck(P){
   if (!P){ card.hidden = true; return; }
   card.hidden = false;
   const t = T(), L = P.latest, today = new Date();
-  $('paySub').textContent = `From the per-paycheck 401(k) rows on your Amortization sheet · ${P.perYear} paychecks a year` +
+  $('paySub').textContent = `From the per-paycheck 401(k) rows on your Retirement Plan sheet · ${P.perYear} paychecks a year` +
     (P.all.some(x => x.date > today) ? ' · later checks this year are the sheet’s plan' : '');
 
   const k = $('payKpis');
@@ -5810,7 +5813,7 @@ function renderHistory(){
     tr.appendChild(elx('td', null, r.contribs != null ? Fmt.k(r.contribs) : '—'));
     tb2.appendChild(tr);
   });
-  if (!retRows.length){ const tr = elx('tr'); tr.appendChild(elx('td', null, 'No yearly actuals on the Amortization sheet yet')); tb2.appendChild(tr); }
+  if (!retRows.length){ const tr = elx('tr'); tr.appendChild(elx('td', null, 'No yearly actuals on the Retirement Plan sheet yet')); tb2.appendChild(tr); }
   rt.appendChild(th2); rt.appendChild(tb2);
 
   const cur = H.expected.find(e => e.key === 'amort' && e.value != null) || H.expected.find(e => e.value != null);

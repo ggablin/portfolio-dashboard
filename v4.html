@@ -2260,16 +2260,19 @@ const Parse = (() => {
 
   /* ---------- Sheet1: this year's growth attribution ---------- */
   function attribution(ws){
+    // the first block on the sheet is this year: accounts from row 3 down to its "Totals" row
+    const tot = find(ws, /^totals?$/i, 2, 40, 0, 0);
+    const tr = tot ? tot.r : 12;
     const items = [];
-    for (let r = 2; r <= 10; r++){
+    for (let r = 2; r < tr; r++){
       const name = cell(ws, r, 0);
-      if (!name) continue;
+      if (!name || (typeof cell(ws, r, 1) !== 'number' && typeof cell(ws, r, 6) !== 'number')) continue;
       items.push({name: String(name), begin:num(ws,r,1), contribs:num(ws,r,2),
                   divs:num(ws,r,3), fees:num(ws,r,4), growth:num(ws,r,5), ending:num(ws,r,6)});
     }
     if (!items.length) return null;
-    const totals = {begin:num(ws,12,1), contribs:num(ws,12,2), divs:num(ws,12,3),
-                    fees:num(ws,12,4), growth:num(ws,12,5), ending:num(ws,12,6)};
+    const totals = {begin:num(ws,tr,1), contribs:num(ws,tr,2), divs:num(ws,tr,3),
+                    fees:num(ws,tr,4), growth:num(ws,tr,5), ending:num(ws,tr,6)};
     return {items, totals};
   }
 
@@ -2607,18 +2610,18 @@ const Parse = (() => {
       if (!ws) return null;
       try { return fn(ws); } catch(e){ console.warn(label + ' parse error:', e); return null; }
     };
-    const amort = sheet(wb, /^amortization$/i);
+    const amort = sheet(wb, /^(amortization|retirement plan)$/i);
     return {
       rows,
       projection: soft(projection, wbal, 'Projection'),
       target:     soft(targetPath, wbal, 'Target path'),
       notes:      soft(sheetNotes, wbal, 'Notes') || [],
-      attr:       soft(attribution, sheet(wb, /^sheet1$/i), 'Attribution'),
+      attr:       soft(attribution, sheet(wb, /^(sheet1|growth by account)$/i), 'Attribution'),
       plan:       soft(amortPlan, amort, 'Plan'),
       k401:       soft(k401Blocks, amort, '401(k) blocks'),
-      forecast:   soft(forecast, sheet(wb, /^annual forecast$/i), 'Annual forecast'),
+      forecast:   soft(forecast, sheet(wb, /^(annual forecast|forecast 2022)$/i), 'Annual forecast'),
       pension:    soft(pension, sheet(wb, /^pension/i), 'Pension'),
-      contrib:    soft(contributions, sheet(wb, /^average savings$/i), 'Contributions'),
+      contrib:    soft(contributions, sheet(wb, /^(average savings|contributions)$/i), 'Contributions'),
       accounts:   soft(accountSheet, findAccountSheet(wb), 'Account list'),
       mortgage:   soft(mortgageTerms, sheet(wb, /^mortgage/i), 'Mortgage terms'),
       budget:     soft(budget, sheet(wb, /^budget$/i), 'Budget'),
@@ -3319,7 +3322,7 @@ const Household = (() => {
 
   /* ---------- 401(k) blocks: this year's pacing, and paycheck history ---------- */
   /* TSP deposits share the 401(k)'s IRS limit: the limit is per person across every workplace plan, Roth or
-     traditional. Logged so far on the Average Savings sheet, plus the rest of the year at the same monthly pace. */
+     traditional. Logged so far on the Contributions sheet, plus the rest of the year at the same monthly pace. */
   function tspYear(d, year, today){
     const months = contribMonths(d).filter(m => m.year === year);
     const amt = m => sum(m.items.filter(it => it.key === 'tsp').map(it => it.amount));
@@ -3537,7 +3540,7 @@ const Household = (() => {
         if (proj.length){
           const f = proj[0];
           const pts = [{date: new Date(f.year, 0, 1), value: f.begin}].concat(proj.map(r => ({date: new Date(r.year, 11, 31), value: r.estEnd})));
-          lines.push({key:'amort', label:'Amortization plan', assumes: `${fmtRate(f.estRate || 0.075)} return`,
+          lines.push({key:'amort', label:'Retirement Plan', assumes: `${fmtRate(f.estRate || 0.075)} return`,
                       built: `rebased to Jan ${f.year}`, pts});
         }
       }
@@ -3695,13 +3698,13 @@ const Report = (() => {
 
   /* ---------- subjects: each scores 0–100 against a rule of thumb ---------- */
   const needAge = {need: 'your age', needAction: {text: 'Add your birth date', label: 'Your birth date'}};
-  const needPay = {need: 'your pay, from the paycheck rows on the Amortization sheet'};
+  const needPay = {need: 'your pay, from the paycheck rows on the Retirement Plan sheet'};
   const needSpend = {need: 'your monthly spending', needAction: {text: 'Add monthly spending', label: 'Monthly spending'}};
 
   function subjSaving(d, c){
     const s = {key: 'save', name: 'Savings rate', weight: 20};
     const R = Household.savingsRate(d), S = Household.contribSummary(d);
-    if (!R || R.rate == null || !S.nDone) return {...s, need: 'this year’s paychecks (Amortization sheet) and deposits (Average Savings sheet)'};
+    if (!R || R.rate == null || !S.nDone) return {...s, need: 'this year’s paychecks (Retirement Plan sheet) and deposits (Contributions sheet)'};
     const saved = R.saved + c.adj.saveMonthly * S.nDone, rate = saved / R.income;
     const pct = Fmt.pct(rate, 0), lastM = MONTH_ABBR[S.done[S.done.length-1].m];
     const perPoint = R.income / S.nDone / 100;
@@ -3825,7 +3828,7 @@ const Report = (() => {
     const s = {key: 'track', name: 'On plan', weight: 10};
     const H = Household.planHistory(d);
     const pick = ['target', 'amort', 'forecast'].map(k => H.expected.find(e => e.key === k && e.value > 0)).find(Boolean);
-    if (!pick) return {...s, need: 'a plan in the workbook: a weekly target path, the Amortization plan or the Annual Forecast'};
+    if (!pick) return {...s, need: 'a plan in the workbook: a weekly target path, the Retirement Plan or the Annual Forecast'};
     const ratio = H.actual / pick.value, gap = H.actual - pick.value;
     const beat = H.returns.filter(r => r.actual > r.assumed).length;
     const name = pick.key === 'target' ? 'your weekly target path' : 'your ' + pick.label;
@@ -4113,7 +4116,7 @@ const Report = (() => {
     return out.filter(b => b.earned).concat(out.filter(b => !b.earned).sort((a, b) => b.progress - a.progress));
   }
 
-  /* months in a row with money saved, from the Average Savings log (ending last month or this one) */
+  /* months in a row with money saved, from the Contributions log (ending last month or this one) */
   function savingStreak(d){
     const months = Household.contribMonths(d).filter(m => !m.planned);
     if (!months.length) return null;
@@ -5329,7 +5332,7 @@ const Saving = {
     const years = M.Compute.yearTable(d).filter(y => y.growth != null);
     if (!S && !P && !years.length){
       root.append(h('section', {class: 'sec empty'}, h('h2', {class: 'h3', text: 'Nothing to show yet'}),
-        h('p', {class: 'prose', text: 'This tab reads the Average Savings sheet (every deposit, by month) and the paycheck rows on the Amortization sheet. Neither was found in this file.'})));
+        h('p', {class: 'prose', text: 'This tab reads the Contributions sheet (every deposit, by month) and the paycheck rows on the Retirement Plan sheet. Neither was found in this file.'})));
       return;
     }
     if (S) root.append(this.top(S, R), this.monthsSec(S), this.destRate(S, R));
@@ -5368,7 +5371,7 @@ const Saving = {
     const t = Color.theme(), {months, groups} = this.groups(), planned = months.filter(m => m.planned).length;
     const fy = d.contrib && d.contrib.fixedYears && d.contrib.fixedYears[0];
     return h('section', {class: 'sec tight', 'aria-label': 'Contributions by month'},
-      secHead('Contributions by month', 'Every deposit logged in your Average Savings sheet.' + (planned ? ` The faded ${planned === 1 ? 'month is' : planned + ' months are'} planned, not made yet.` : '') +
+      secHead('Contributions by month', 'Every deposit logged in your Contributions sheet.' + (planned ? ` The faded ${planned === 1 ? 'month is' : planned + ' months are'} planned, not made yet.` : '') +
         (fy ? ` The second block in the sheet is labeled ${fy.was}, so it is read as ${fy.now}.` : ''),
         legendOf(groups.map(g => [this.colorOf(t, g.key), g.label])), tableToggle('c-contrib')),
       h('div', {class: 'chart h-contrib', id: 'c-contrib', role: 'img', 'aria-label': 'Monthly contributions stacked by where the money went'}),
@@ -5403,7 +5406,7 @@ const Saving = {
         h('div', {class: 'bn'}, h('span', {text: x.dest}), h('small', {text: (g ? g.label + ' · ' : '') + F.pct(x.amount / (S.ytd || 1), 0) + ' of the total'})),
         h('div', {class: 'btrack', 'aria-hidden': 'true'}, h('i')), h('div', {class: 'bv', text: F.usd(x.amount)})); });
     let rate;
-    if (!R || R.rate == null) rate = [secHead('Savings rate', 'Needs this year’s paycheck rows on the Amortization sheet.')];
+    if (!R || R.rate == null) rate = [secHead('Savings rate', 'Needs this year’s paycheck rows on the Retirement Plan sheet.')];
     else rate = [secHead('Savings rate', (R.household ? 'Everything saved ÷ household pay' : 'Everything saved ÷ your pay') + ', this year so far.'),
       h('p', {class: 'bigfig', text: F.pct(R.rate, 0)}),
       meterEl('Share of pay saved', F.pct(R.rate, 0), R.rate * 2, t.gain, {quiet: true, scale: ['0%', '50%']}),
@@ -5470,7 +5473,7 @@ const Saving = {
     else if (B && B.net && B.net.now && B.gross && B.gross.now) note = [`Your Budget sheet’s paycheck table shows take-home of `, h('b', {text: F.cents(B.net.now)}), ` on ${F.cents(B.gross.now)} gross${B.gross.now < L.gross * 0.95 ? ', which is older than the checks above' : ''}.`];
     else note = ['Take-home pay isn’t in the sheet.'];
     return h('section', {class: 'sec tight', 'aria-label': 'Paycheck'},
-      secHead('Paycheck', `From the per-paycheck 401(k) rows on your Amortization sheet, ${P.perYear} paychecks a year.` + (P.all.some(x => x.date > today) ? ' Later checks this year are the sheet’s plan.' : ''),
+      secHead('Paycheck', `From the per-paycheck 401(k) rows on your Retirement Plan sheet, ${P.perYear} paychecks a year.` + (P.all.some(x => x.date > today) ? ' Later checks this year are the sheet’s plan.' : ''),
         legendOf([[t.groups.retire, '401(k)'], [t.groups.match, 'Employer match'], [t.ink2, 'Gross pay', 'line']]), tableToggle('c-pay')),
       kpis(items), split,
       h('div', {class: 'chart h-pay', id: 'c-pay', role: 'img', 'aria-label': 'Gross pay per paycheck with the 401(k) deferral and employer match'}),
@@ -5627,7 +5630,7 @@ const Plan = {
     const retRows = H.returns.map(r => ({...r, label: String(r.year)})).concat(yt.map(y => ({year: y.year, label: y.year + ' YTD', actual: y.ret, assumed: (H.returns[0] || {}).assumed, contribs: y.contribs})));
     const ret = retRows.length ? tableEl(['Year', 'Your market return', 'Plan assumed', 'Difference', 'You added'], retRows.slice().reverse().map(r => { const dl = r.assumed != null ? r.actual - r.assumed : null;
       return [r.label, {t: SP(r.actual), cls: 'd ' + dir(r.actual)}, r.assumed != null ? F.pct(r.assumed, 1) : 'Not yet', dl != null ? deltaCell(dl, `${dl >= 0 ? '▲' : '▼'} ${minus((dl * 100).toFixed(1))} pts`) : '', r.contribs != null ? F.k(r.contribs) : 'Not yet']; }), {stack: true})
-      : h('p', {class: 'prose', text: 'No yearly actuals on the Amortization sheet yet.'});
+      : h('p', {class: 'prose', text: 'No yearly actuals on the Retirement Plan sheet yet.'});
     const col = this.planColors(t);
     return h('section', {class: 'sec tight', 'aria-label': 'Plan history'},
       secHead('Plan history', 'Every plan in your workbook against what actually happened' + (cur ? `. Today you are ${signedK(H.actual - cur.value)} against the ${cur.label.toLowerCase()}.` : '.') + ' The benchmark applies the plan’s return to the money you really put in, so the gap above it is market luck and skill.'),
