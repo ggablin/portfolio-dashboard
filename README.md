@@ -2,7 +2,7 @@
 
 | Page | What it is |
 |---|---|
-| `v4.html` | **Meridian v4 (in progress).** The "Long game" design as the real dashboard: all seven tabs, with v3's own logic. It opens a workbook from this device and keeps a copy in that browser so the next visit is instant (v3 and v4 share that copy). OneDrive loading, **Your numbers** and the report card's homework and grade history are still to come, so keep using v3 for those. Add `?demo=1` to the address for made-up numbers. |
+| `v4.html` | **Meridian v4 (in progress).** The "Long game" design as the real dashboard: all seven tabs, with v3's own logic. It opens a workbook from this device and keeps a copy in that browser so the next visit is instant (v3 and v4 share that copy). **Your numbers** (the pencil button and the Add/Update links) works the same as in v3 and shares its saved numbers. OneDrive loading and the report card's homework and grade history are still to come, so keep using v3 for those. Add `?demo=1` to the address for made-up numbers. |
 | `v3.html` | **Meridian v3.** Portfolio, report card, net worth, saving and plan views. Loads the workbook straight from OneDrive. |
 | `v2.html` | Meridian v2 (upload a file each visit). |
 | `index.html` | The original dashboard. |
