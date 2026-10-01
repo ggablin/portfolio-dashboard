@@ -3387,7 +3387,7 @@ const AgeChart = {
     return h('section', {class: 'sec tight keep', 'aria-label': 'Net worth by age'},
       secHead('Net worth by age', `U.S. households by age (Federal Reserve, ${B.scf.year} dollars) against your net worth over time${D.plan.length ? ' and your Annual Forecast' : ''}. The scale is logarithmic, so each gridline is 10 times the one below.`),
       h('div', {class: 'toolrow'},
-        legendOf([[t.gain, 'You', 'line']].concat(D.plan.length ? [[t.gain, 'Your plan (portfolio, today’s dollars)', 'dotted']] : []).concat([[t.ink2, 'Typical household (median)', 'line'], [t.muted, 'Average household', 'dash']])),
+        legendOf([[t.gain, 'You', 'line']].concat(D.plan.length ? [[t.gain, 'Your plan (portfolio, today’s dollars)', 'dotted']] : []).concat([[t.ink2, 'Typical household (median)', 'line'], [t.ink2, 'Average household', 'dash']])),
         h('div', {class: 'tools-r'}, tableToggle('c-age'))),
       h('div', {class: 'chart h-age', id: 'c-age', role: 'img', 'aria-label': 'Your net worth by age compared with the typical and average U.S. household'}),
       h('div', {class: 'tbl-wrap', id: 'tbl-c-age', hidden: true}));
@@ -3415,7 +3415,7 @@ const AgeChart = {
         if (a == null) return '';
         const bd = bandAt(a), mine = along(you, a), pl = along(plan, a);
         return `<div style="color:${t.muted};font-size:12px;margin-bottom:3px">Age ${Math.floor(a)}</div>` + (mine != null ? line(t.gain, 'You', mine) : '') + (pl != null ? line(t.gain, 'Your plan', pl, 'dotted') : '') +
-          line(t.ink2, `Typical, ${bd.label}`, bd.nwMedian) + line(t.muted, `Average, ${bd.label}`, bd.nwMean, 'dashed');
+          line(t.ink2, `Typical, ${bd.label}`, bd.nwMedian) + line(t.ink2, `Average, ${bd.label}`, bd.nwMean, 'dashed');
       }},
       grid: {left: 4, right: 18, top: 30, bottom: 30, containLabel: true},
       xAxis: {type: 'value', min: 20, max: xMax, interval: narrow ? 10 : 5, name: 'Age', nameLocation: 'middle', nameGap: 28, nameTextStyle: {color: t.muted, fontSize: 12, fontFamily: FONT},
@@ -3424,7 +3424,7 @@ const AgeChart = {
               axisLabel: {color: t.muted, fontSize: 12, fontFamily: FONT, formatter: v => axisMoney(v)}},
       series: [
         {name: 'Typical household (median)', type: 'line', step: 'end', data: steps('nwMedian'), showSymbol: false, emphasis: {disabled: true}, lineStyle: {width: 2, color: t.ink2}, itemStyle: {color: t.ink2}},
-        {name: 'Average household', type: 'line', step: 'end', data: steps('nwMean'), showSymbol: false, emphasis: {disabled: true}, lineStyle: {width: 1.5, type: [6, 5], color: t.muted}, itemStyle: {color: t.muted}},
+        {name: 'Average household', type: 'line', step: 'end', data: steps('nwMean'), showSymbol: false, emphasis: {disabled: true}, lineStyle: {width: 1.5, type: [6, 5], color: t.ink2}, itemStyle: {color: t.ink2}},
         plan.length ? {name: 'Your plan', type: 'line', data: plan, showSymbol: false, smooth: .2, emphasis: {disabled: true}, lineStyle: {width: 2, type: [2, 4], color: t.gain}, itemStyle: {color: t.gain}} : null,
         {name: 'You', type: 'line', data: you, showSymbol: false, connectNulls: false, emphasis: {disabled: true}, z: 5, lineStyle: {width: 2.5, color: t.gain}, itemStyle: {color: t.gain},
          markPoint: {symbol: 'circle', symbolSize: 12, silent: true, data: [{coord: now, value: now[1]}], itemStyle: {color: t.gain, borderColor: t.page, borderWidth: 2},
