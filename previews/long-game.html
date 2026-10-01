@@ -530,8 +530,8 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
   #refreshBtn{order:1} #fileBtn{order:2} #numbersBtn{order:3} #themeBtn{order:4}
   .brk{display:block;order:5;flex-basis:100%;height:0}
   .src{order:6}
-  .seg{order:7;flex:1;justify-content:space-between}
-  .seg button{flex:1;min-width:0;padding:4px 6px}
+  .tools .seg{order:7;flex:1;justify-content:space-between}
+  .tools .seg button{flex:1;min-width:0;padding:4px 6px}
   .tools .btn .lbl,.src .src-date{display:none}
   .tools .btn{padding:7px 10px;min-width:38px;justify-content:center}
   .bandhead{display:block;padding:8px var(--gutter) 18px}
@@ -626,6 +626,144 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
 .dropzone p{padding:14px 22px;border-radius:999px;background:var(--ink);color:var(--page);font-size:var(--fs-m);font-weight:680}
 .is-dropping .dropzone{display:grid}
 
+/* ============ SHARED PIECES FOR THE LENS TABS ============ */
+.prose{color:var(--ink-2);max-width:68ch;line-height:1.55}
+.prose b{color:var(--ink);font-weight:650}
+.chip{display:inline-block;padding:1px 8px;border:1px solid var(--hair-2);border-radius:999px;color:var(--muted);font-size:var(--fs-xs);font-weight:600;line-height:1.5;white-space:nowrap}
+.chip.live{color:var(--good);border-color:color-mix(in oklch, var(--good) 45%, var(--hair-2))}
+.chip.est{color:var(--ink-2);border-style:dashed}
+.slider{display:grid;gap:8px;max-width:560px}
+.slider-l{display:flex;justify-content:space-between;align-items:baseline;gap:16px;font-weight:650;color:var(--ink-2)}
+.slider-l output{font-size:var(--fs-m);font-weight:740;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.slider input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;margin:0;background:transparent;cursor:pointer}
+.slider input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(to right,var(--ink) var(--fill,50%),var(--hair-2) var(--fill,50%))}
+.slider input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:var(--hair-2)}
+.slider input[type=range]::-moz-range-progress{height:4px;border-radius:2px;background:var(--ink)}
+.slider input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-9px;border-radius:50%;border:2px solid var(--ink);background:var(--accent);box-shadow:0 0 0 3px var(--page)}
+.slider input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;border:2px solid var(--ink);background:var(--accent);box-shadow:0 0 0 3px var(--page)}
+.slider input[type=range]:focus-visible{outline:none}
+.slider input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 3px var(--page),0 0 0 5px var(--focus)}
+.slider input[type=range]:focus-visible::-moz-range-thumb{box-shadow:0 0 0 3px var(--page),0 0 0 5px var(--focus)}
+.slider-h{color:var(--muted);font-size:var(--fs-xs)}
+
+/* ============ ACCOUNTS ============ */
+.alloc{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);column-gap:56px;align-items:start}
+.abar-row{display:grid;grid-template-columns:78px minmax(0,1fr);column-gap:14px;align-items:center}
+.abar-row+.abar-row{margin-top:10px}
+.abar-l{color:var(--muted);font-size:var(--fs-xs);font-weight:620}
+.abar-row.now .abar-l{color:var(--ink);font-weight:700}
+.abar{display:flex;gap:2px;height:52px}
+.abar-row.was .abar{height:22px}
+.abar i{display:grid;align-items:center;min-width:3px;padding:0 9px;overflow:hidden;white-space:nowrap;background:var(--c);color:var(--on);font-style:normal;font-size:var(--fs-xs);font-weight:700;transition:opacity .15s var(--ease)}
+.abar i:first-child{border-radius:6px 0 0 6px}
+.abar i:last-child{border-radius:0 6px 6px 0}
+.abar.dim i:not(.on){opacity:.28}
+.glist{list-style:none;margin:26px 0 0;padding:0;border-top:1px solid var(--hair)}
+.grow{display:grid;grid-template-columns:14px minmax(0,1fr) auto auto;column-gap:14px;align-items:baseline;width:100%;padding:12px 8px;margin:0;border:0;border-bottom:1px solid var(--hair);background:transparent;text-align:left;cursor:pointer;color:inherit;transition:background-color .15s var(--ease)}
+.grow:hover{background:var(--surface-2)}
+.grow:active{background:var(--surface-3)}
+.grow[aria-pressed="true"]{background:var(--surface-2);box-shadow:inset 0 0 0 1.5px var(--ink);border-radius:8px}
+.grow .sw{width:12px;height:12px;border-radius:3px;background:var(--c);align-self:center}
+.grow .gn{font-weight:650}
+.grow .gv{font-weight:700;font-variant-numeric:tabular-nums}
+.grow .gs{min-width:120px;text-align:right;color:var(--ink-2);font-size:var(--fs-xs);font-variant-numeric:tabular-nums}
+.grow .gs b{color:var(--ink);font-weight:650}
+.shifts{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+.shifts li{padding-left:1.1em;text-indent:-1.1em;color:var(--ink-2)}
+.shifts b{color:var(--ink)}
+.ledger{list-style:none;margin:0;padding:0;border-top:1px solid var(--hair)}
+.lrow{display:grid;grid-template-columns:minmax(0,1fr) 200px 100px 120px 70px;column-gap:20px;align-items:center;width:100%;padding:12px 8px;margin:0;border:0;border-bottom:1px solid var(--hair);background:transparent;text-align:left;cursor:pointer;color:inherit;transition:background-color .15s var(--ease),opacity .15s var(--ease)}
+.lrow:hover{background:var(--surface-2)}
+.lrow:active{background:var(--surface-3)}
+.lrow[aria-expanded="true"]{background:var(--surface-2)}
+.ledger.dim .lrow:not(.on){opacity:.35}
+.lrow .ln{display:flex;align-items:center;gap:10px;min-width:0}
+.lrow .sw{flex:none;width:12px;height:12px;border-radius:3px;background:var(--c)}
+.lrow .nm{font-weight:650}
+.lrow .gl{display:block;color:var(--muted);font-size:var(--fs-xs);font-weight:500}
+.lrow svg.spark{width:200px;max-width:100%;height:34px;overflow:visible}
+.spark path.ln{fill:none;stroke:var(--c);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.spark path.ar{fill:var(--c);opacity:.12}
+.spark circle{fill:var(--c);stroke:var(--page);stroke-width:2}
+.lrow .lv{font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.lrow .lc{text-align:right;font-size:var(--fs-xs);font-weight:620;font-variant-numeric:tabular-nums}
+.lrow .lp{text-align:right;color:var(--muted);font-size:var(--fs-xs);font-variant-numeric:tabular-nums}
+.lhead{display:grid;grid-template-columns:minmax(0,1fr) 200px 100px 120px 70px;column-gap:20px;padding:0 8px 8px;color:var(--muted);font-size:var(--fs-xs);font-weight:650}
+.lhead span:nth-child(n+3){text-align:right}
+.ldetail{padding:18px 8px 26px;border-bottom:1px solid var(--hair);background:var(--surface-2)}
+.ldetail .sub{margin:0 0 10px;color:var(--ink-2)}
+.h-acct{height:220px}
+.h-attr{height:300px}
+.kidsrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));column-gap:56px;row-gap:44px}
+.kid h3{margin:0 0 2px}
+.kid .ks{color:var(--muted);font-size:var(--fs-xs);margin-bottom:16px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:20px 28px}
+.kv .fb-v{font-size:var(--fs-l)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:56px}
+
+/* ============ NET WORTH ============ */
+.bs{display:grid;gap:30px}
+.bs-h{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-bottom:8px;border-bottom:1px solid var(--hair-2);font-weight:700}
+.bs-h span:last-child{font-variant-numeric:tabular-nums}
+.bsr{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;column-gap:20px;align-items:center;padding:12px 0;border-bottom:1px solid var(--hair)}
+.bsr .bn{font-weight:650;min-width:0}
+.bsr .bn small{display:block;color:var(--muted);font-size:var(--fs-xs);font-weight:500;line-height:1.4;margin-top:1px}
+.bsr .bn .chip{margin-left:6px;vertical-align:1px}
+.bsr .btrack{height:8px;border-radius:4px;background:var(--surface-3);overflow:hidden}
+.bsr .btrack i{display:block;height:100%;border-radius:4px;background:var(--c);width:var(--w)}
+.bsr .bv{font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.bs-total{display:flex;justify-content:space-between;align-items:baseline;padding-top:14px;border-top:2px solid var(--ink);font-weight:700}
+.bs-total .big{font-size:var(--fs-l);letter-spacing:-.015em}
+.loan{padding:14px 0;border-bottom:1px solid var(--hair)}
+.loan:first-child{padding-top:2px}
+.loan-t{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-weight:650}
+.loan-t b{font-variant-numeric:tabular-nums}
+.loan .ls{color:var(--muted);font-size:var(--fs-xs);margin:2px 0 8px}
+.loan .btrack{height:8px;border-radius:4px;background:var(--surface-3);overflow:hidden}
+.loan .btrack i{display:block;height:100%;border-radius:4px;background:var(--c);width:var(--w)}
+.h-nw{height:360px}
+.h-mort{height:280px}
+.mortrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:56px;margin-top:40px}
+.cap{margin:0 0 8px;font-weight:650;color:var(--ink-2)}
+.story{margin-top:28px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:32px;row-gap:24px;margin-bottom:36px}
+.kpis.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.kpis .fb-v{font-size:var(--fs-l)}
+
+@media (max-width:1020px){
+  .lrow,.lhead{grid-template-columns:minmax(0,1fr) 170px 90px 110px}
+  .lrow .lp,.lhead span:nth-child(5){display:none}
+}
+@media (max-width:900px){
+  .pair.gapped>*+*{margin-top:56px}
+  .alloc .figs{grid-template-columns:minmax(0,1fr)}
+  .alloc,.mortrow,.two{grid-template-columns:minmax(0,1fr)}
+  .two>*+*{margin-top:36px}
+  .alloc>*+*{margin-top:40px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpis.three{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mortrow>*+*{margin-top:36px}
+}
+@media (max-width:719px){
+  .abar-row{grid-template-columns:62px minmax(0,1fr);column-gap:10px}
+  .abar{height:44px}
+  .abar i{padding:0 6px}
+  .grow{grid-template-columns:14px minmax(0,1fr) auto;row-gap:2px}
+  .grow .gs{grid-column:2 / -1;text-align:left;min-width:0}
+  .lhead{display:none}
+  .lrow{grid-template-columns:minmax(0,1fr) 84px;row-gap:6px}
+  .lrow .ln{grid-column:1}
+  .lrow svg.spark{grid-column:1 / -1;grid-row:2;height:30px}
+  .lrow .lv{grid-column:2;grid-row:1}
+  .lrow .lc{grid-column:2;grid-row:3;text-align:right}
+  .lrow .lp{display:none}
+  .bsr{grid-template-columns:minmax(0,1fr) auto;row-gap:8px}
+  .bsr .btrack{grid-column:1 / -1;grid-row:2}
+  .h-nw{height:300px}
+  .h-attr{height:280px}
+  .kv{grid-template-columns:1fr 1fr}
+}
+
 /* ============ MOTION OFF ============ */
 .shot *,.shot *::before,.shot *::after{transition:none!important;animation:none!important}
 @media (prefers-reduced-motion:reduce){
@@ -669,6 +807,8 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
 <main id="main" tabindex="-1">
   <section class="view" id="view-pulse" role="tabpanel" aria-labelledby="tab-pulse"></section>
   <section class="view" id="view-report" role="tabpanel" aria-labelledby="tab-report" hidden></section>
+  <section class="view" id="view-accounts" role="tabpanel" aria-labelledby="tab-accounts" hidden></section>
+  <section class="view" id="view-networth" role="tabpanel" aria-labelledby="tab-networth" hidden></section>
   <section class="view" id="view-other" role="tabpanel" hidden></section>
 </main>
 
@@ -1330,7 +1470,8 @@ const Charts = (() => {
   const yearStep = (el, spanMs) => { const perYear = (el ? el.clientWidth - 60 : 600) / Math.max(1, spanMs / (365.25 * 864e5)); return perYear < 26 ? 5 : perYear < 52 ? 2 : 1; };
   const valAxis = (t, fmt) => ({type: 'value', scale: true, axisLine: {show: false}, axisTick: {show: false},
                                 splitLine: {lineStyle: {color: t.hair, width: 1}}, axisLabel: {color: t.muted, fontSize: 12, fontFamily: FONT, formatter: fmt}});
-  return {mount, disposeAll, resizeAll, base, timeAxis, valAxis, yearStep, get: id => inst.get(id)};
+  function dispose(id){ const c = inst.get(id); if (c){ c.dispose(); inst.delete(id); } }
+  return {mount, dispose, disposeAll, resizeAll, base, timeAxis, valAxis, yearStep, get: id => inst.get(id)};
 })();
 
 /* table twins for charts (the no-hover way to read every value) */
@@ -1364,7 +1505,7 @@ const TODAY = new Date();
 Data.init({M, d});
 const TABS = [['pulse', 'Pulse'], ['report', 'Report card'], ['accounts', 'Accounts'], ['networth', 'Net worth'], ['saving', 'Saving'], ['plan', 'Plan'], ['lab', 'Lab']];
 const RANGES = [['1Y', '1Y'], ['3Y', '3Y'], ['5Y', '5Y'], ['YTD', 'YTD'], ['ALL', 'All']];
-const state = {view: ['pulse', 'report', 'accounts', 'networth', 'saving', 'plan', 'lab'].includes(Q.get('view')) ? Q.get('view') : 'pulse', range: 'ALL', model: null};
+const state = {view: ['pulse', 'report', 'accounts', 'networth', 'saving', 'plan', 'lab'].includes(Q.get('view')) ? Q.get('view') : 'pulse', range: 'ALL', model: null, group: null, acct: null, stackMode: '$', ppExtra: 200};
 const word = v => v > 0 ? 'Up' : v < 0 ? 'Down' : 'Flat';
 const arrow = v => v > 0 ? '↑' : v < 0 ? '↓' : '·';
 const dir = v => v > 0 ? 'up' : v < 0 ? 'dn' : 'flat';
@@ -1808,9 +1949,453 @@ const Report = {
 };
 
 /* ---------------- THE OTHER FIVE LENSES (not in this preview) ---------------- */
+/* ======================================================================
+   LENS TAB HELPERS (shared by Accounts, Net worth and the tabs after them)
+   ====================================================================== */
+const lum = hex => { const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(v => v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
+const contrast = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+/* page or ink text, whichever reads better on a fill */
+const onFill = (hex, t) => contrast(hex, t.page) >= contrast(hex, t.ink) ? 'var(--page)' : 'var(--ink)';
+/* a tint of one color over another, as hex (canvas charts can't take color-mix) */
+function blend(fg, bg, a){
+  const f = [1, 3, 5].map(i => parseInt(fg.slice(i, i + 2), 16)), b = [1, 3, 5].map(i => parseInt(bg.slice(i, i + 2), 16));
+  return '#' + f.map((v, i) => Math.round(v * a + b[i] * (1 - a)).toString(16).padStart(2, '0')).join('');
+}
+/* the parts of a gain: your own money strongest, then dividends, then the market; fees are a loss */
+const partColors = t => ({contribs: t.gain, divs: blend(t.gain, t.page, .7), growth: blend(t.gain, t.page, .45), fees: t.loss});
+const PART_LABEL = {contribs: 'Contributions', divs: 'Dividends', growth: 'Market', fees: 'Fees'};
+const swatch = (color, cls) => cls === 'line' ? h('i', {class: 'key', style: 'border-top-color:' + color, 'aria-hidden': 'true'}) : h('i', {class: 'key ' + (cls || 'sq'), style: 'background:' + color, 'aria-hidden': 'true'});
+function legendOf(items){
+  return h('ul', {class: 'legend', 'aria-label': 'Legend'}, items.map(([color, label, cls]) => h('li', null, swatch(color, cls), label)));
+}
+function chipEl(cls, text){ return h('span', {class: 'chip ' + (cls || ''), text}); }
+function sparkSvg(vals){
+  const W = 200, H = 34, n = vals.length;
+  if (n < 2) return '';
+  const lo = Math.min(...vals), hi = Math.max(...vals), span = (hi - lo) || 1;
+  const pts = vals.map((v, i) => [i / (n - 1) * (W - 8) + 3, H - 5 - (v - lo) / span * (H - 12)]);
+  const line = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('');
+  const e = pts[n - 1];
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" aria-hidden="true"><path class="ar" d="${line}L${e[0].toFixed(1)} ${H}L${pts[0][0].toFixed(1)} ${H}Z"/><path class="ln" d="${line}"/><circle cx="${e[0].toFixed(1)}" cy="${e[1].toFixed(1)}" r="3.2"/></svg>`;
+}
+const sampleTo = (arr, n) => arr.length <= n ? arr : Array.from({length: n}, (_, i) => arr[Math.round(i * (arr.length - 1) / (n - 1))]);
+function slider({id, label, min, max, step, value, fmt, hint, onInput}){
+  const out = h('output', {for: id, text: fmt(value)});
+  const inp = h('input', {type: 'range', id, min, max, step, value});
+  const paint = () => { inp.style.setProperty('--fill', ((inp.value - min) / (max - min) * 100) + '%'); out.textContent = fmt(+inp.value); };
+  inp.addEventListener('input', () => { paint(); onInput(+inp.value); });
+  paint();
+  return h('div', {class: 'slider'}, h('label', {class: 'slider-l', for: id}, h('span', {text: label}), out), inp, hint ? h('p', {class: 'slider-h', text: hint}) : null);
+}
+const tipHead = (t, ms) => `<div style="color:${t.muted};font-size:12px;margin-bottom:3px">Week of ${esc(F.date(new Date(ms)))}</div>`;
+const tipRow = (name, color, val, bold) => `<div style="display:flex;justify-content:space-between;gap:16px;align-items:center"><span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${color};margin-right:7px"></span>${esc(name)}</span><b${bold ? ' style="font-size:15px"' : ''}>${esc(val)}</b></div>`;
+const shortRange = () => state.range === '1Y' || state.range === 'YTD';
+
+/* ======================================================================
+   ACCOUNTS: the portfolio split into its groups and accounts
+   ====================================================================== */
+const Accounts = {
+  render(){
+    const root = $('#view-accounts'), t = Color.theme();
+    root.textContent = '';
+    const rows = M.rowsInRange(d.rows, state.range), last = rows[rows.length - 1];
+    const G = M.GROUPS, drift = M.Compute.drift(rows), fg = state.group;
+    const gc = k => t.groups[k];
+    const was = rows.length > 52 ? 'a year ago' : 'the start of the range';
+    const live = drift.filter(g => g.now > 0 || g.past > 0);
+    const nAcct = M.ACCOUNTS.filter(a => rows.some(r => r[a.key] > 0)).length;
+    const total = live.reduce((s, g) => s + g.nowAbs, 0) || 1;
+
+    /* 1. the mix, now and then; a group can be focused and the page follows */
+    const bar = (cls, label, key) => h('div', {class: 'abar-row ' + cls},
+      h('span', {class: 'abar-l', text: label}),
+      h('div', {class: 'abar' + (fg ? ' dim' : ''), role: 'img',
+                'aria-label': `${label}: ` + live.filter(g => g[key] > 0).map(g => `${g.label} ${(g[key] * 100).toFixed(0)}%`).join(', ')},
+        live.filter(g => g[key] > 0).map(g => h('i', {class: fg === g.key ? 'on' : null, style: `flex:${g[key]} 1 0;--c:${gc(g.key)};--on:${onFill(gc(g.key), t)}`,
+          text: cls === 'now' && g[key] >= 0.09 ? `${Math.round(g[key] * 100)}%` : ''}))));
+    const list = h('ul', {class: 'glist', 'aria-label': 'Account groups. Select one to focus it.'}, drift.map(g => {
+      const dl = (g.now - g.past) * 100;
+      return h('li', null, h('button', {class: 'grow', type: 'button', 'aria-pressed': String(fg === g.key), 'data-key': g.key, style: `--c:${gc(g.key)}`, onclick: () => this.focus(g.key)},
+        h('i', {class: 'sw', 'aria-hidden': 'true'}), h('span', {class: 'gn', text: g.label}), h('span', {class: 'gv', text: F.usd(g.nowAbs)}),
+        h('span', {class: 'gs'}, h('b', {text: `${(g.now * 100).toFixed(1)}%`}), ` · was ${(g.past * 100).toFixed(1)}% `,
+          h('span', {class: Math.abs(dl) < 0.05 ? 'flat' : dl > 0 ? 'up' : 'dn', text: `(${dl >= 0 ? '+' : '−'}${Math.abs(dl).toFixed(1)} pts)`}))));
+    }));
+    const big = drift.slice().sort((a, b) => b.now - a.now)[0];
+    const mv = drift.slice().sort((a, b) => Math.abs(b.now - b.past) - Math.abs(a.now - a.past))[0], mvd = (mv.now - mv.past) * 100;
+    const shifts = h('ul', {class: 'shifts'},
+      h('li', null, h('b', {text: big.label}), ` is the biggest layer: ${(big.now * 100).toFixed(0)}% of the portfolio, ${F.usd(big.nowAbs)}.`),
+      Math.abs(mvd) >= 0.5 ? h('li', null, h('b', {text: mv.label}), ` moved the most since ${was}: ${mvd > 0 ? 'up' : 'down'} ${Math.abs(mvd).toFixed(1)} points.`)
+                           : h('li', null, `The mix has barely moved since ${was}.`),
+      h('li', null, `${live.length} group${live.length === 1 ? '' : 's'} across ${nAcct} account${nAcct === 1 ? '' : 's'}.`));
+    root.append(h('section', {class: 'sec alloc', 'aria-label': 'Allocation'},
+      h('div', null,
+        secHead('Allocation', `Share of the portfolio today and ${was}. Select a group to focus it everywhere on this page.`),
+        bar('now', 'Today', 'now'), bar('was', rows.length > 52 ? 'A year ago' : 'Start', 'past'), list),
+      h('div', {class: 'figs'}, figBlock('Portfolio', F.usd(total), '', `Week ending ${F.date(last.date)}`), shifts)));
+
+    /* 2. composition over time */
+    root.append(h('section', {class: 'sec tight'},
+      secHead('Composition over time', 'The account groups stacked, so you can see the mix shift. Switch to percent to read it as shares.',
+        legendOf(G.filter(g => live.some(x => x.key === g.key)).map(g => [gc(g.key), g.label])),
+        h('div', {class: 'seg', id: 'stackSeg', role: 'group', 'aria-label': 'Dollars or percent'},
+          ['$', '%'].map(m => h('button', {type: 'button', 'aria-pressed': String(state.stackMode === m), text: m, onclick: () => { state.stackMode = m; $$('#stackSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.textContent === m))); this.stack(M.rowsInRange(d.rows, state.range), Color.theme()); }}))),
+        tableToggle('c-stack')),
+      h('div', {class: 'chart h-main', id: 'c-stack', role: 'img', 'aria-label': 'The account groups stacked over time'}),
+      h('div', {class: 'tbl-wrap', id: 'tbl-c-stack', hidden: true})));
+
+    /* 3. every account, as a ledger that opens in place */
+    root.append(h('section', {class: 'sec tight', 'aria-label': 'Every account'},
+      secHead('Every account', 'Each account against its own history. Select one to open its chart.'),
+      h('div', {class: 'lhead', 'aria-hidden': 'true'}, h('span', {text: 'Account'}), h('span', {text: rows.length > 52 ? 'Last 52 weeks' : 'In this range'}), h('span', {text: 'Value'}), h('span', {text: rows.length > 52 ? '52-week change' : 'Change'}), h('span', {text: 'Share'})),
+      h('ul', {class: 'ledger', id: 'ledger'})));
+
+    const att = this.attribution(t);
+    if (att) root.append(att);
+    const kids = this.kids(t);
+    if (kids) root.append(kids);
+
+    this.ledger(rows, t);
+    this.stack(rows, t);
+  },
+
+  focus(key){
+    state.group = state.group === key ? null : key;
+    this.render();
+    const b = $(`#view-accounts .grow[data-key="${key}"]`);
+    if (b) b.focus({preventScroll: true});
+  },
+
+  stack(rows, t){
+    const G = M.GROUPS, gs = M.Compute.groupSeries(rows), pct = state.stackMode === '%', fg = state.group;
+    const short = shortRange(), step = Charts.yearStep($('#c-stack'), gs.length ? gs[gs.length - 1].ts - gs[0].ts : 1);
+    const keys = G.filter(g => gs.some(r => r[g.key] > 0));
+    const series = keys.map(g => ({
+      name: g.label, type: 'line', stack: 'alloc', showSymbol: false, connectNulls: false, emphasis: {focus: 'series'},
+      lineStyle: {width: 2, color: t.page}, itemStyle: {color: t.groups[g.key]},
+      areaStyle: {color: t.groups[g.key], opacity: fg && fg !== g.key ? .14 : 1},
+      data: gs.flatMap((r, i) => {
+        const den = pct ? (G.reduce((s, x) => s + r[x.key], 0) || 1) : 1, pt = [r.ts, pct ? r[g.key] / den * 100 : r[g.key]];
+        return i && rows[i].bigGap ? [[r.ts - DAY, null], pt] : [pt];
+      }),
+    }));
+    Charts.mount('c-stack', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, formatter: ps => {
+        const l = [].concat(ps).filter(p => p.value && p.value[1] != null);
+        if (!l.length) return '';
+        const sumv = l.reduce((s, p) => s + p.value[1], 0);
+        return tipHead(t, l[0].value[0]) + l.slice().reverse().map(p => tipRow(p.seriesName, p.color, pct ? p.value[1].toFixed(1) + '%' : F.usd(p.value[1]))).join('') +
+               (pct ? '' : `<div style="margin-top:4px;padding-top:4px;border-top:1px solid ${t.hair2};display:flex;justify-content:space-between"><span>Total</span><b>${esc(F.usd(sumv))}</b></div>`);
+      }},
+      grid: {left: 4, right: 16, top: 12, bottom: 6, containLabel: true},
+      xAxis: Charts.timeAxis(t, short, step),
+      yAxis: pct ? {...Charts.valAxis(t, v => v + '%'), min: 0, max: 100, scale: false} : {...Charts.valAxis(t, axisMoney), min: 0, scale: false},
+      series,
+    });
+    Tables.set('c-stack', {cols: ['Week', ...keys.map(g => g.label), 'Total'],
+      rows: gs.slice(-52).reverse().map(r => [F.date(new Date(r.ts)), ...keys.map(g => F.usd(r[g.key])), F.usd(keys.reduce((s, g) => s + r[g.key], 0))])});
+  },
+
+  ledger(rows, t){
+    const last = rows[rows.length - 1], fg = state.group, ul = $('#ledger');
+    const accts = M.ACCOUNTS.filter(a => rows.some(r => r[a.key] > 0));
+    ul.textContent = '';
+    ul.classList.toggle('dim', !!fg);
+    accts.forEach(a => {
+      const cur = last[a.key], base = rows.length > 52 ? rows[rows.length - 53][a.key] : rows[0][a.key];
+      const chg = base > 0 ? cur / base - 1 : null, col = t.groups[a.group], open = state.acct === a.key;
+      const gl = M.GROUPS.find(g => g.key === a.group).label;
+      const spark = sampleTo(rows.slice(-Math.min(rows.length, 104)).map(r => r[a.key]), 56);
+      const btn = h('button', {class: 'lrow' + (fg === a.group ? ' on' : ''), type: 'button', 'aria-expanded': String(open), 'aria-controls': 'ad-' + a.key, style: `--c:${col}`, 'data-key': a.key, onclick: () => { state.acct = open ? null : a.key; this.ledger(rows, t); const b = $(`#ledger .lrow[data-key="${a.key}"]`); if (b) b.focus({preventScroll: true}); }},
+        h('span', {class: 'ln'}, h('i', {class: 'sw', 'aria-hidden': 'true'}), h('span', {class: 'nm'}, a.label, h('small', {class: 'gl', text: gl}))),
+        h('span', {html: sparkSvg(spark)}),
+        h('span', {class: 'lv', text: F.k(cur)}),
+        h('span', {class: 'lc ' + (chg == null ? 'flat' : dir(chg)), text: chg == null ? 'new' : `${arrow(chg)} ${SP(chg)}`}),
+        h('span', {class: 'lp', text: ((cur / (last.total || 1)) * 100).toFixed(1) + '%'}));
+      const li = h('li', null, btn);
+      if (open){
+        const share = cur / (last.total || 1);
+        li.append(h('div', {class: 'ldetail', id: 'ad-' + a.key},
+          h('p', {class: 'sub', text: `${F.usd(cur)} today, ${(share * 100).toFixed(1)}% of the portfolio` + (base > 0 ? `, ${SP(cur / base - 1)} ${rows.length > 52 ? 'over the last 52 weeks' : 'across this range'}` : '') + `. ${gl} group.`}),
+          h('div', {class: 'chart h-acct', id: 'c-acct', role: 'img', 'aria-label': `${a.label} balance over time`})));
+      }
+      ul.append(li);
+    });
+    if (state.acct && accts.some(a => a.key === state.acct)) this.detail(accts.find(a => a.key === state.acct), rows, t);
+    else Charts.dispose('c-acct');
+  },
+
+  detail(a, rows, t){
+    const col = t.groups[a.group], opened = rows.find(r => r[a.key] > 0);
+    const short = shortRange(), step = Charts.yearStep($('#c-acct'), rows[rows.length - 1].date - rows[0].date);
+    Charts.mount('c-acct', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, formatter: ps => { const p = [].concat(ps).find(x => x.value && x.value[1] != null); return p ? tipHead(t, p.value[0]) + `<div style="font-size:16px;font-weight:720">${esc(F.usd(p.value[1]))}</div>` : ''; }},
+      grid: {left: 4, right: 16, top: 20, bottom: 6, containLabel: true},
+      xAxis: Charts.timeAxis(t, short, step), yAxis: {...Charts.valAxis(t, axisMoney), scale: true},
+      series: [{name: a.label, type: 'line', data: MeridianKit.gapSeries(rows, r => r[a.key]), connectNulls: false, showSymbol: false,
+        lineStyle: {width: 2, color: col}, itemStyle: {color: col}, areaStyle: {color: col, opacity: .14}, emphasis: {disabled: true},
+        markLine: opened && opened !== rows[0] ? {silent: true, symbol: 'none', lineStyle: {color: t.muted, width: 1, type: 'solid'},
+          label: {formatter: 'Opened ' + F.month(opened.date), color: t.ink2, fontFamily: FONT, fontSize: 12, fontWeight: 600, position: 'insideEndTop', rotate: 0, align: 'left', offset: [6, 4]}, data: [{xAxis: opened.date.getTime()}]} : undefined}],
+    });
+  },
+
+  attribution(t){
+    const at = d.attr;
+    if (!at) return null;
+    const tot = at.totals, pc = partColors(t);
+    const steps = [{label: 'Begin', v: tot.begin, total: true}, {label: 'Contributions', v: tot.contribs}, {label: 'Dividends', v: tot.divs},
+                   {label: 'Market', v: tot.growth}, {label: 'Fees', v: tot.fees}, {label: 'Ending', v: tot.ending, total: true}];
+    const gain = tot.ending - tot.begin;
+    const sec = h('section', {class: 'sec tight', 'aria-label': 'Where this year’s growth came from'},
+      secHead('Where this year’s growth came from', 'Contributions, dividends and the market, from your attribution sheet.', legendOf(Object.keys(PART_LABEL).map(k => [pc[k], PART_LABEL[k]]))),
+      h('div', {class: 'two'},
+        h('div', null, h('p', {class: 'cap', text: 'Start to end, step by step'}), h('div', {class: 'chart h-attr', id: 'c-waterfall', role: 'img', 'aria-label': 'Waterfall from the starting balance through contributions, dividends, market and fees to the ending balance'})),
+        h('div', null, h('p', {class: 'cap', text: 'By account'}), h('div', {class: 'chart h-attr', id: 'c-attr', role: 'img', 'aria-label': 'Each account’s growth split into contributions, dividends, market and fees'}))),
+      gain > 0 ? h('p', {class: 'prose story'}, h('b', {text: F.pct(tot.contribs / gain, 0)}), ' of this year’s gain was new money you put in; ',
+        h('b', {text: F.pct((tot.growth + tot.divs + tot.fees) / gain, 0)}), ` came from markets and dividends (net of ${F.usd(Math.abs(tot.fees))} in fees).`) : null);
+    queueMicrotask(() => {
+      let run = 0;
+      const bases = [], bars = [];
+      steps.forEach(s => {
+        if (s.total){ bases.push(0); bars.push({value: s.v, itemStyle: {color: blend(t.muted, t.page, .5), borderRadius: [4, 4, 0, 0]}}); if (s.label === 'Begin') run = s.v; }
+        else { bases.push(Math.min(run, run + s.v)); bars.push({value: Math.abs(s.v), itemStyle: {color: s.v >= 0 ? t.gain : t.loss, borderRadius: [4, 4, 0, 0]}}); run += s.v; }
+      });
+      Charts.mount('c-waterfall', {
+        ...Charts.base(t),
+        tooltip: {...Charts.base(t).tooltip, trigger: 'axis', axisPointer: {type: 'shadow', shadowStyle: {color: t.hair}}, formatter: ps => { const p = [].concat(ps).find(x => x.seriesIndex === 1); if (!p) return ''; const s = steps[p.dataIndex]; return `<div style="color:${t.muted};font-size:12px">${esc(s.label)}</div><div style="font-size:16px;font-weight:720">${esc(s.total ? F.usd(s.v) : F.signed(s.v))}</div>`; }},
+        grid: {left: 4, right: 12, top: 28, bottom: 6, containLabel: true},
+        xAxis: {type: 'category', data: steps.map(s => s.label), axisLine: {lineStyle: {color: t.hair2}}, axisTick: {show: false}, axisLabel: {color: t.muted, fontSize: 12, fontFamily: FONT, interval: 0, hideOverlap: true}},
+        yAxis: Charts.valAxis(t, axisMoney),
+        series: [{type: 'bar', stack: 'wf', data: bases, itemStyle: {color: 'transparent'}, emphasis: {disabled: true}, silent: true, barMaxWidth: 40},
+                 {type: 'bar', stack: 'wf', data: bars, barMaxWidth: 40, label: {show: true, position: 'top', color: t.ink2, fontSize: 12, fontWeight: 650, fontFamily: FONT, formatter: p => { const s = steps[p.dataIndex]; return s.total ? F.k(s.v) : F.signed(s.v, F.k); }}}],
+      });
+      Charts.mount('c-attr', {
+        ...Charts.base(t),
+        tooltip: {...Charts.base(t).tooltip, axisPointer: {type: 'shadow', shadowStyle: {color: t.hair}}, formatter: ps => { const l = [].concat(ps); if (!l.length) return ''; return `<div style="color:${t.muted};font-size:12px;margin-bottom:3px">${esc(l[0].name)}</div>` + l.slice().reverse().map(p => tipRow(p.seriesName, p.color, F.signed(p.value))).join(''); }},
+        grid: {left: 4, right: 12, top: 12, bottom: 6, containLabel: true},
+        xAxis: {type: 'category', data: at.items.map(a => a.name), axisLine: {lineStyle: {color: t.hair2}}, axisTick: {show: false}, axisLabel: {color: t.muted, fontSize: 12, fontFamily: FONT, interval: 0, hideOverlap: true, rotate: at.items.length > 6 ? 32 : 0}},
+        yAxis: Charts.valAxis(t, axisMoney),
+        series: Object.keys(PART_LABEL).map(k => ({name: PART_LABEL[k], type: 'bar', stack: 'attr', barMaxWidth: 26, data: at.items.map(a => a[k]), itemStyle: {color: pc[k], borderColor: t.page, borderWidth: 1}, emphasis: {disabled: true}})),
+      });
+    });
+    return sec;
+  },
+
+  kids(t){
+    const K = M.Household.kids(d);
+    if (!K || !K.length) return null;
+    const own = d.source === 'file', est = K.filter(k => k.estimated);
+    const cols = K.map(k => {
+      const bits = [];
+      if (k.formal && k.formal !== k.name) bits.push(k.formal);
+      if (k.fund) bits.push(k.fund);
+      return h('div', {class: 'kid'},
+        h('h3', {class: 'h3', text: k.name}), h('p', {class: 'ks', text: bits.join(' · ') || '529 plan'}),
+        h('div', {class: 'kv'},
+          k.est != null ? figBlock(k.estimated ? '529 today (estimated)' : '529 balance', F.usd(k.est), '',
+              k.estimated ? `${F.usd(k.base.v)} on ${F.date(k.base.asOf)}, plus deposits, at ${F.pct(k.rate, 1)} a year` : 'As of ' + F.date(k.base.asOf)) : figBlock('529 balance', 'None', 'flat', 'Not in the account list'),
+          figBlock('Adding', F.usd(k.monthly) + '/mo', '', k.ytd ? F.usd(k.ytd) + ' logged this year' : 'Nothing logged this year'),
+          k.savings ? figBlock('Savings account', F.usd(k.savings.v), '', k.savings.asOf ? 'As of ' + F.date(k.savings.asOf) : '') : null,
+          k.at18 ? figBlock('At 18, projected', F.k(k.at18.value), '', `${F.month(k.at18.date)}, same deposits and return`) : figBlock('At 18', 'Not yet', 'flat', 'Needs a birth date')));
+    });
+    return h('section', {class: 'sec tight', 'aria-label': 'Kids’ accounts'},
+      secHead('Kids’ accounts', '529 plans and savings, kept apart from the portfolio total' + (est.length && est[0].base ? `. Estimated forward from ${F.date(est[0].base.asOf)}.` : '.')),
+      h('div', {class: 'kidsrow'}, cols),
+      est.length && own ? h('p', {class: 'prose story', text: 'Balances are estimated until you add current ones. Add rows such as “Sam 529 balance” to a Dashboard sheet in your workbook.'}) : null);
+  },
+};
+
+/* ======================================================================
+   NET WORTH: what you own, what you owe, and the mortgage underneath
+   ====================================================================== */
+const FRESH = {live: ['live', () => 'live'], input: ['', i => i.asOf ? 'as of ' + F.month(i.asOf) : 'your figure'], stale: ['est', i => i.asOf ? F.month(i.asOf) : 'old'],
+               est: ['est', () => 'estimated'], calc: ['', () => 'calculated']};
+const nwFill = t => ({port: blend(t.accent, t.page, .6), home: blend(t.groups.home, t.page, .55)});
+const NetWorth = {
+  render(){
+    const root = $('#view-networth'), t = Color.theme();
+    root.textContent = '';
+    const H = M.Household, nw = H.netWorth(d), last = d.rows[d.rows.length - 1], today = new Date();
+    const full = H.netWorthSeries(d, d.rows), ago = full.length > 52 ? full[full.length - 53] : null;
+    const SHORT = {portfolio: 'Portfolio', home: 'Home', cash: 'Checking', kids: 'Kids'};
+
+    /* 1. the number */
+    const cur = full.length ? full[full.length - 1].net : nw.net, dlt = ago ? cur - ago.net : 0;
+    root.append(h('section', {class: 'sec now', 'aria-label': 'Net worth now'},
+      h('div', {class: 'now-main'},
+        h('p', {class: 'eyebrow', text: `True net worth, portfolio as of ${F.date(last.date)}`}),
+        h('p', {class: 'hero-fig', text: F.usd(nw.net)}),
+        h('ul', {class: 'deltas'},
+          ago ? deltaLine(dlt, `${word(dlt)} ${F.usd(Math.abs(dlt))} in 52 weeks`, `(${SP(cur / ago.net - 1, 1)})`) : null,
+          h('li', null, h('span', {class: 'txt', text: `Loans worked out to ${F.date(today)}.`})))),
+      h('div', {class: 'now-side'},
+        h('div', {class: 'sign'}, h('p', {class: 'sign-label', text: 'What you own'}), h('p', {class: 'sign-fig', text: F.usd(nw.assets)}),
+          h('p', {class: 'sign-sub', text: nw.items.filter(i => i.kind === 'asset').map(i => SHORT[i.key] || i.name).join(' · ')})),
+        h('div', {class: 'sign'}, h('p', {class: 'sign-label', text: 'What you owe'}), h('p', {class: 'sign-fig' + (nw.owed > 0 ? '' : ' up'), text: F.usd(nw.owed)}),
+          h('p', {class: 'sign-sub', text: nw.owed > 0 ? `${F.pct(nw.owed / (nw.assets || 1), 0)} of what you own` : 'Nothing owed'})))));
+
+    /* 2. the balance sheet and the loans */
+    const assetC = {portfolio: t.port, home: t.groups.home, cash: t.groups.cash, kids: t.groups.kids};
+    const maxV = Math.max(...nw.items.map(i => i.value), 1);
+    const groups = [['asset', 'What you own'], ['debt', 'What you owe']].map(([kind, title]) => {
+      const items = nw.items.filter(i => i.kind === kind);
+      if (!items.length) return null;
+      return h('div', {class: 'bs-g'},
+        h('div', {class: 'bs-h'}, h('span', {text: title}), h('span', {text: F.usd(M.sum(items.map(i => i.value)))})),
+        items.map(i => { const f = FRESH[i.fresh] || FRESH.calc;
+          return h('div', {class: 'bsr', style: `--c:${kind === 'asset' ? (assetC[i.key] || t.muted) : t.loss};--w:${Math.max(0, Math.min(100, i.value / maxV * 100)).toFixed(1)}%`},
+            h('div', {class: 'bn'}, h('span', {text: i.name}), chipEl(f[0], f[1](i)), h('small', {text: i.sub})),
+            h('div', {class: 'btrack', 'aria-hidden': 'true'}, h('i')),
+            h('div', {class: 'bv', text: i.paidOff ? 'Paid off' : F.usd(i.value)})); }));
+    });
+    const stale = [];
+    const home = nw.items.find(i => i.key === 'home'), cash = nw.items.find(i => i.key === 'cash');
+    if (home && home.fresh === 'stale') stale.push(`the home is at its ${home.asOf ? home.asOf.getFullYear() + ' ' : ''}purchase price`);
+    if (cash && cash.fresh === 'stale') stale.push(`checking is from ${F.month(cash.asOf)}`);
+    const sheet = h('div', {class: 'bs'}, groups, h('div', {class: 'bs-total'}, h('span', {text: 'True net worth'}), h('span', {class: 'big', text: F.usd(nw.net)})),
+      stale.length && d.source === 'file' ? h('p', {class: 'prose', text: `To sharpen this: ${stale.join('; ')}. Add rows named Home value and Checking to a Dashboard sheet in your workbook.`}) : null);
+
+    const m = nw.m, loans = [];
+    if (m && m.timeline) loans.push({name: 'Mortgage', lender: H.fmtRate(m.terms.rate) + ' fixed', now: m.now.balance, start: m.terms.loan, payoff: m.payoff, payment: m.pmt});
+    nw.D.forEach(x => loans.push({name: x.name, lender: x.lender + ' · ' + H.fmtRate(x.rate), now: x.now, start: x.path.length ? x.path[0].balance : x.now, payoff: x.paidOff, payment: x.payment}));
+    const debts = loans.length ? loans.map(l => {
+      const done = l.now <= 0.5, yrs = l.payoff && !done ? (l.payoff - today) / (365.25 * DAY) : null;
+      return h('div', {class: 'loan', style: `--c:${t.gain};--w:${l.start ? Math.max(0, Math.min(100, (l.start - l.now) / l.start * 100)).toFixed(1) : 0}%`},
+        h('div', {class: 'loan-t'}, h('span', {text: l.name}), h('b', {text: done ? '$0' : F.usd(l.now)})),
+        h('p', {class: 'ls', text: l.lender + (l.payment ? ` · ${F.usd(l.payment)}/mo` : '') + (yrs ? ` · ${yrs.toFixed(1)} years left` : '')}),
+        h('div', {class: 'btrack', 'aria-hidden': 'true'}, h('i')),
+        h('p', {class: 'ls', style: 'margin:6px 0 0', text: done ? 'Paid off' + (l.payoff ? ' ' + F.month(l.payoff) : '') : l.payoff ? 'Payoff ' + F.month(l.payoff) : 'Payoff date unknown'}));
+    }) : [h('p', {class: 'prose', text: 'No loans found in the workbook.'})];
+    root.append(h('section', {class: 'sec tight pair gapped', 'aria-label': 'Balance sheet'},
+      h('div', null, secHead('Balance sheet', 'Every line says where its number comes from and how fresh it is.'), sheet),
+      h('div', null, secHead('Loans', 'The bar shows how much of each loan is paid off.'), h('div', null, debts))));
+
+    /* 3. net worth over time */
+    const mm = nw.m, hasHome = !!(mm && mm.timeline && mm.home);
+    root.append(h('section', {class: 'sec tight', 'aria-label': 'Net worth over time'},
+      secHead('Net worth over time', (hasHome ? 'Portfolio plus home equity' + (mm.home.source !== 'estimate' ? ' (home at its purchase price)' : '') + ', minus loans.' : 'Portfolio minus loans.') + ' Checking and the kids’ accounts have no history, so they are only in today’s number.',
+        legendOf([[nwFill(t).port, 'Portfolio']].concat(hasHome ? [[nwFill(t).home, 'Home equity']] : []).concat([[t.ink, 'Net worth', 'line']])), tableToggle('c-nw')),
+      h('div', {class: 'chart h-nw', id: 'c-nw', role: 'img', 'aria-label': 'Net worth over time: portfolio and home equity stacked, with the net worth line'}),
+      h('div', {class: 'tbl-wrap', id: 'tbl-c-nw', hidden: true})));
+
+    if (mm && mm.timeline) root.append(this.mortgage(mm, t));
+    if (mm && mm.timeline && mm.now.balance > 0) root.append(this.prepay(mm));
+
+    this.over(t, hasHome, mm);
+    if (mm && mm.timeline) this.mortCharts(mm, t);
+  },
+
+  over(t, hasHome, m){
+    const rows = M.rowsInRange(d.rows, state.range), ser = M.Household.netWorthSeries(d, rows);
+    if (!ser.length) return;
+    const hasDebt = ser.some(x => x.other > 0.5), short = shortRange();
+    const step = Charts.yearStep($('#c-nw'), ser[ser.length - 1].date - ser[0].date);
+    const pts = fn => { const o = []; ser.forEach((x, i) => { if (i && x.bigGap) o.push([x.date.getTime() - DAY, null]); o.push([x.date.getTime(), Math.round(fn(x))]); }); return o; };
+    const series = [{name: 'Portfolio', type: 'line', stack: hasHome ? 'nw' : undefined, data: pts(x => x.portfolio), showSymbol: false, connectNulls: false,
+      lineStyle: {width: 2, color: t.page}, areaStyle: {color: nwFill(t).port, opacity: 1}, itemStyle: {color: nwFill(t).port}, emphasis: {disabled: true}}];
+    if (hasHome) series.push({name: 'Home equity', type: 'line', stack: 'nw', data: pts(x => x.homeEq), showSymbol: false, connectNulls: false,
+      lineStyle: {width: 2, color: t.page}, areaStyle: {color: nwFill(t).home, opacity: 1}, itemStyle: {color: nwFill(t).home}, emphasis: {disabled: true}});
+    if (hasHome || hasDebt) series.push({name: 'Net worth', type: 'line', data: pts(x => x.net), showSymbol: false, connectNulls: false, z: 5,
+      lineStyle: {width: 2, color: t.ink}, itemStyle: {color: t.ink}, emphasis: {disabled: true}});
+    Charts.mount('c-nw', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, formatter: ps => {
+        const l = [].concat(ps).filter(p => p.value && p.value[1] != null); if (!l.length) return '';
+        const sw = p => p.seriesName === 'Net worth' ? t.ink : p.color;
+        return tipHead(t, l[0].value[0]) + l.slice().reverse().map(p => tipRow(p.seriesName, sw(p), F.usd(p.value[1]), p.seriesName === 'Net worth')).join('');
+      }},
+      grid: {left: 4, right: 16, top: 12, bottom: 6, containLabel: true},
+      xAxis: Charts.timeAxis(t, short, step), yAxis: {...Charts.valAxis(t, axisMoney), min: 0, scale: false}, series,
+    });
+    Tables.set('c-nw', {cols: ['Week', 'Portfolio'].concat(hasHome ? ['Home equity'] : []).concat(hasDebt ? ['Other loans'] : []).concat(['Net worth']),
+      rows: ser.slice(-104).reverse().map(x => [F.date(x.date), F.usd(x.portfolio)].concat(hasHome ? [F.usd(x.homeEq)] : []).concat(hasDebt ? [F.usd(-x.other)] : []).concat([F.usd(x.net)]))});
+  },
+
+  mortgage(m, t){
+    const H = M.Household, tm = m.terms, today = new Date();
+    const hv = m.home ? H.homeValueAt(m, today) : null, equity = hv != null ? hv - m.now.balance : null, yrs = (m.payoff - today) / (365.25 * DAY);
+    const cur = m.timeline[m.idx];
+    const story = [];
+    if (m.payment) story.push('Your monthly payment is ', h('b', {text: F.cents(m.payment)}), ' (Budget sheet): ', h('b', {text: F.cents(m.pmt)}), ` principal and interest, plus about ${F.cents(Math.max(0, m.payment - m.pmt))} for taxes, insurance and escrow. `);
+    else story.push('Principal and interest come to ', h('b', {text: F.cents(m.pmt) + '/mo'}), m.escrow ? `, plus roughly ${F.cents(m.escrow)} a month in taxes and insurance. ` : '. ');
+    if (cur && cur.principal) story.push(`This month ${F.usd(cur.principal)} of it paid down the loan and ${F.usd(cur.interest)} went to interest, so `, h('b', {text: F.pct(cur.principal / (cur.principal + cur.interest), 0) + ' is building equity'}), ', and that share grows with every payment.');
+    return h('section', {class: 'sec tight', 'aria-label': 'Mortgage and home equity'},
+      secHead('Mortgage and home equity', `${F.usd(tm.loan)} at ${H.fmtRate(tm.rate)} over ${tm.years} years, payments from ${F.month(M.addMonths(m.origin, 1))}.` + (m.anchor ? ` Anchored to the ${F.usd(m.anchor.balance)} balance in ${m.anchor.source} (${F.date(m.anchor.date)}).` : '') + ' Extra principal payments would make the real balance lower.'),
+      h('div', {class: 'kpis'},
+        figBlock('Balance today', F.usd(m.now.balance), '', `After the ${F.month(m.now.date)} payment`),
+        equity != null ? figBlock('Home equity', F.usd(equity), '', `${F.pct(equity / hv, 0)} of ${m.home.source === 'estimate' ? 'your value estimate' : 'the purchase price'}`) : null,
+        figBlock('Paid off', F.month(m.payoff), '', `${yrs.toFixed(1)} years to go`),
+        figBlock('Interest', F.usd(m.paidInterest) + ' paid', '', `${F.usd(m.leftInterest)} still to come`)),
+      h('div', {class: 'two'},
+        h('div', null, h('p', {class: 'cap', text: 'Balance and equity over the life of the loan'}), legendOf([[blend(t.loss, t.page, .4), 'Still owed']].concat(m.home ? [[nwFill(t).home, 'Your equity']] : [])),
+          h('div', {class: 'chart h-mort', id: 'c-mort', role: 'img', 'aria-label': 'Mortgage balance and home equity over the life of the loan'})),
+        h('div', null, h('p', {class: 'cap', text: 'Each year’s payments: principal and interest'}), legendOf([[t.gain, 'Principal'], [blend(t.muted, t.page, .6), 'Interest']]),
+          h('div', {class: 'chart h-mort', id: 'c-mortsplit', role: 'img', 'aria-label': 'Principal versus interest paid each year'}))),
+      h('p', {class: 'prose story'}, story));
+  },
+
+  mortCharts(m, t){
+    const H = M.Household, today = new Date(), tl = m.timeline;
+    const yearly = tl.filter((p, i) => i === 0 || p.date.getMonth() === 0 || i === tl.length - 1 || i === m.idx);
+    const owed = yearly.map(p => [p.date.getTime(), Math.round(p.balance)]);
+    const eq = yearly.map(p => [p.date.getTime(), m.home ? Math.round(H.homeValueAt(m, p.date) - p.balance) : null]);
+    const nowLine = {silent: true, symbol: 'none', lineStyle: {color: t.ink2, type: 'solid', width: 1}, label: {formatter: 'Today', color: t.ink2, fontFamily: FONT, fontSize: 12, fontWeight: 600, position: 'insideEndTop', rotate: 0, align: 'left', offset: [6, 4]}, data: [{xAxis: today.getTime()}]};
+    const step = Charts.yearStep($('#c-mort'), tl[tl.length - 1].date - tl[0].date);
+    Charts.mount('c-mort', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, formatter: ps => { const l = [].concat(ps).filter(p => p.value && p.value[1] != null); if (!l.length) return ''; return `<div style="color:${t.muted};font-size:12px;margin-bottom:3px">${esc(F.month(new Date(l[0].value[0])))}</div>` + l.slice().reverse().map(p => tipRow(p.seriesName, p.color, F.usd(p.value[1]))).join(''); }},
+      grid: {left: 4, right: 16, top: 12, bottom: 6, containLabel: true},
+      xAxis: Charts.timeAxis(t, false, step), yAxis: {...Charts.valAxis(t, axisMoney), min: 0, scale: false},
+      series: [{name: 'Still owed', type: 'line', stack: 'home', data: owed, showSymbol: false, lineStyle: {width: 2, color: t.page}, areaStyle: {color: blend(t.loss, t.page, .4), opacity: 1}, itemStyle: {color: t.loss}, emphasis: {disabled: true}, markLine: nowLine}]
+        .concat(m.home ? [{name: 'Your equity', type: 'line', stack: 'home', data: eq, showSymbol: false, lineStyle: {width: 2, color: t.page}, areaStyle: {color: nwFill(t).home, opacity: 1}, itemStyle: {color: nwFill(t).home}, emphasis: {disabled: true}}] : []),
+    });
+    const by = new Map();
+    tl.slice(1).forEach(p => { const y = p.date.getFullYear(), x = by.get(y) || {p: 0, i: 0}; x.p += p.principal; x.i += p.interest; by.set(y, x); });
+    const yrs = [...by.keys()], cy = today.getFullYear(), fade = y => y > cy ? .45 : 1;
+    const intC = blend(t.muted, t.page, .6);
+    Charts.mount('c-mortsplit', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, axisPointer: {type: 'shadow', shadowStyle: {color: t.hair}}, formatter: ps => { const l = [].concat(ps); if (!l.length) return ''; return `<div style="color:${t.muted};font-size:12px;margin-bottom:3px">${esc(l[0].name)}${+l[0].name > cy ? ' · ahead' : ''}</div>` + l.slice().reverse().map(p => tipRow(p.seriesName, p.color, F.usd(p.value))).join(''); }},
+      grid: {left: 4, right: 12, top: 12, bottom: 6, containLabel: true},
+      xAxis: {type: 'category', data: yrs.map(String), axisLine: {lineStyle: {color: t.hair2}}, axisTick: {show: false}, axisLabel: {color: t.muted, fontSize: 12, fontFamily: FONT, hideOverlap: true}},
+      yAxis: {...Charts.valAxis(t, axisMoney), min: 0, scale: false},
+      series: [{name: 'Principal', type: 'bar', stack: 'pi', barMaxWidth: 16, data: yrs.map(y => ({value: Math.round(by.get(y).p), itemStyle: {opacity: fade(y)}})), itemStyle: {color: t.gain, borderColor: t.page, borderWidth: 1}, emphasis: {disabled: true}},
+               {name: 'Interest', type: 'bar', stack: 'pi', barMaxWidth: 16, data: yrs.map(y => ({value: Math.round(by.get(y).i), itemStyle: {opacity: fade(y)}})), itemStyle: {color: intC, borderColor: t.page, borderWidth: 1, borderRadius: [3, 3, 0, 0]}, emphasis: {disabled: true}}],
+    });
+  },
+
+  prepay(m){
+    const H = M.Household, rate = H.planRate(d);
+    const body = h('div', {id: 'ppBody'});
+    const sec = h('section', {class: 'sec tight', 'aria-label': 'Pay extra or invest'},
+      secHead('Pay extra, or invest it?', `Extra principal each month versus investing the same amount at your plan’s ${F.pct(rate, 1)} return.`),
+      slider({id: 'ppExtra', label: 'Extra toward principal each month', min: 0, max: 2000, step: 50, value: state.ppExtra, fmt: v => F.usd(v), onInput: v => { state.ppExtra = v; this.prepayBody(m); }}),
+      h('div', {style: 'margin-top:32px'}, body));
+    queueMicrotask(() => this.prepayBody(m));
+    return sec;
+  },
+
+  prepayBody(m){
+    const H = M.Household, extra = state.ppExtra, rate = H.planRate(d), r = H.prepay(m, extra, rate), body = $('#ppBody');
+    if (!body) return;
+    const sooner = (r.baseMonths - r.newMonths) / 12;
+    body.textContent = '';
+    body.append(h('div', {class: 'kpis three'},
+      figBlock('Mortgage-free', F.month(r.payoffNew), '', extra ? `${sooner.toFixed(1)} years sooner than ${F.month(r.payoffBase)}` : 'On the current schedule'),
+      figBlock('Interest saved', F.usd(r.interestSaved), '', 'Over the rest of the loan'),
+      figBlock('If you invested it instead', extra ? F.signed(r.investEdge, F.k) : 'Not yet', extra ? dir(r.investEdge) : 'flat',
+               extra ? `${r.investEdge >= 0 ? 'More' : 'Less'} by ${F.month(r.payoffBase)}, if returns hold` : 'Move the slider')));
+    if (!extra) return;
+    body.append(h('p', {class: 'prose'}, `Every extra dollar on a ${H.fmtRate(m.terms.rate)} mortgage earns a guaranteed ${H.fmtRate(m.terms.rate)}. Paying ${F.usd(extra)} a month extra clears the loan in ${F.month(r.payoffNew)}; from then on the whole payment gets invested. Investing the ${F.usd(extra)} instead, at ${F.pct(rate, 1)} a year, comes out `,
+      h('b', {text: `${F.k(Math.abs(r.investEdge))} ${r.investEdge >= 0 ? 'ahead' : 'behind'}`}),
+      ` by ${F.month(r.payoffBase)}. Paying extra wins only if your investments average less than about ${H.fmtRate(m.terms.rate)} a year. It is a trade between a sure return and a likely higher one.`));
+  },
+};
+
+const OWN = {pulse: Pulse, report: Report, accounts: Accounts, networth: NetWorth};
+
 const OTHER = {
-  accounts: {title: 'Accounts', lede: 'The horizon split into your accounts: retirement, brokerage, cash and crypto as layers under the line, each in its own color, with this week\'s movers pinned at today.'},
-  networth: {title: 'Net worth', lede: 'A second line above the portfolio for everything you own less what you owe, with the mortgage paying down underneath and pins where the loan passes halfway and hits zero.'},
   saving: {title: 'Saving', lede: 'Every month\'s saving as ticks along the past, this year\'s 401(k) limit as the goal ahead, and the streak counting toward its next badge.'},
   plan: {title: 'Plan', lede: 'Drag the fan: change the return, the monthly saving or the retirement date, and watch every pin ahead slide to its new date.'},
   lab: {title: 'Lab', lede: 'Side trails off the main one: work optional, paying extra on the mortgage versus investing, and other what-ifs, each drawn as its own fan.'},
@@ -1841,22 +2426,7 @@ const Other = {
     const row = (name, color, val, dashed) => `<div style="display:flex;justify-content:space-between;gap:14px;align-items:center"><span><span style="display:inline-block;width:14px;border-top:2px ${dashed ? 'dashed' : 'solid'} ${color};vertical-align:middle;margin-right:7px"></span>${esc(name)}</span><b>${esc(val)}</b></div>`;
     const head = ms => `<div style="color:${t.muted};font-size:12px;margin-bottom:3px">${esc(F.month(new Date(ms)))}</div>`;
     const xFor = (a, b, short) => Charts.timeAxis(t, short, Charts.yearStep($('#c-stub'), b - a));
-    if (key === 'accounts'){
-      const G = M.GROUPS, s = all.series.byGroup.filter((_, i, a) => i % 4 === 0 || i === a.length - 1);
-      Charts.mount('c-stub', {...opt, legend: lg(G.map(g => g.label), 'area'), xAxis: xFor(s[0].ts, s[s.length - 1].ts),
-        tooltip: {...opt.tooltip, formatter: ps => { const l = [].concat(ps); if (!l.length) return ''; return head(l[0].value[0]) + l.slice().reverse().map(p => row(p.seriesName, p.color, F.k(p.value[1]))).join(''); }},
-        yAxis: {...opt.yAxis, scale: false, min: 0},
-        series: G.map(g => ({name: g.label, type: 'line', stack: 'all', showSymbol: false, lineStyle: {width: 1.5, color: t.groups[g.key]}, itemStyle: {color: t.groups[g.key]}, areaStyle: {color: t.groups[g.key], opacity: .45}, emphasis: {disabled: true},
-          data: s.map(p => [p.ts, p[g.key]])}))});
-      cap.textContent = 'Your four account groups, stacked, every month since 2017.';
-    } else if (key === 'networth'){
-      const nws = M.Household.netWorthSeries(d, d.rows).filter((_, i, a) => i % 3 === 0 || i === a.length - 1);
-      Charts.mount('c-stub', {...opt, legend: lg(['Net worth', 'Portfolio'], 'line'), xAxis: xFor(nws[0].date.getTime(), nws[nws.length - 1].date.getTime()),
-        tooltip: {...opt.tooltip, formatter: ps => { const l = [].concat(ps); if (!l.length) return ''; return head(l[0].value[0]) + l.map(p => row(p.seriesName, p.color, F.k(p.value[1]))).join(''); }},
-        series: [{name: 'Net worth', type: 'line', showSymbol: false, data: nws.map(p => [p.date.getTime(), Math.round(p.net)]), lineStyle: {width: 2, color: t.ink2}, itemStyle: {color: t.ink2}, emphasis: {disabled: true}},
-                 {name: 'Portfolio', type: 'line', showSymbol: false, data: nws.map(p => [p.date.getTime(), p.portfolio]), lineStyle: {width: 2, color: t.port}, itemStyle: {color: t.port}, areaStyle: {color: t.portWash}, emphasis: {disabled: true}}]});
-      cap.textContent = 'Net worth (with home equity) against the portfolio, since the home was bought.';
-    } else if (key === 'saving'){
+    if (key === 'saving'){
       const cm = M.Household.contribMonths(d);
       const G = [['retire', 'Retirement accounts'], ['match', 'Employer match'], ['broker', 'Brokerage'], ['cash', 'Savings'], ['kids', "Kids' 529s"]];
       Charts.mount('c-stub', {...opt, legend: lg(G.map(g => g[1]), 'bar'), xAxis: xFor(cm[0].date.getTime(), cm[cm.length - 1].date.getTime(), true),
@@ -1977,7 +2547,7 @@ function renderShell(){
   /* tabs */
   const tabs = $('#tabs'); tabs.textContent = '';
   TABS.forEach(([k, lab]) => tabs.append(h('button', {class: 'tab', role: 'tab', id: 'tab-' + k, type: 'button', 'aria-selected': String(state.view === k), tabindex: state.view === k ? 0 : -1,
-    'aria-controls': k === 'pulse' ? 'view-pulse' : k === 'report' ? 'view-report' : 'view-other', onclick: () => go(k), text: lab})));
+    'aria-controls': OWN[k] ? 'view-' + k : 'view-other', onclick: () => go(k), text: lab})));
   /* the phone's headline, above the band */
   const P = all.portfolio;
   const bh = $('#bandHead'); bh.textContent = '';
@@ -2000,12 +2570,9 @@ function renderView(){
   Charts.disposeAll();
   const v = state.view;
   $('#band').classList.toggle('lens-report', v === 'report');
-  $('#view-pulse').hidden = v !== 'pulse';
-  $('#view-report').hidden = v !== 'report';
-  $('#view-other').hidden = v === 'pulse' || v === 'report';
-  if (v === 'pulse') Pulse.render();
-  else if (v === 'report') Report.render();
-  else Other.render(v);
+  Object.keys(OWN).forEach(k => { $('#view-' + k).hidden = v !== k; });
+  $('#view-other').hidden = !!OWN[v];
+  if (OWN[v]) OWN[v].render(); else Other.render(v);
 }
 
 function go(v){
@@ -2141,7 +2708,7 @@ function useData(next){
     M.state.data = next;
     Data.init({M, d: next});
     const model = Data.build('ALL');
-    d = next; state.range = 'ALL'; state.model = model;
+    d = next; state.range = 'ALL'; state.model = model; state.group = null; state.acct = null;
     renderShell(); renderBand(); renderView();
   } catch (err){
     d = was.d; M.state.data = was.d; Data.init({M, d: was.d}); state.range = was.range; state.model = was.model;
