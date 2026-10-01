@@ -527,10 +527,10 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
   .topbar{flex-wrap:wrap;gap:10px 6px;padding-top:12px;padding-bottom:12px}
   .brand{font-size:var(--fs-m)}
   .tools{display:contents}
-  #refreshBtn{order:1} #numbersBtn{order:2} #themeBtn{order:3}
-  .brk{display:block;order:4;flex-basis:100%;height:0}
-  .src{order:5}
-  .seg{order:6;flex:1;justify-content:space-between}
+  #refreshBtn{order:1} #fileBtn{order:2} #numbersBtn{order:3} #themeBtn{order:4}
+  .brk{display:block;order:5;flex-basis:100%;height:0}
+  .src{order:6}
+  .seg{order:7;flex:1;justify-content:space-between}
   .seg button{flex:1;min-width:0;padding:4px 6px}
   .tools .btn .lbl,.src .src-date{display:none}
   .tools .btn{padding:7px 10px;min-width:38px;justify-content:center}
@@ -612,6 +612,20 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
 :root[data-theme="dark"] .ap-sw.stone{--sw-band:oklch(0.26 0.006 80);--sw-mark:oklch(0.86 0.012 80);--sw-acc:oklch(0.84 0.02 80)}
 .ap-note{margin-top:14px;font-size:var(--fs-xs)}
 
+/* ============ OPEN A WORKBOOK ============ */
+.src b{display:block;max-width:min(240px,40vw);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pop h3{overflow-wrap:anywhere}
+.pop-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.pop-actions .btn{min-height:36px;padding:6px 14px;font-size:var(--fs-xs)}
+.pop-actions .btn.quiet{border-color:transparent;background:transparent;color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
+.pop-actions .btn.quiet:hover{background:var(--surface-2);color:var(--ink)}
+.icon-btn[hidden],.btn[hidden]{display:none}
+#fileBtn.busy svg{animation:spin .9s linear infinite}
+.toast.err .tg{background:var(--bad);color:var(--page)}
+.dropzone{position:fixed;inset:12px;z-index:900;display:none;place-items:center;border:2px dashed var(--ink-2);border-radius:20px;background:color-mix(in oklch, var(--page) 88%, transparent);pointer-events:none}
+.dropzone p{padding:14px 22px;border-radius:999px;background:var(--ink);color:var(--page);font-size:var(--fs-m);font-weight:680}
+.is-dropping .dropzone{display:grid}
+
 /* ============ MOTION OFF ============ */
 .shot *,.shot *::before,.shot *::after{transition:none!important;animation:none!important}
 @media (prefers-reduced-motion:reduce){
@@ -628,10 +642,13 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
     <span>Meridian</span>
   </div>
   <div class="tools">
-    <button class="src" id="srcBtn" type="button" popovertarget="srcPop" aria-label="Data source: demo data. Show details"><span class="src-dot" aria-hidden="true"></span><b>Demo data</b><span class="src-date" id="srcDate"></span></button>
+    <button class="src" id="srcBtn" type="button" popovertarget="srcPop" aria-label="Data source: demo data. Show details"><span class="src-dot" aria-hidden="true"></span><b id="srcName">Demo data</b><span class="src-date" id="srcDate"></span></button>
     <button class="icon-btn" id="refreshBtn" type="button" aria-label="Refresh" title="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 12a8.5 8.5 0 1 1-2.5-6"/><path d="M20.5 3.5v5h-5"/></svg></button>
     <span class="brk" aria-hidden="true"></span>
     <div class="seg" id="range" role="group" aria-label="Time range for Pulse"></div>
+    <button class="btn" id="fileBtn" type="button" aria-describedby="fileHint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 17v-6M9.5 13.5 12 11l2.5 2.5"/></svg><span class="lbl">Open workbook</span></button>
+    <input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
+    <span class="vh" id="fileHint">Opens an Excel workbook from this device. It is read in this browser and not uploaded.</span>
     <button class="btn" id="numbersBtn" type="button" popovertarget="numbersPop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span class="lbl">Your numbers</span></button>
     <button class="icon-btn" id="themeBtn" type="button" popovertarget="appearPop" aria-label="Appearance"></button>
   </div>
@@ -660,9 +677,10 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <div class="pop" id="srcPop" popover>
-  <h3>Demo data</h3>
-  <p>A synthetic household, so every view can be explored before loading the real workbook. Nothing here is saved.</p>
+  <h3 id="srcTitle">Demo data</h3>
+  <p id="srcNote">A made-up household, so every view can be explored. Open your own workbook to see your numbers.</p>
   <dl id="srcFacts"></dl>
+  <div class="pop-actions" id="srcActions"></div>
 </div>
 <div class="pop pop-appear" id="appearPop" popover>
   <h3>Appearance</h3>
@@ -672,8 +690,9 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
 <div class="pop" id="numbersPop" popover>
   <h3>Your numbers</h3>
   <p>In the app, this is where you enter what the workbook doesn't have: your birth date, monthly spending, home value, checking.</p>
-  <p class="muted">Not part of this preview.</p>
+  <p class="muted" id="numbersNote">Not part of this preview.</p>
 </div>
+<div class="dropzone" id="dropZone" aria-hidden="true"><p>Drop your workbook to open it</p></div>
 
 <script src="../vendor/echarts-5.6.0.min.js"></script>
 <script src="kit.js"></script>
@@ -720,6 +739,7 @@ const ICON = {
   chart: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 13.5h12"/><path d="M2.5 11 6 7l2.5 2.5L13.5 4"/></svg>',
   sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.5 1.5M17.6 17.6l1.5 1.5M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.5-1.5M17.6 6.4l1.5-1.5"/></svg>',
   moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 13.2A8.5 8.5 0 1 1 10.8 3.5a6.6 6.6 0 0 0 9.7 9.7z"/></svg>',
+  file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 17v-6M9.5 13.5 12 11l2.5 2.5"/></svg>',
   check: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 6.5 11.5 12.5 4.5"/></svg>',
   note: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1.5a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13Zm-.8 3.2v1.7h1.6V4.7Zm0 2.9v4h1.6v-4Z"/></svg>',
 };
@@ -1336,7 +1356,9 @@ function tableToggle(chartId){
 /* ======================================================================
    VIEWS
    ====================================================================== */
-const {M, d} = await MeridianKit.load({sparse: Q.get('sparse') === '1', src: '../v3.html'});   // ?sparse=1: the short sparse demo, to check the empty and ungraded states
+let {M, d} = await MeridianKit.load({sparse: Q.get('sparse') === '1', src: '../v3.html'});
+const DEMO = d;   // kept so the reader can come back to it
+const XLSX_SRC = '../vendor/xlsx-0.18.5.mini.min.js';   // ?sparse=1: the short sparse demo, to check the empty and ungraded states
 const F = M.Fmt;
 const TODAY = new Date();
 Data.init({M, d});
@@ -1872,13 +1894,14 @@ function axisMoney(v){ return Math.abs(v) >= 1e6 ? (v < 0 ? '−' : '') + '$' + 
 /* ======================================================================
    CELEBRATION: earning a badge moves its pin behind today, with accent and ink confetti
    ====================================================================== */
-function toast(nodes){
+function toast(nodes, opts = {}){
   const el = $('#toast');
   el.textContent = '';
   el.append(...[].concat(nodes));
+  el.classList.toggle('err', !!opts.error);
   el.classList.add('on');
   clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove('on'), 4200);
+  el._t = setTimeout(() => el.classList.remove('on'), opts.ms || 4200);
 }
 function celebrate(b, from){
   toast([h('span', {class: 'tg', html: glyphSvg(Data.badgeGlyph(b))}), h('span', {text: `Earned: ${b.title}. ${b.desc}.`})]);
@@ -1922,10 +1945,24 @@ function confetti(from){
    ====================================================================== */
 function renderShell(){
   const {all} = state.model;
+  const own = d.source === 'file', name = own ? d.fileName : 'Demo data';
+  ROOT.dataset.source = own ? 'file' : 'demo';
+  $('#srcName').textContent = name;
+  $('#srcBtn').title = own ? name : '';
   $('#srcDate').textContent = '· ' + F.date(all.asOf);
-  $('#srcBtn').setAttribute('aria-label', `Data source: demo data, as of ${F.date(all.asOf)}. Show details`);
+  $('#srcBtn').setAttribute('aria-label', `Data source: ${own ? 'your workbook ' + name : 'demo data'}, as of ${F.date(all.asOf)}. Show details`);
+  $('#srcTitle').textContent = name;
+  $('#srcNote').textContent = own ? 'Read in this browser from the file you opened. It isn\u2019t uploaded or kept, so open it again next visit.'
+    : 'A made-up household, so every view can be explored. Open your own workbook to see your numbers.';
+  $('#numbersNote').textContent = own ? 'Numbers you saved in the app aren\u2019t available here. Anything on your workbook\u2019s Dashboard sheet is used. Editing isn\u2019t part of this preview.' : 'Not part of this preview.';
+  $('#refreshBtn').hidden = own;
   const f = $('#srcFacts'); f.textContent = '';
-  f.append(h('dt', {text: 'As of'}), h('dd', {text: F.date(all.asOf)}), h('dt', {text: 'Weeks'}), h('dd', {text: `${d.rows.length} since ${F.month(d.rows[0].date)}`}), h('dt', {text: 'Saved'}), h('dd', {text: 'Nothing'}));
+  f.append(h('dt', {text: 'As of'}), h('dd', {text: F.date(all.asOf)}), h('dt', {text: 'Weeks'}), h('dd', {text: `${d.rows.length} since ${F.month(d.rows[0].date)}`}));
+  if (own && d.modified) f.append(h('dt', {text: 'File saved'}), h('dd', {text: F.date(d.modified)}));
+  f.append(h('dt', {text: 'Kept here'}), h('dd', {text: 'Nothing'}));
+  const act = $('#srcActions'); act.textContent = '';
+  act.append(h('button', {class: 'btn', type: 'button', onclick: () => { $('#srcPop').hidePopover(); pickFile(); }, html: ICON.file + '<span>' + (own ? 'Open another workbook' : 'Open your workbook') + '</span>'}));
+  if (own) act.append(h('button', {class: 'btn quiet', type: 'button', onclick: () => { $('#srcPop').hidePopover(); backToDemo(); }, text: 'Back to demo data'}));
   /* range */
   const rg = $('#range'); rg.textContent = '';
   const applies = state.view === 'pulse' || state.view === 'accounts' || state.view === 'networth';
@@ -2082,6 +2119,77 @@ $('#tabs').addEventListener('keydown', e => {
   e.preventDefault();
   go(TABS[(n + TABS.length) % TABS.length][0]);
 });
+/* ======================================================================
+   OPEN A WORKBOOK: read in this browser with v3's own parser; nothing is uploaded or saved
+   ====================================================================== */
+let xlsxLoading = null;
+function loadXLSX(){
+  if (window.XLSX) return Promise.resolve();
+  if (!xlsxLoading) xlsxLoading = new Promise((ok, fail) => {
+    const sc = document.createElement('script');
+    sc.src = XLSX_SRC;
+    sc.onload = () => ok();
+    sc.onerror = () => { xlsxLoading = null; fail(new Error('The spreadsheet reader didn\u2019t load. Check your connection and try again.')); };
+    document.head.append(sc);
+  });
+  return xlsxLoading;
+}
+/* swap the data the whole page runs on; if anything fails, put the old data back */
+function useData(next){
+  const was = {d, model: state.model, range: state.range};
+  try {
+    M.state.data = next;
+    Data.init({M, d: next});
+    const model = Data.build('ALL');
+    d = next; state.range = 'ALL'; state.model = model;
+    renderShell(); renderBand(); renderView();
+  } catch (err){
+    d = was.d; M.state.data = was.d; Data.init({M, d: was.d}); state.range = was.range; state.model = was.model;
+    try { renderShell(); renderBand(); renderView(); } catch (e2){ console.error(e2); }
+    throw err;
+  }
+}
+function backToDemo(){
+  if (d === DEMO) return;
+  useData(DEMO);
+  toast([h('span', {class: 'tg', html: ICON.check}), h('span', {text: 'Back to the demo data.'})]);
+}
+function pickFile(){ $('#fileInput').click(); }
+async function openWorkbook(file){
+  if (!file) return;
+  const btn = $('#fileBtn');
+  btn.disabled = true; btn.classList.add('busy'); btn.setAttribute('aria-busy', 'true');
+  try {
+    await loadXLSX();
+    const wb = window.XLSX.read(new Uint8Array(await file.arrayBuffer()), {type: 'array'});
+    const next = M.Parse.workbook(wb, file.name);
+    Object.assign(next, {source: 'file', fileName: file.name, modified: file.lastModified ? new Date(file.lastModified) : null});
+    useData(next);
+    toast([h('span', {class: 'tg', html: ICON.check}), h('span', {text: `Opened ${file.name}.`})]);
+  } catch (err){
+    console.error('Could not open the workbook:', err);
+    const why = err && err.message ? err.message : 'It isn\u2019t a workbook Meridian can read.';
+    toast([h('span', {class: 'tg', html: ICON.note}), h('span', {text: `Couldn\u2019t open ${file.name}. ${why}`})], {error: true, ms: 9000});
+  } finally {
+    btn.disabled = false; btn.classList.remove('busy'); btn.removeAttribute('aria-busy');
+    $('#fileInput').value = '';
+    btn.focus({preventScroll: true});
+  }
+}
+$('#fileBtn').addEventListener('click', pickFile);
+$('#fileInput').addEventListener('change', e => openWorkbook(e.target.files && e.target.files[0]));
+/* drop a workbook anywhere on the page */
+let dragDepth = 0;
+const hasFiles = e => e.dataTransfer && [...e.dataTransfer.types].includes('Files');
+addEventListener('dragenter', e => { if (!hasFiles(e)) return; e.preventDefault(); dragDepth++; document.body.classList.add('is-dropping'); });
+addEventListener('dragover', e => { if (hasFiles(e)) e.preventDefault(); });
+addEventListener('dragleave', e => { if (!hasFiles(e)) return; dragDepth = Math.max(0, dragDepth - 1); if (!dragDepth) document.body.classList.remove('is-dropping'); });
+addEventListener('drop', e => {
+  if (!hasFiles(e)) return;
+  e.preventDefault(); dragDepth = 0; document.body.classList.remove('is-dropping');
+  openWorkbook(e.dataTransfer.files[0]);
+});
+
 /* refresh: the demo never changes, so it just confirms */
 $('#refreshBtn').addEventListener('click', () => {
   const b = $('#refreshBtn');
