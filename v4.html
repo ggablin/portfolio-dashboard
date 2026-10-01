@@ -211,6 +211,7 @@ svg{display:block}
 .b-gridlab{fill:var(--band-text-2);font-size:11.5px;font-weight:560}
 .b-wash{fill:var(--band-mark);fill-opacity:.1}
 .b-line{fill:none;stroke:var(--band-mark);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.b-bridge{fill:none;stroke:var(--band-mark);stroke-width:1.5;stroke-dasharray:3 4;stroke-linecap:round;opacity:.5}
 .b-fan{fill:var(--band-mark);fill-opacity:.14}
 .b-edge{fill:none;stroke:var(--band-mark);stroke-opacity:.5;stroke-width:1}
 .b-plan{fill:none;stroke:var(--band-mark);stroke-width:2;stroke-dasharray:7 5;stroke-linecap:round}
@@ -289,6 +290,26 @@ svg{display:block}
 .tab:active{background:var(--surface-3)}
 .tab[aria-selected="true"]{background:var(--band);color:var(--band-text);font-weight:720}
 .tab .soon{display:block;height:0;overflow:hidden}
+
+/* the tabs (and the section chips) stay under the strip once the band scrolls away */
+.stick{position:sticky;top:44px;z-index:290;background:var(--page)}
+body.strip-on .stick{box-shadow:0 8px 16px -14px oklch(0.25 0.04 60 / .45)}
+:root{--stuck:110px}
+.sec,.grade{scroll-margin-top:calc(var(--stuck) + 16px)}
+.jumpchips{display:flex;gap:6px;padding:6px var(--gutter) 8px;border-top:1px solid var(--hair)}
+.jumpchips a{flex:none;display:inline-flex;align-items:center;min-height:28px;padding:3px 12px;border-radius:999px;border:1px solid var(--hair-2);color:var(--ink-2);font-size:var(--fs-xs);font-weight:600;text-decoration:none;white-space:nowrap}
+.jumpchips a[aria-current="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
+.jump{display:none}
+@media (min-width:1440px){
+  main.has-rail{display:grid;grid-template-columns:180px minmax(0,1fr);column-gap:40px;max-width:calc(var(--maxw) + 220px + 2 * var(--gutter))}
+  main.has-rail .view{grid-column:2;grid-row:1}
+  main.has-rail .jump{display:block;grid-column:1;grid-row:1}
+  .jump ol{position:sticky;top:calc(var(--stuck) + 24px);list-style:none;margin:0;padding:0;display:grid;gap:2px}
+  .jump a{display:block;padding:6px 10px;border-radius:8px;color:var(--muted);font-size:var(--fs-xs);font-weight:600;line-height:1.3;text-decoration:none;transition:background-color .15s var(--ease),color .15s var(--ease)}
+  .jump a:hover{background:var(--surface-2);color:var(--ink)}
+  .jump a[aria-current="true"]{background:var(--surface-2);color:var(--ink);font-weight:720}
+  .stick .jumpchips{display:none}
+}
 
 /* ============ LAYOUT ============ */
 main{max-width:calc(var(--maxw) + 2 * var(--gutter));margin:0 auto;padding:48px var(--gutter) 112px}
@@ -400,6 +421,8 @@ main{max-width:calc(var(--maxw) + 2 * var(--gutter));margin:0 auto;padding:48px 
 .sk-letter{fill:var(--ink);font-size:20px;font-weight:760}
 .sk-score{fill:var(--muted);font-size:12px;font-weight:560}
 .sk-name{fill:var(--ink-2);font-size:12.5px;font-weight:600}
+.sk-wt{fill:var(--muted);font-size:11.5px;font-weight:520}
+.fb-next{margin-top:4px;font-size:var(--fs-xs);font-weight:650;color:var(--ink)}
 .sk-base{stroke:var(--hair-2);stroke-width:1}
 .sk-g{cursor:default}
 .sk-g .sk-col{transition:fill .15s var(--ease)}
@@ -847,7 +870,7 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
 .sun.sm .letter{font-size:3.2rem;letter-spacing:-.04em;transform:translate(-1px,-2px)}
 /* what if */
 .wi{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);column-gap:64px;align-items:start}
-.wi-side{position:sticky;top:64px;padding-bottom:4px}
+.wi-side{position:sticky;top:calc(var(--stuck) + 16px);padding-bottom:4px}
 .lever{padding:24px 0;border-top:1px solid var(--hair)}
 .lever:first-child{border-top:0;padding-top:0}
 .lever .slider{max-width:none}
@@ -936,7 +959,8 @@ details.method>summary:focus-visible{outline:2px solid var(--focus);outline-offs
   @page{margin:14mm}
   body{background:transparent}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact;animation:none!important;transition:none!important}
-  .skip,.topbar,.bandhead,.band,.tabs-wrap,.strip,.tip,.toast,.pop,.rc-print,.whatif,.tgl,.btn{display:none!important}
+  .skip,.topbar,.bandhead,.band,.stick,.jump,.strip,.tip,.toast,.pop,.rc-print,.whatif,.tgl,.btn{display:none!important}
+  main.has-rail{display:block}
   main{padding:0;max-width:none}
   .print-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin:0 0 22px;padding-bottom:8px;border-bottom:1px solid var(--hair-2);color:var(--ink-2);font-size:var(--fs-s)}
   .print-head b{color:var(--ink);font-size:var(--fs-m)}
@@ -956,8 +980,8 @@ details.method>summary:focus-visible{outline:2px solid var(--focus);outline-offs
 /* ============ WELCOME: before there is anything to draw ============ */
 #welcome{display:none}
 body.welcome #welcome{display:block}
-body.welcome #bandHead,body.welcome #band,body.welcome #tabsWrap,body.welcome #main,body.welcome #strip,
-body.loading #bandHead,body.loading #band,body.loading #tabsWrap,body.loading #main,body.loading #strip,body.loading .tools{display:none}
+body.welcome #bandHead,body.welcome #band,body.welcome #stick,body.welcome #main,body.welcome #strip,
+body.loading #bandHead,body.loading #band,body.loading #stick,body.loading #main,body.loading #strip,body.loading .tools{display:none}
 body.welcome .tools>:not(#themeBtn){display:none}
 .wl-hero{background:var(--band)}
 .wl-in{max-width:calc(var(--maxw) + 2 * var(--gutter));margin:0 auto;padding:0 var(--gutter)}
@@ -1107,11 +1131,15 @@ body.welcome .tools>:not(#themeBtn){display:none}
   <div class="band-scroll" id="bandScroll" data-scroll-x><svg id="bandSvg" role="group" aria-describedby="bandDesc"></svg></div>
 </section>
 
-<nav class="tabs-wrap" id="tabsWrap" data-scroll-x aria-label="Lenses on the timeline">
-  <div class="tabs" role="tablist" id="tabs"></div>
-</nav>
+<div class="stick" id="stick">
+  <nav class="tabs-wrap" id="tabsWrap" data-scroll-x aria-label="Lenses on the timeline">
+    <div class="tabs" role="tablist" id="tabs"></div>
+  </nav>
+  <nav class="jumpchips" id="jumpChips" data-scroll-x aria-label="Sections on this tab" hidden></nav>
+</div>
 
 <main id="main" tabindex="-1">
+  <nav class="jump" id="jumpRail" aria-label="Sections on this tab" hidden></nav>
   <section class="view" id="view-pulse" role="tabpanel" aria-labelledby="tab-pulse"></section>
   <section class="view" id="view-report" role="tabpanel" aria-labelledby="tab-report" hidden></section>
   <section class="view" id="view-accounts" role="tabpanel" aria-labelledby="tab-accounts" hidden></section>
@@ -1595,6 +1623,11 @@ const Band = (() => {
       sv('path', {class: 'b-wash', d: d + `L${sg[sg.length - 1][0].toFixed(1)} ${rail}L${sg[0][0].toFixed(1)} ${rail}Z`}, L.past);
       sv('path', {class: 'b-line', d}, L.past);
     });
+    /* a faint dashed bridge where weeks are missing, so the gap reads as "no data", not a drop */
+    for (let k = 1; k < segs.length; k++){
+      const a = segs[k-1][segs[k-1].length - 1], b = segs[k][0];
+      sv('path', {class: 'b-bridge', d: `M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}`}, L.past);
+    }
 
     /* the future: the fan (5% to 9%) with the plan's 7% dashed through it */
     let endLabels = [];
@@ -1790,6 +1823,10 @@ const Band = (() => {
     const segs = [];
     m.rows.forEach((r, i) => { if (!i || r.bigGap) segs.push([]); segs[segs.length - 1].push([X(r.date.getTime()), Y(r.total)]); });
     segs.forEach(sg => sv('path', {class: 'b-line', style: 'stroke-width:1.5', d: 'M' + sg.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L')}, svg));
+    for (let k = 1; k < segs.length; k++){
+      const a = segs[k-1][segs[k-1].length - 1], b = segs[k][0];
+      sv('path', {class: 'b-bridge', d: `M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}`}, svg);
+    }
     if (fanM){
       const P2 = ln => ln.pts.filter((_, i) => i % 3 === 0 || i === ln.pts.length - 1).map(p => [X(p[0]), Y(p[1])]);
       const hi = P2(fanM.high), lo = P2(fanM.low);
@@ -3492,7 +3529,8 @@ const Household = (() => {
         const v = sum(K.map(k => (k.est != null ? k.est : 0) + (k.savings ? k.savings.v : 0)));
         if (v > 0) items.push({kind:'asset', key:'kids', name:'Kids’ accounts',
           sub: '529s' + (K.some(k => k.savings) ? ' + savings' : ''), value: v, asOf: today,
-          fresh: K.some(k => k.estimated) ? 'est' : 'stale'});
+          fresh: K.some(k => k.estimated) ? 'est' : 'stale',
+          from: K.filter(k => k.estimated && k.base).map(k => k.base.asOf).sort((a, b) => a - b)[0] || null});
       }
       if (m && m.timeline) items.push({kind:'debt', key:'mortgage', name:'Mortgage',
         sub: fmtRate(m.terms.rate) + ' fixed · from the loan schedule', value: m.now.balance, asOf: today, fresh:'calc'});
@@ -4342,8 +4380,25 @@ const Kit = (() => {
     };
   }
 
+  /* a faint dashed "No data" line across each break that gapSeries left, as markLine items */
+  function bridge(data, t){
+    const out = [];
+    for (let i = 1; i < data.length - 1; i++){
+      const a = data[i-1], b = data[i+1];
+      if (data[i][1] != null || !a || !b || a[1] == null || b[1] == null) continue;
+      out.push([{coord: [a[0], a[1]], lineStyle: {type: [4, 4], width: 1.5, color: t.muted},
+                 label: {show: true, formatter: 'No data', position: 'middle', color: t.muted, fontFamily: FONT, fontSize: 11, fontWeight: 600}},
+                {coord: [b[0], b[1]]}]);
+    }
+    return out;
+  }
+  function bridgeLine(data, t, extra){
+    const items = bridge(data, t).concat(extra || []);
+    return items.length ? {silent: true, symbol: 'none', animation: false, data: items} : undefined;
+  }
+
   // buildVM(M, d, range) recomputes the view model for another range ('1Y','3Y','5Y','YTD','ALL')
-  return {buildVM, gapSeries, sample};
+  return {buildVM, gapSeries, sample, bridge, bridgeLine};
 })();
 let d = null;   // the data on screen; null until there is a workbook, a saved copy or the demo
 const F = M.Fmt;
@@ -4508,7 +4563,7 @@ const Pulse = {
       series: [
         {name: 'Portfolio', type: 'line', data: vm.series.total, showSymbol: false, connectNulls: false, z: 3,
          lineStyle: {width: 2, color: t.port}, itemStyle: {color: t.port}, areaStyle: {color: t.portWash}, emphasis: {disabled: true},
-         markPoint: {animation: false, data: [...mileData, ...noteData]}},
+         markPoint: {animation: false, data: [...mileData, ...noteData]}, markLine: Kit.bridgeLine(vm.series.total, t)},
         {name: 'Target path', type: 'line', data: tgt, showSymbol: false, z: 2, lineStyle: {width: 1.5, type: [6, 5], color: t.plan}, itemStyle: {color: t.plan}, emphasis: {disabled: true}},
       ],
     });
@@ -4551,6 +4606,7 @@ const Pulse = {
       yAxis: {...Charts.valAxis(t, v => v === 0 ? '0%' : minus(v) + '%'), max: 0, scale: false},
       series: [{name: 'Below the high', type: 'line', data: dd, showSymbol: false, connectNulls: false,
         lineStyle: {width: 2, color: t.loss}, itemStyle: {color: t.loss}, areaStyle: {color: t.lossWash}, emphasis: {disabled: true},
+        markLine: Kit.bridgeLine(dd, t),
         markPoint: worst[1] < -1 ? {animation: false, symbol: 'circle', symbolSize: 9, itemStyle: {color: t.loss, borderColor: t.page, borderWidth: 2},
           label: {position: 'right', distance: 8, color: t.ink2, fontSize: 12, fontWeight: 650, fontFamily: FONT, formatter: `${minus(worst[1].toFixed(1))}%, ${F.month(new Date(worst[0]))}`},
           data: [{coord: worst}]} : undefined}],
@@ -4616,30 +4672,7 @@ const Report = {
         this.since(o, prev),
         h('button', {class: 'btn rc-print', type: 'button', onclick: () => window.print(), html: ICON.print + '<span>Print or save as PDF</span>'}))));
 
-    /* 2. subjects: the skyline (width = weight, height = score), then every subject in full */
-    const sky = h('div', {class: 'sky', id: 'sky'});
-    const list = h('div', {class: 'subjects'}, rc.subjects.map(s => {
-      const graded = s.exact != null;
-      const low = graded && s.exact < 80;
-      return h('article', {class: 'subj' + (graded ? '' : ' needs') + (low ? ' low' : ''), 'data-twin': 'subj-' + s.key, 'aria-label': s.name},
-        h('div', {class: 'lg' + (low ? ' low' : ''), 'aria-label': graded ? `Grade ${s.letter}` : 'Not graded yet', text: graded ? s.letter : '?'}),
-        h('div', null,
-          h('div', {class: 'nm'}, h('b', {text: s.name}), h('span', null, graded ? `${s.score} / 100` : `${s.weight}% of the grade · not graded yet`, graded ? this.trend(s, prev) : null, graded ? ` · ${s.weight}% of the grade` : null)),
-          graded ? h('p', {class: 'val'}, h('b', {text: s.value}), h('span', {text: s.unit})) : null,
-          h('p', {class: 'why'}, graded ? s.why : `Needs ${s.need}.`, !graded && s.needAction && d.source !== 'demo' ? [' ', numLink(s.needAction.text, s.needAction.label)] : null),
-          graded && s.bench ? h('p', {class: 'bench', text: s.bench}) : null,
-          graded && s.tip && s.tip.text ? h('p', {class: 'note-tip', html: ICON.note}, h('span', null, s.tip.text, s.tip.action && d.source !== 'demo' ? [' ', numLink(s.tip.action.text, s.tip.action.label)] : null)) : null));
-    }));
-    root.append(h('section', {class: 'sec'},
-      secHead('Subjects', 'Each is scored 0 to 100 against a published rule of thumb, then weighted into the grade. Wider columns count more.' + (prev ? ` Arrows show the change since the week of ${F.day(prev.date)}.` : '')),
-      sky, list));
-    this.skyline(t);
-
-    /* what if: a sandbox that re-grades the card */
-    const wi = WhatIf.section();
-    if (wi) root.append(wi);
-
-    /* 3. badges: behind today, and ahead */
+    /* 2. badges: behind today, and ahead (right under the grade) */
     const B = rc.badges, near = B.ahead.slice(0, 8), later = B.ahead.slice(8);
     const earnedRow = h('div', {class: 'medals earned'},
       B.earned.map(b => badgeBtn(h('button', {class: 'medal is-earned', type: 'button', 'data-twin': Data.badgeKey(b),
@@ -4672,6 +4705,30 @@ const Report = {
     /* the earned row opens at its right end, beside today, so the newest badges are the ones in view on a phone */
     requestAnimationFrame(() => { const er = $('#badges .medals.earned'); if (er && er.parentNode) er.parentNode.scrollLeft = er.parentNode.scrollWidth; });
 
+
+    /* 3. subjects: the skyline (height = score; the weight is printed under each name), then every subject in full */
+    const sky = h('div', {class: 'sky', id: 'sky'});
+    const list = h('div', {class: 'subjects'}, rc.subjects.map(s => {
+      const graded = s.exact != null;
+      const low = graded && s.exact < 80;
+      return h('article', {class: 'subj' + (graded ? '' : ' needs') + (low ? ' low' : ''), 'data-twin': 'subj-' + s.key, 'aria-label': s.name},
+        h('div', {class: 'lg' + (low ? ' low' : ''), 'aria-label': graded ? `Grade ${s.letter}` : 'Not graded yet', text: graded ? s.letter : '?'}),
+        h('div', null,
+          h('div', {class: 'nm'}, h('b', {text: s.name}), h('span', null, graded ? `${s.score} / 100` : `${s.weight}% of the grade · not graded yet`, graded ? this.trend(s, prev) : null, graded ? ` · ${s.weight}% of the grade` : null)),
+          graded ? h('p', {class: 'val'}, h('b', {text: s.value}), h('span', {text: s.unit})) : null,
+          h('p', {class: 'why'}, graded ? s.why : `Needs ${s.need}.`, !graded && s.needAction && d.source !== 'demo' ? [' ', numLink(s.needAction.text, s.needAction.label)] : null),
+          graded && s.bench ? h('p', {class: 'bench', text: s.bench}) : null,
+          graded && s.tip && s.tip.text ? h('p', {class: 'note-tip', html: ICON.note}, h('span', null, s.tip.text, s.tip.action && d.source !== 'demo' ? [' ', numLink(s.tip.action.text, s.tip.action.label)] : null)) : null));
+    }));
+    root.append(h('section', {class: 'sec'},
+      secHead('Subjects', 'Each is scored 0 to 100 against a published rule of thumb, then weighted into the grade. Under each name is how much it counts.' + (prev ? ` Arrows show the change since the week of ${F.day(prev.date)}.` : '')),
+      sky, list));
+    this.skyline(t);
+
+    /* what if: a sandbox that re-grades the card */
+    const wi = WhatIf.section();
+    if (wi) root.append(wi);
+
     /* 4 and 5. this week, and the next best moves */
     root.append(h('section', {class: 'sec weekmoves'}, this.week(t, all), this.moves(rc)));
 
@@ -4691,23 +4748,23 @@ const Report = {
     const box = $('#sky');
     const subs = state.model.all.report.subjects;
     const W = box.clientWidth || 1100, phone = innerWidth < 720;
-    const totalW = subs.reduce((a, s) => a + s.weight, 0);
     box.textContent = '';
     const tipFor = (s, graded) => [h('div', {class: 't1', text: `${s.name} · ${graded ? s.letter : 'not graded'}`}), h('div', {class: 't2', text: graded ? `${s.score} / 100 · ${s.weight}% of the grade` : `${s.weight}% of the grade`}), graded ? h('div', {class: 't3', text: `${s.value} ${s.unit}`}) : null].filter(Boolean);
     if (W < 560){
       /* narrow screens: the same idea turned sideways (thickness = weight, length = score) */
-      const nameW = 142, unit = 300 / totalW, gapY = 4;
-      const H = subs.reduce((a, s) => a + Math.max(18, s.weight * unit), 0) + gapY * (subs.length - 1) + 2;
-      const svg = sv('svg', {viewBox: `0 0 ${W} ${H}`, height: H, role: 'img', 'aria-label': 'Each subject as a bar: thickness is its weight in the grade, length is its score'});
+      const nameW = 142, hg = 32, gapY = 4;
+      const H = subs.length * hg + gapY * (subs.length - 1) + 2;
+      const svg = sv('svg', {viewBox: `0 0 ${W} ${H}`, height: H, role: 'img', 'aria-label': 'Each subject as a bar: length is its score; under each name, its share of the grade'});
       box.append(svg);
       const X = v => nameW + v / 100 * (W - nameW - 40);
       let y = 0;
       subs.forEach(s => {
-        const hg = Math.max(18, s.weight * unit), graded = s.exact != null, sc = graded ? s.score : 0;
+        const graded = s.exact != null, sc = graded ? s.score : 0;
         const g = sv('g', {class: 'sk-g', 'data-twin': 'subj-' + s.key}, svg);
         sv('rect', {class: 'sk-col', x: nameW, y, width: Math.max(0, X(sc) - nameW), height: hg, rx: 3}, g);
         if (graded) sv('line', {class: 'sk-roof', x1: X(sc), x2: X(sc), y1: y + 1.5, y2: y + hg - 1.5}, g);
-        const nm = sv('text', {class: 'sk-name', x: nameW - 10, y: y + hg / 2 + 4.5, 'text-anchor': 'end'}, g); nm.textContent = s.name;
+        const nm = sv('text', {class: 'sk-name', x: nameW - 10, y: y + hg / 2 - 1, 'text-anchor': 'end'}, g); nm.textContent = s.name;
+        const wt = sv('text', {class: 'sk-wt', x: nameW - 10, y: y + hg / 2 + 11, 'text-anchor': 'end'}, g); wt.textContent = `counts ${s.weight}%`;
         const lt = sv('text', {class: 'sk-letter', x: X(sc) + 7, y: y + hg / 2 + 6, style: 'font-size:16px'}, g); lt.textContent = graded ? s.letter : '?';
         g.addEventListener('pointerenter', () => Tip.show(tipFor(s, graded), g.querySelector('.sk-col').getBoundingClientRect()));
         g.addEventListener('pointerleave', Tip.hide);
@@ -4716,15 +4773,15 @@ const Report = {
       sv('line', {class: 'sk-base', x1: nameW - 0.5, x2: nameW - 0.5, y1: 0, y2: H}, svg);
       return;
     }
-    const Hs = phone ? 150 : 176, nameH = phone ? 44 : 40, H = Hs + nameH + 30;
-    const svg = sv('svg', {viewBox: `0 0 ${W} ${H}`, height: H, role: 'img', 'aria-label': 'Each subject as a column: width is its weight in the grade, height is its score'});
+    const Hs = phone ? 150 : 176, nameH = phone ? 60 : 56, H = Hs + nameH + 30;
+    const svg = sv('svg', {viewBox: `0 0 ${W} ${H}`, height: H, role: 'img', 'aria-label': 'Each subject as a column: height is its score; under each name, its share of the grade'});
     box.append(svg);
     const gap = phone ? 3 : 6;
     const avail = W - gap * (subs.length - 1);
     const base = 30 + Hs, Y = v => base - v / 100 * Hs;
     let x = 0;
     subs.forEach(s => {
-      const w = s.weight / totalW * avail, graded = s.exact != null, sc = graded ? s.score : 0;
+      const w = avail / subs.length, graded = s.exact != null, sc = graded ? s.score : 0;
       const g = sv('g', {class: 'sk-g', 'data-twin': 'subj-' + s.key}, svg);
       sv('rect', {class: 'sk-col', x, y: Y(sc), width: w, height: Math.max(0, base - Y(sc)), rx: 3}, g);
       if (graded) sv('line', {class: 'sk-roof', x1: x + 1.5, x2: x + w - 1.5, y1: Y(sc), y2: Y(sc)}, g);
@@ -4736,6 +4793,8 @@ const Report = {
       const lines = [];
       words.forEach(wd => { const cur = lines[lines.length - 1]; if (cur && (cur + ' ' + wd).length * 6.6 < w - 4) lines[lines.length - 1] = cur + ' ' + wd; else lines.push(wd); });
       lines.slice(0, 2).forEach((ln, i) => { const ts = sv('tspan', {x: x + w / 2, dy: i ? 15 : 0}, nm); ts.textContent = ln; });
+      const wt = sv('text', {class: 'sk-wt', x: x + w / 2, y: base + 18 + Math.min(2, lines.length) * 15, 'text-anchor': 'middle'}, g);
+      wt.textContent = `counts ${s.weight}%`;
       g.addEventListener('pointerenter', () => Tip.show(tipFor(s, graded), g.querySelector('.sk-col').getBoundingClientRect()));
       g.addEventListener('pointerleave', Tip.hide);
       x += w + gap;
@@ -4963,6 +5022,11 @@ const Accounts = {
         return i && rows[i].bigGap ? [[r.ts - DAY, null], pt] : [pt];
       }),
     }));
+    /* the bridge rides on the top of the stack: the total, or 100% */
+    if (series.length) series[series.length - 1].markLine = Kit.bridgeLine(gs.flatMap((r, i) => {
+      const pt = [r.ts, pct ? 100 : keys.reduce((s, g) => s + r[g.key], 0)];
+      return i && rows[i].bigGap ? [[r.ts - DAY, null], pt] : [pt];
+    }), t);
     Charts.mount('c-stack', {
       ...Charts.base(t),
       tooltip: {...Charts.base(t).tooltip, formatter: ps => {
@@ -5021,7 +5085,8 @@ const Accounts = {
       series: [{name: a.label, type: 'line', data: Kit.gapSeries(rows, r => r[a.key]), connectNulls: false, showSymbol: false,
         lineStyle: {width: 2, color: col}, itemStyle: {color: col}, areaStyle: {color: col, opacity: .14}, emphasis: {disabled: true},
         markLine: opened && opened !== rows[0] ? {silent: true, symbol: 'none', lineStyle: {color: t.muted, width: 1, type: 'solid'},
-          label: {formatter: 'Opened ' + F.month(opened.date), color: t.ink2, fontFamily: FONT, fontSize: 12, fontWeight: 600, position: 'insideEndTop', rotate: 0, align: 'left', offset: [6, 4]}, data: [{xAxis: opened.date.getTime()}]} : undefined}],
+          label: {formatter: 'Opened ' + F.month(opened.date), color: t.ink2, fontFamily: FONT, fontSize: 12, fontWeight: 600, position: 'insideEndTop', rotate: 0, align: 'left', offset: [6, 4]},
+          data: [{xAxis: opened.date.getTime()}, ...Kit.bridge(Kit.gapSeries(rows, r => r[a.key]), t)]} : Kit.bridgeLine(Kit.gapSeries(rows, r => r[a.key]), t)}],
     });
   },
 
@@ -5095,7 +5160,7 @@ const Accounts = {
    NET WORTH: what you own, what you owe, and the mortgage underneath
    ====================================================================== */
 const FRESH = {live: ['live', () => 'live'], input: ['', i => i.asOf ? 'as of ' + F.month(i.asOf) : 'your figure'], stale: ['est', i => i.asOf ? F.month(i.asOf) : 'old'],
-               est: ['est', () => 'estimated'], calc: ['', () => 'calculated']};
+               est: ['est', i => i.from ? 'est. from ' + F.month(i.from) : 'estimated'], calc: ['', () => 'calculated']};
 const nwFill = t => ({port: blend(t.accent, t.page, .6), home: blend(t.groups.home, t.page, .55)});
 const NetWorth = {
   render(){
@@ -5123,6 +5188,8 @@ const NetWorth = {
     /* 2. the balance sheet and the loans */
     const assetC = {portfolio: t.port, home: t.groups.home, cash: t.groups.cash, kids: t.groups.kids};
     const maxV = Math.max(...nw.items.map(i => i.value), 1);
+    const K0 = (M.Household.kids(d) || [])[0];
+    const upd = {home: 'Home value', cash: 'Checking', kids: K0 ? `${K0.name} 529 balance` : null};
     const groups = [['asset', 'What you own'], ['debt', 'What you owe']].map(([kind, title]) => {
       const items = nw.items.filter(i => i.kind === kind);
       if (!items.length) return null;
@@ -5130,7 +5197,7 @@ const NetWorth = {
         h('div', {class: 'bs-h'}, h('span', {text: title}), h('span', {text: F.usd(M.sum(items.map(i => i.value)))})),
         items.map(i => { const f = FRESH[i.fresh] || FRESH.calc;
           return h('div', {class: 'bsr', style: `--c:${kind === 'asset' ? (assetC[i.key] || t.muted) : t.loss};--w:${Math.max(0, Math.min(100, i.value / maxV * 100)).toFixed(1)}%`},
-            h('div', {class: 'bn'}, h('span', {text: i.name}), chipEl(f[0], f[1](i)), h('small', {text: i.sub}), d.source !== 'demo' && {home: 'Home value', cash: 'Checking'}[i.key] ? numLink('Update', {home: 'Home value', cash: 'Checking'}[i.key]) : null),
+            h('div', {class: 'bn'}, h('span', {text: i.name}), chipEl(f[0], f[1](i)), h('small', {text: i.sub}), d.source !== 'demo' && upd[i.key] ? numLink('Update', upd[i.key]) : null),
             h('div', {class: 'btrack', 'aria-hidden': 'true'}, h('i')),
             h('div', {class: 'bv', text: i.paidOff ? 'Paid off' : F.usd(i.value)})); }));
     });
@@ -5183,6 +5250,7 @@ const NetWorth = {
       lineStyle: {width: 2, color: t.page}, areaStyle: {color: nwFill(t).home, opacity: 1}, itemStyle: {color: nwFill(t).home}, emphasis: {disabled: true}});
     if (hasHome || hasDebt) series.push({name: 'Net worth', type: 'line', data: pts(x => x.net), showSymbol: false, connectNulls: false, z: 5,
       lineStyle: {width: 2, color: t.ink}, itemStyle: {color: t.ink}, emphasis: {disabled: true}});
+    { const top = series[series.length - 1]; top.markLine = Kit.bridgeLine(top.name === 'Net worth' ? top.data : pts(x => x.portfolio + (hasHome ? x.homeEq : 0)), t); }
     Charts.mount('c-nw', {
       ...Charts.base(t),
       tooltip: {...Charts.base(t).tooltip, formatter: ps => {
@@ -5452,6 +5520,12 @@ const Saving = {
       np ? withLink(figBlock('Take-home per paycheck', F.cents(np.v), '', `${F.pct(np.v / L.gross, 0)} of gross` + (np.asOf ? ', as of ' + F.date(np.asOf) : '')), 'Update', 'Net pay per check') : withLink(figBlock('Take-home per paycheck', 'Not yet', 'flat', d.source !== 'demo' ? '' : 'Not in the sheet'), 'Add your take-home', 'Net pay per check'),
       figBlock('To your 401(k)', F.cents(L.employee), '', `${F.pct(L.employee / L.gross, 0)} plus ${F.cents(L.match)} match (${F.pct(L.match / L.gross, 0)})`),
       P.yearAgo ? figBlock('Past year', SP(L.gross / P.yearAgo.gross - 1), dir(L.gross / P.yearAgo.gross - 1), `From ${F.cents(P.yearAgo.gross)} on ${F.date(P.yearAgo.date)}`) : figBlock('Past year', 'Not yet', 'flat', 'Needs a year of paychecks')];
+    /* the next check, when the sheet already plans a change for it (a new 401(k) % or a raise) */
+    const nx = P.all.find(x => x.date > today);
+    if (nx && nx !== L){
+      if (Math.abs(nx.gross - L.gross) >= 0.5) items[0].append(h('p', {class: 'fb-next', text: `Next check, ${F.day(nx.date)}: ${F.cents(nx.gross)}`}));
+      if (Math.abs(nx.employee - L.employee) >= 0.5) items[2].append(h('p', {class: 'fb-next', text: `Next check, ${F.day(nx.date)}: ${F.cents(nx.employee)} (${F.pct(nx.employee / nx.gross, 0)})`}));
+    }
     let split = null;
     if (np){
       const other = L.gross - L.employee - np.v;
@@ -5649,7 +5723,8 @@ const Plan = {
     const all = H.lines.flatMap(l => l.pts).concat(H.bench ? H.bench.pts : []), minD = all.length ? new Date(Math.min(...all.map(p => p.date.getTime()))) : d.rows[0].date;
     const start = far ? minD : new Date(Math.max(minD.getTime(), new Date(asOf.getFullYear() - 3, 0, 1).getTime())), end = far ? new Date(Math.max(...all.map(p => p.date.getTime()), asOf.getTime())) : new Date(asOf.getFullYear() + 5, 11, 31);
     const inR = p => p.date >= start && p.date <= end;
-    const series = [{name: 'Actual', type: 'line', data: Kit.gapSeries(d.rows.filter(r => r.date >= start), r => r.total), connectNulls: false, showSymbol: false, emphasis: {disabled: true}, lineStyle: {width: 2.5, color: t.ink}, itemStyle: {color: t.ink}, z: 5}];
+    const actual = Kit.gapSeries(d.rows.filter(r => r.date >= start), r => r.total);
+    const series = [{name: 'Actual', type: 'line', data: actual, connectNulls: false, showSymbol: false, emphasis: {disabled: true}, lineStyle: {width: 2.5, color: t.ink}, itemStyle: {color: t.ink}, z: 5, markLine: Kit.bridgeLine(actual, t)}];
     if (H.bench) series.push({name: 'Benchmark', type: 'line', data: H.bench.pts.filter(inR).map(p => [p.date.getTime(), Math.round(p.value)]), showSymbol: false, emphasis: {disabled: true}, lineStyle: {width: 1.5, type: [6, 5], color: t.ink2}, itemStyle: {color: t.ink2}});
     H.lines.forEach(l => series.push({name: `${l.label} (${l.assumes})`, type: 'line', data: l.pts.filter(inR).map(p => [p.date.getTime(), Math.round(p.value)]), symbol: 'circle', symbolSize: 7, showSymbol: true, emphasis: {disabled: true},
       lineStyle: {width: 2, type: [6, 5], color: col[l.key]}, itemStyle: {color: col[l.key], borderColor: t.page, borderWidth: 2}}));
@@ -6342,7 +6417,48 @@ function renderView(){
   $('#band').classList.toggle('lens-report', v === 'report');
   Object.keys(OWN).forEach(k => { $('#view-' + k).hidden = v !== k; });
   OWN[v].render();
+  Jump.build(v);
 }
+
+/* quick jump: every section on the tab, as a rail on wide screens and a chip row under the tabs elsewhere */
+const Jump = {
+  io: null,
+  build(v){
+    const root = $('#view-' + v), rail = $('#jumpRail'), chips = $('#jumpChips');
+    if (this.io){ this.io.disconnect(); this.io = null; }
+    const secs = [...root.querySelectorAll('section')].filter(s => !s.parentElement.closest('#view-' + v + ' section') && !s.hidden).map((s, i) => {
+      const hd = s.querySelector('.sec-h h2, h2'), name = (hd ? hd.textContent : s.getAttribute('aria-label') || '').trim();
+      if (!name) return null;
+      if (!s.id) s.id = `sec-${v}-${i}`;
+      return {s, name};
+    }).filter(Boolean);
+    const show = secs.length >= 3;
+    rail.hidden = chips.hidden = !show;
+    $('#main').classList.toggle('has-rail', show);
+    rail.textContent = ''; chips.textContent = '';
+    if (show){
+      const go = (e, x) => { e.preventDefault(); x.s.scrollIntoView({behavior: MOTION ? 'smooth' : 'auto', block: 'start'}); this.mark(x.s.id); };
+      rail.append(h('ol', null, secs.map(x => h('li', null, h('a', {href: '#' + x.s.id, 'data-for': x.s.id, onclick: e => go(e, x), text: x.name})))));
+      secs.forEach(x => chips.append(h('a', {href: '#' + x.s.id, 'data-for': x.s.id, onclick: e => go(e, x), text: x.name})));
+      if ('IntersectionObserver' in window){
+        const seen = new Map();
+        this.io = new IntersectionObserver(es => {
+          es.forEach(en => seen.set(en.target.id, en.isIntersecting));
+          const cur = secs.find(x => seen.get(x.s.id));
+          if (cur) this.mark(cur.s.id);
+        }, {rootMargin: '-35% 0px -55% 0px'});
+        secs.forEach(x => this.io.observe(x.s));
+      }
+    }
+    this.measure();
+  },
+  mark(id){
+    document.querySelectorAll('#jumpRail a, #jumpChips a').forEach(a => a.setAttribute('aria-current', String(a.dataset.for === id)));
+    const c = document.querySelector(`#jumpChips a[data-for="${id}"]`), w = $('#jumpChips');
+    if (c && w.scrollWidth > w.clientWidth) w.scrollLeft = Math.max(0, c.offsetLeft - 40);
+  },
+  measure(){ document.documentElement.style.setProperty('--stuck', (44 + $('#stick').offsetHeight) + 'px'); },
+};
 
 function go(v){
   if (v === state.view) return;
@@ -6829,12 +6945,16 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => { if 
 const strip = $('#strip');
 strip.addEventListener('click', e => { if (e.target.closest('.pin,.bead')) return; scrollTo({top: 0, behavior: MOTION ? 'smooth' : 'auto'}); });
 if (!SHOT && 'IntersectionObserver' in window){
-  new IntersectionObserver(([en]) => strip.classList.toggle('on', !en.isIntersecting && en.boundingClientRect.top < 0), {threshold: 0}).observe($('#band'));
+  new IntersectionObserver(([en]) => {
+    const on = !en.isIntersecting && en.boundingClientRect.top < 0;
+    strip.classList.toggle('on', on); document.body.classList.toggle('strip-on', on);
+  }, {threshold: 0}).observe($('#band'));
 }
 let lastW = innerWidth;
 addEventListener('resize', () => {
   clearTimeout(window.__rz);
   window.__rz = setTimeout(() => {
+    if (d) Jump.measure();
     if (innerWidth === lastW){ Charts.resizeAll(); return; }
     lastW = innerWidth;
     if (!d) return;
