@@ -293,7 +293,7 @@ main{max-width:calc(var(--maxw) + 2 * var(--gutter));margin:0 auto;padding:48px 
 .sec.tight{margin-top:64px}
 .view>.sec:first-child{margin-top:0}
 .sec-h{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;column-gap:24px;row-gap:6px;margin-bottom:22px}
-.sec-h h2{font-size:var(--fs-xl);line-height:1.15;font-weight:740;font-variation-settings:"opsz" 36;letter-spacing:-.02em}
+.sec-h h2{text-wrap:balance;font-size:var(--fs-xl);line-height:1.15;font-weight:740;font-variation-settings:"opsz" 36;letter-spacing:-.02em}
 .sec-h .sub{grid-column:1;color:var(--muted);max-width:72ch}
 .sec-h .acts{grid-column:2;grid-row:1 / span 2;align-self:end;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
 .h3{font-size:var(--fs-l);line-height:1.2;font-weight:720;font-variation-settings:"opsz" 28;letter-spacing:-.015em}
@@ -830,6 +830,115 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
   .h-sv,.h-pay,.h-pace,.h-inc{height:250px}
 }
 
+/* ============ REPORT CARD EXTRAS ============ */
+.print-head{display:none}
+.gpa .rc-print{margin-top:22px;justify-self:end}
+.sun.sm{width:84px;height:84px;flex:none}
+.sun.sm .letter{font-size:3.2rem;letter-spacing:-.04em;transform:translate(-1px,-2px)}
+/* what if */
+.wi{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);column-gap:64px;align-items:start}
+.wi-side{position:sticky;top:64px;padding-bottom:4px}
+.lever{padding:24px 0;border-top:1px solid var(--hair)}
+.lever:first-child{border-top:0;padding-top:0}
+.lever .slider{max-width:none}
+.lever .chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+.lever .slider-h{margin:8px 0 0}
+.wi-top{display:flex;align-items:center;gap:22px}
+.wi-top .eyebrow{font-size:var(--fs-s);margin:0 0 2px}
+.wi-delta{margin:0;font-size:var(--fs-f1);line-height:1.05;font-weight:760;font-variation-settings:"opsz" 48;letter-spacing:-.025em}
+.wi-line{margin:6px 0 0;color:var(--ink-2)}
+.wi-rows{margin-top:24px}
+.wi-row{display:grid;grid-template-columns:minmax(0,1fr) auto 14px auto 3.2em;align-items:center;column-gap:10px;padding:11px 0;border-top:1px solid var(--hair)}
+.wi-row .nm b{display:block;font-weight:680}
+.wi-row .nm small{display:block;color:var(--muted);font-size:var(--fs-xs)}
+.wi-row .lg{min-width:1.7em;text-align:center;font-size:var(--fs-l);line-height:1;font-weight:780;font-variation-settings:"opsz" 28;letter-spacing:-.03em}
+.wi-row .lg.low{color:var(--loss)}
+.wi-row .ar2{display:grid;color:var(--muted)}
+.wi-row .ar2 svg{width:14px;height:14px}
+.wi-row .wd{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.wi-badges{margin:16px 0 0;color:var(--ink-2)}
+.wi-sum{margin:16px 0 0;color:var(--ink-2);max-width:56ch}
+/* you vs. people your age */
+.peers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:56px}
+.peer-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:14px}
+.peer-name{font-size:var(--fs-m);font-weight:720;letter-spacing:-.01em}
+.peer-note{color:var(--ink-2);font-size:var(--fs-xs);font-weight:620;text-align:right}
+.peer-note.dn{color:var(--bad)}
+.pbar{display:grid;grid-template-columns:112px minmax(0,1fr) 56px;column-gap:12px;align-items:center;padding:6px 0;color:var(--ink-2)}
+.pbar .trk{height:10px;border-radius:5px;background:var(--surface-3);overflow:hidden}
+.pbar .trk i{display:block;height:100%;border-radius:5px;background:var(--c);width:var(--w)}
+.pbar .v{text-align:right;font-weight:650;color:var(--ink);font-variant-numeric:tabular-nums}
+.pbar.you{color:var(--ink);font-weight:720}
+.pbar.you .trk{height:12px;border-radius:6px}
+.peer-foot{margin:10px 0 0;color:var(--muted);font-size:var(--fs-xs);line-height:1.5}
+.pfacts{list-style:none;margin:40px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:56px;row-gap:16px}
+.pfact{display:grid;grid-template-columns:22px minmax(0,1fr);column-gap:10px;align-items:start}
+.pfact .ck{display:grid;place-items:center;width:20px;height:20px;margin-top:1px;border-radius:50%;color:var(--good);box-shadow:inset 0 0 0 1.5px currentColor}
+.pfact .ck.no{color:var(--muted)}
+.pfact .ck svg{width:12px;height:12px}
+.h-age{height:440px}
+/* how the grades work */
+details.method>summary{display:flex;align-items:flex-start;gap:14px;cursor:pointer;list-style:none;padding:2px 0;border-radius:8px}
+details.method>summary::-webkit-details-marker{display:none}
+details.method>summary:focus-visible{outline:2px solid var(--focus);outline-offset:4px;box-shadow:0 0 0 8px var(--halo)}
+.method .chev{display:grid;place-items:center;flex:none;width:28px;height:28px;margin-top:2px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--hair-2);color:var(--ink-2);transition:transform .2s var(--ease)}
+.method .chev svg{width:14px;height:14px}
+.method[open] .chev{transform:rotate(90deg)}
+.method .mh{display:block;font-size:var(--fs-xl);line-height:1.15;font-weight:740;font-variation-settings:"opsz" 36;letter-spacing:-.02em}
+.method .msub{display:block;margin-top:4px;color:var(--muted)}
+.method-body{margin:28px 0 0 42px;display:grid;gap:22px;max-width:980px}
+.method-body .tbl-x{margin:0}
+.tbl.text td,.tbl.text th{text-align:left;white-space:normal}
+.tbl.text td:nth-child(2),.tbl.text th:nth-child(2){white-space:nowrap}
+.src-list{margin:0;padding:0 0 0 1.2em;display:grid;gap:6px;color:var(--ink-2)}
+.src-list a{color:var(--ink);text-underline-offset:3px}
+.src-list a:hover{color:var(--gain)}
+@media (max-width:1020px){
+  .peers{column-gap:36px}
+  .pbar{grid-template-columns:100px minmax(0,1fr) 54px}
+  .gpa .rc-print{grid-column:1 / -1;justify-self:start;margin-top:14px}
+}
+@media (max-width:900px){
+  .wi{display:flex;flex-direction:column}
+  .wi-side{display:contents}
+  .wi-top{position:sticky;top:46px;z-index:5;order:-1;gap:16px;padding:10px 0 12px;margin-bottom:18px;background:var(--page);border-bottom:1px solid var(--hair)}
+  .wi-detail,.wi-sum{order:2}
+  .wi-detail .wi-rows:first-child{margin-top:8px}
+  .sun.sm{width:64px;height:64px}
+  .sun.sm .letter{font-size:2.4rem}
+  .wi-delta{font-size:var(--fs-xl)}
+  .wi-top.on .wi-line{display:none}
+  .peers{grid-template-columns:minmax(0,1fr);row-gap:40px}
+  .pfacts{grid-template-columns:minmax(0,1fr);margin-top:32px}
+}
+@media (max-width:719px){
+  .h-age{height:360px}
+  .method-body{margin-left:0}
+  .method .mh{font-size:var(--fs-l)}
+  .pbar{grid-template-columns:104px minmax(0,1fr) 56px}
+}
+/* print: light colors (the script switches the theme), page chrome and sandboxes hidden */
+@media print{
+  @page{margin:14mm}
+  body{background:transparent}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact;animation:none!important;transition:none!important}
+  .skip,.topbar,.bandhead,.band,.tabs-wrap,.strip,.tip,.toast,.pop,.rc-print,.whatif,.tgl,.btn{display:none!important}
+  main{padding:0;max-width:none}
+  .print-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin:0 0 22px;padding-bottom:8px;border-bottom:1px solid var(--hair-2);color:var(--ink-2);font-size:var(--fs-s)}
+  .print-head b{color:var(--ink);font-size:var(--fs-m)}
+  .sec{margin-top:34px}
+  .sec-h{break-after:avoid}
+  .keep,.subj,.peer,.pfact,.moves li,.road li,.medal,.sky,.chart,.tbl-wrap,.mv{break-inside:avoid}
+  .chart canvas{max-width:100%!important;height:auto!important}
+  .medals-scroll{overflow:visible!important}
+  .medals{flex-wrap:wrap;row-gap:10px}
+  .medals::before,.todaytick{display:none}
+  .method .chev{display:none}
+  .method-body{margin-left:0}
+  a{color:inherit;text-decoration:none}
+  .src-list a::after{content:" (" attr(href) ")";color:var(--muted);font-size:var(--fs-xs);overflow-wrap:anywhere}
+}
+
 /* ============ MOTION OFF ============ */
 .shot *,.shot *::before,.shot *::after{transition:none!important;animation:none!important}
 @media (prefers-reduced-motion:reduce){
@@ -950,6 +1059,8 @@ const ICON = {
   file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 17v-6M9.5 13.5 12 11l2.5 2.5"/></svg>',
   check: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 6.5 11.5 12.5 4.5"/></svg>',
   note: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1.5a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13Zm-.8 3.2v1.7h1.6V4.7Zm0 2.9v4h1.6v-4Z"/></svg>',
+  print: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 5.5V2h7v3.5"/><rect x="2" y="5.5" width="12" height="6" rx="1.8"/><path d="M4.5 9.5h7V14h-7z"/></svg>',
+  chevron: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5"/></svg>',
 };
 
 /* ======================================================================
@@ -1570,7 +1681,7 @@ const Charts = (() => {
   function disposeAll(){ inst.forEach(c => c.dispose()); inst.clear(); }
   function resizeAll(){ inst.forEach(c => { if (c.getDom().offsetParent) c.resize(); }); }
   const base = t => ({
-    animation: MOTION, animationDuration: 380, animationEasing: 'quarticOut',
+    animation: MOTION && !document.body.classList.contains('printing'), animationDuration: 380, animationEasing: 'quarticOut',
     textStyle: {fontFamily: FONT, color: t.muted},
     tooltip: {trigger: 'axis', confine: true, backgroundColor: t.page, borderColor: t.hair2, borderWidth: 1, padding: [10, 12],
               textStyle: {color: t.ink, fontFamily: FONT, fontSize: 13},
@@ -1627,7 +1738,7 @@ const TODAY = new Date();
 Data.init({M, d});
 const TABS = [['pulse', 'Pulse'], ['report', 'Report card'], ['accounts', 'Accounts'], ['networth', 'Net worth'], ['saving', 'Saving'], ['plan', 'Plan'], ['lab', 'Lab']];
 const RANGES = [['1Y', '1Y'], ['3Y', '3Y'], ['5Y', '5Y'], ['YTD', 'YTD'], ['ALL', 'All']];
-const state = {view: ['pulse', 'report', 'accounts', 'networth', 'saving', 'plan', 'lab'].includes(Q.get('view')) ? Q.get('view') : 'pulse', range: 'ALL', model: null, group: null, acct: null, stackMode: '$', ppExtra: 200};
+const state = {view: ['pulse', 'report', 'accounts', 'networth', 'saving', 'plan', 'lab'].includes(Q.get('view')) ? Q.get('view') : 'pulse', range: 'ALL', model: null, group: null, acct: null, stackMode: '$', ppExtra: 200, whatIf: {}};
 const word = v => v > 0 ? 'Up' : v < 0 ? 'Down' : 'Flat';
 const arrow = v => v > 0 ? '↑' : v < 0 ? '↓' : '·';
 const dir = v => v > 0 ? 'up' : v < 0 ? 'dn' : 'flat';
@@ -1872,6 +1983,9 @@ const Report = {
     const rc = all.report, o = rc.overall, R = all.R;
     root.textContent = '';
 
+    /* printed pages have no top bar, so say what this is */
+    root.append(h('div', {class: 'print-head'}, h('b', {text: 'Meridian report card'}), h('span', {text: `Week ending ${F.date(R.hold.last.date)} · ${d.source === 'file' ? d.fileName : 'Demo data'}`})));
+
     /* 1. the grade, as the sun */
     const counts = ['a', 'b', 'c', 'd', 'f'].filter(k => rc.gradeCounts[k]).map(k => `${rc.gradeCounts[k]} ${k.toUpperCase()}${rc.gradeCounts[k] > 1 ? '’s' : ''}`).join(' · ');
     root.append(h('section', {class: 'sec grade', 'aria-label': 'Overall grade'},
@@ -1884,7 +1998,8 @@ const Report = {
       h('div', {class: 'gpa'},
         h('p', {class: 'fb-l', text: 'Grade point average'}),
         h('p', {class: 'fb-v', text: o ? o.gpa.toFixed(2) : 'None yet'}),
-        h('p', {class: 'fb-s', text: counts ? counts + ' · 4.0 scale' : 'No subjects graded yet'}))));
+        h('p', {class: 'fb-s', text: counts ? counts + ' · 4.0 scale' : 'No subjects graded yet'}),
+        h('button', {class: 'btn rc-print', type: 'button', onclick: () => window.print(), html: ICON.print + '<span>Print or save as PDF</span>'}))));
 
     /* 2. subjects: the skyline (width = weight, height = score), then every subject in full */
     const sky = h('div', {class: 'sky', id: 'sky'});
@@ -1904,6 +2019,10 @@ const Report = {
       secHead('Subjects', 'Each is scored 0 to 100 against a published rule of thumb, then weighted into the grade. Wider columns count more.'),
       sky, list));
     this.skyline(t);
+
+    /* what if: a sandbox that re-grades the card */
+    const wi = WhatIf.section();
+    if (wi) root.append(wi);
 
     /* 3. badges: behind today, and ahead */
     const B = rc.badges, near = B.ahead.slice(0, 8), later = B.ahead.slice(8);
@@ -1938,8 +2057,15 @@ const Report = {
     /* 4 and 5. this week, and the next best moves */
     root.append(h('section', {class: 'sec weekmoves'}, this.week(t, all), this.moves(rc)));
 
+    /* against everyone else: people your age, then net worth by age */
+    root.append(Peers.section());
+    const age = AgeChart.section();
+    if (age){ root.append(age); AgeChart.chart(t); }
+
     /* the road ahead: the band's future, as a list */
     if (rc.road.length) root.append(this.road(all));
+
+    root.append(Method.section(R));
   },
 
   skyline(t){
@@ -2536,7 +2662,7 @@ function meterEl(label, valueText, frac, color, opts = {}){
 function tableEl(cols, rows, opts = {}){
   const st = !!opts.stack, aria = r => st ? {role: r} : {};
   const cell = (c, i) => { const o = c && typeof c === 'object' && !c.nodeType ? c : {t: c}; return h('td', {class: o.cls || null, 'data-label': cols[i] || null, ...aria('cell')}, o.node || o.t); };
-  return h('div', {class: 'tbl-x'}, h('table', {class: 'tbl' + (st ? ' tbl-stack' : ''), ...aria('table')},
+  return h('div', {class: 'tbl-x'}, h('table', {class: 'tbl' + (st ? ' tbl-stack' : '') + (opts.text ? ' text' : ''), ...aria('table')},
     h('thead', aria('rowgroup'), h('tr', aria('row'), cols.map(c => h('th', {scope: 'col', text: c, ...aria('columnheader')})))),
     h('tbody', aria('rowgroup'), rows.map(r => h('tr', aria('row'), r.map(cell))))));
 }
@@ -3038,6 +3164,339 @@ const Lab = {
   },
 };
 
+/* ======================================================================
+   REPORT CARD EXTRAS: what if, you vs. people your age, net worth by age,
+   how the grades work, and print
+   ====================================================================== */
+const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ({1: 'st', 2: 'nd', 3: 'rd'})[n % 10] || 'th');
+const joinList = a => a.length <= 1 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+const fmtX = v => (Math.round(v * 10) / 10).toString() + '×';
+
+/* ---------------- WHAT IF: sliders that re-grade the card. Nothing is saved. ---------------- */
+const WhatIf = {
+  ctx: null, raf: 0,
+  adj(){
+    const W = state.whatIf;
+    return {saveMonthly: W.saveMonthly || 0, kidMonthly: W.kidMonthly || 0, toCash: W.toCash || 0,
+            spend: W.spend != null ? W.spend : null, rate: W.rate != null ? W.rate / 100 : null, home: W.home != null ? W.home : null};
+  },
+  /* the levers this workbook supports, each ranged around today's value (def) */
+  levers(R){
+    const H = M.Household, sub = k => R.subjects.find(s => s.key === k && s.exact != null);
+    const around = (def, lo, hi, step) => ({min: def - Math.floor((def - lo) / step) * step, max: def + Math.ceil((hi - def) / step) * step});
+    const save = sub('save'), ready = sub('ready'), kids = sub('kids'), ef = sub('cash');
+    const out = [];
+    if (save || ready){
+      const chips = [];
+      const k = H.k401Year(d);
+      if (k && !k.onPace && k.remaining > 0) chips.push({text: `Max the ${k.year} 401(k)`, value: Math.ceil(k.short / 12 / 25) * 25, move: true});
+      if (save){
+        const SR = H.savingsRate(d), n = H.contribSummary(d).nDone;
+        const goal = [0.15, 0.2, 0.25, 0.3, 0.35, 0.4].find(x => x > save.raw + 0.004);
+        if (goal) chips.push({text: `Save ${F.pct(goal, 0)} of pay`, value: Math.ceil((goal * SR.income - SR.saved) / n / 25) * 25});
+      }
+      const monthlyPay = R.income ? R.income.total / 12 : 4000;
+      out.push({key: 'saveMonthly', label: 'Save more each month', def: 0, min: 0, step: 25,
+        max: Math.max(1000, Math.ceil(monthlyPay * 0.25 / 250) * 250, ...chips.map(c => c.value)), chips,
+        fmt: v => v ? `+${F.usd(v)}/mo` : 'no change', say: v => `saving ${F.usd(v)} more a month`,
+        hint: 'Counts toward this year’s savings rate, then keeps going into your investments until retirement.'});
+    }
+    if (kids){
+      const each = kids.per.length > 1, half = Math.max(0, ...kids.per.map(p => p.extra));
+      const chips = half > 0.5 ? [{text: 'On pace for half', value: Math.ceil(half / 10) * 10, move: true}] : [];
+      out.push({key: 'kidMonthly', label: each ? 'Add to each child’s 529' : 'Add to the 529', def: 0, min: 0, step: 10,
+        max: Math.max(500, ...chips.map(c => c.value)), chips,
+        fmt: v => v ? `+${F.usd(v)}/mo${each ? ' each' : ''}` : 'no change',
+        say: v => `adding ${F.usd(v)} a month to ${each ? 'each 529' : 'the 529'}`,
+        hint: 'Every month until each child turns 18, growing at your plan’s return.'});
+    }
+    if (R.spend){
+      const def = R.spend.monthly, step = 50, r = around(def, def * 0.5, def * 1.5, step);
+      out.push({key: 'spend', label: 'Monthly spending', def, step, min: r.min, max: r.max,
+        chips: [{text: 'Spend 10% less', value: def - Math.round(def * 0.1 / step) * step}],
+        fmt: v => F.usd(v) + '/mo' + (Math.abs(v - def) < step / 2 ? '' : ` (${F.signed(v - def)})`),
+        say: v => `spending ${F.usd(Math.abs(v - def))} ${v < def ? 'less' : 'more'} a month`,
+        hint: 'Changes how long your cash would last and how much retirement income you’d need.'});
+    }
+    if (ef){
+      const room = Math.max(0, R.hold.invested - R.hold.second), toSix = 6 * R.spend.monthly - R.liquid;
+      const max = Math.min(Math.floor(room / 500) * 500, Math.max(25000, Math.ceil(6 * R.spend.monthly / 5000) * 5000, Math.ceil(toSix / 500) * 500));
+      if (max >= 500) out.push({key: 'toCash', label: 'Move money into savings', def: 0, min: 0, step: 500, max,
+        chips: toSix > 250 && toSix <= max ? [{text: 'Reach 6 months', value: Math.ceil(toSix / 500) * 500, move: true}] : [],
+        fmt: v => v ? `+${F.usd(v)}` : 'no change', say: v => `moving ${F.usd(v)} from investments into savings`,
+        hint: 'Taken from your investments: a bigger cushion, a little less growing for retirement.'});
+    }
+    if (ready){
+      const def = Math.round(ready.calc.rate * 1000) / 10;
+      out.push({key: 'rate', label: 'Market return until retirement', def, min: 3, max: 10, step: 0.1,
+        chips: [{text: 'A rough stretch: 4%', value: 4}],
+        fmt: v => v.toFixed(1) + '% a year', say: v => `earning ${v.toFixed(1)}% a year`,
+        hint: `Only moves retirement readiness. The grade assumes ${def.toFixed(1)}%.`});
+    }
+    const home = R.nw.items.find(i => i.key === 'home');
+    if (home && sub('nw')){
+      const def = home.value, step = 5000, r = around(def, def * 0.6, def * 1.8, step);
+      out.push({key: 'home', label: 'Home value', def, step, min: r.min, max: r.max, chips: [],
+        fmt: v => F.usd(v) + (Math.abs(v - def) < step / 2 ? '' : ` (${F.signed(v - def, F.k)})`),
+        say: v => `valuing the home at ${F.k(v)}`,
+        hint: home.fresh === 'stale' ? 'Net worth still counts the purchase price. Try today’s estimate.' : 'Counts toward net worth.'});
+    }
+    return out;
+  },
+
+  section(){
+    const R = state.model.all.R, levers = R.overall ? this.levers(R) : [];
+    if (!levers.length){ this.ctx = null; return null; }
+    const W = state.whatIf;
+    const c = this.ctx = {R0: R, levers, earned0: M.Report.badges(d, R).filter(b => b.earned), sets: [],
+      top: h('div', {class: 'wi-top'}), detail: h('div', {class: 'wi-detail'}), sum: h('p', {class: 'wi-sum', 'aria-live': 'polite'})};
+    const blocks = levers.map(lv => {
+      if (W[lv.key] != null) W[lv.key] = clamp(W[lv.key], lv.min, lv.max);             // kept within this workbook's range
+      const take = v => {
+        W[lv.key] = Math.abs(v - lv.def) < lv.step / 2 ? null : v;
+        if (!this.raf) this.raf = requestAnimationFrame(() => { this.raf = 0; this.recompute(); });
+      };
+      const sl = slider({id: 'wi-' + lv.key, label: lv.label, min: lv.min, max: lv.max, step: lv.step, value: W[lv.key] != null ? W[lv.key] : lv.def, fmt: lv.fmt, onInput: take});
+      const inp = sl.querySelector('input');
+      const setTo = v => { inp.value = clamp(v, lv.min, lv.max); inp.dispatchEvent(new Event('input', {bubbles: true})); };
+      c.sets.push({lv, setTo});
+      return h('div', {class: 'lever'}, sl,
+        lv.chips.length ? h('div', {class: 'chips', role: 'group', 'aria-label': lv.label + ': suggestions'}, lv.chips.map(x => h('button', {class: 'tgl', type: 'button', text: x.text, onclick: () => setTo(x.value)}))) : null,
+        h('p', {class: 'slider-h', text: lv.hint}));
+    });
+    const moves = levers.some(lv => lv.chips.some(x => x.move))
+      ? h('button', {class: 'btn', type: 'button', text: 'Try the next best moves', onclick: () => c.sets.forEach(({lv, setTo}) => { const x = lv.chips.find(y => y.move); if (x) setTo(x.value); })}) : null;
+    const reset = h('button', {class: 'tgl', type: 'button', text: 'Reset', onclick: () => c.sets.forEach(({lv, setTo}) => setTo(lv.def))});
+    const sec = h('section', {class: 'sec whatif', 'aria-label': 'What if'},
+      secHead('What if…', 'Drag a slider to see how your grade would change. It is a sandbox: nothing here is saved or written to your workbook.', moves, reset),
+      h('div', {class: 'wi'}, h('div', {class: 'wi-sliders'}, blocks), h('div', {class: 'wi-side'}, c.top, c.detail, c.sum)));
+    this.recompute();
+    return sec;
+  },
+
+  recompute(){
+    const c = this.ctx; if (!c) return;
+    const {R0, levers, earned0, top, detail, sum} = c, W = state.whatIf;
+    const active = levers.filter(lv => W[lv.key] != null);
+    const R1 = active.length ? M.Report.card(d, this.adj()) : R0;
+    const o0 = R0.overall, o1 = R1.overall || o0;
+    const dl = Math.round((o1.exact - o0.exact) * 10) / 10;
+    top.textContent = ''; detail.textContent = '';
+    top.classList.toggle('on', active.length > 0);
+    top.append(h('div', {class: 'sun sm', role: 'img', 'aria-label': `${active.length ? 'What-if grade' : 'Grade today'} ${o1.letter}, ${o1.score} out of 100`}, h('span', {class: 'letter', 'aria-hidden': 'true', text: o1.letter})),
+      h('div', null,
+        h('p', {class: 'eyebrow', text: active.length ? 'Your grade, what if' : 'Your grade today'}),
+        h('p', {class: 'wi-delta ' + (active.length ? dir(dl) : ''), text: !active.length ? `${o0.letter}, ${o0.score} out of 100` : dl ? `${arrow(dl)} ${Math.abs(dl).toFixed(1)} points` : 'No change'}),
+        h('p', {class: 'wi-line', text: !active.length ? 'Drag a slider or pick a suggestion to try a change.'
+          : `From ${o0.letter} (${o0.score}) today` + (o1.letter !== o0.letter ? ` to ${o1.letter} (${o1.score})` : `, still ${o1.letter}`)})));
+    if (active.length){
+      /* the subjects that move */
+      const rows = h('div', {class: 'wi-rows', role: 'list'});
+      R1.subjects.forEach(s1 => {
+        const s0 = R0.subjects.find(x => x.key === s1.key);
+        if (!s0 || s0.exact == null || s1.exact == null) return;
+        const dd = s1.score - s0.score;
+        if (!dd && s1.value === s0.value) return;
+        rows.append(h('div', {class: 'wi-row', role: 'listitem'},
+          h('div', {class: 'nm'}, h('b', {text: s1.name}), h('small', {text: `${s0.value} to ${s1.value}${s1.key === 'cash' ? ' months' : ''}`})),
+          h('span', {class: 'lg' + (s0.exact < 80 ? ' low' : ''), 'aria-label': `from ${s0.letter}`, text: s0.letter}),
+          h('span', {class: 'ar2', 'aria-hidden': 'true', html: ICON.arrow}),
+          h('span', {class: 'lg' + (s1.exact < 80 ? ' low' : ''), 'aria-label': `to ${s1.letter}`, text: s1.letter}),
+          h('span', {class: 'wd ' + dir(dd), text: dd > 0 ? '+' + dd : dd < 0 ? '−' + -dd : '±0'})));
+      });
+      detail.append(rows.childNodes.length ? rows : h('p', {class: 'wi-line', style: 'margin-top:22px', text: 'No subject moves enough to change its score.'}));
+      /* badges won or lost (moving up a tier, like $750k to $1M, counts as a new badge, not a loss) */
+      const best = list => { const m = new Map(); list.forEach(b => { const x = m.get(b.group); if (!x || b.rank > x.rank) m.set(b.group, b); }); return m; };
+      const b0 = best(earned0), b1 = best(M.Report.badges(d, R1).filter(b => b.earned));
+      const gained = [...b1.values()].filter(b => { const a = b0.get(b.group); return !a || b.rank > a.rank; }).map(b => b.title);
+      const lost = [...b0.values()].filter(a => { const b = b1.get(a.group); return !b || b.rank < a.rank; }).map(a => a.title);
+      if (gained.length || lost.length) detail.append(h('p', {class: 'wi-badges'},
+        gained.length ? [h('b', {text: gained.length > 1 ? 'New badges: ' : 'New badge: '}), gained.join(', ') + '. '] : null,
+        lost.length ? [h('b', {text: 'Would lose: '}), lost.join(', ') + '.'] : null));
+    }
+    sum.textContent = !active.length ? '' : capFirst(joinList(active.map(lv => lv.say(W[lv.key])))) +
+      (dl ? ` would ${dl > 0 ? 'raise' : 'lower'} your grade ${Math.abs(dl).toFixed(1)} points, to ${o1.letter} (${o1.score}).` : ' would not change your grade.');
+  },
+};
+
+/* ---------------- YOU VS. PEOPLE YOUR AGE ---------------- */
+const Peers = {
+  section(){
+    const all = state.model.all, R = all.R, P = all.report.peers;
+    if (!P) return h('section', {class: 'sec tight', 'aria-label': 'You vs. people your age'},
+      secHead('You vs. people your age', 'This needs your age. Add a “Your birth date” row to the Dashboard sheet, or an Annual Forecast sheet with an age column, then open the workbook again.'));
+    const b = P.band, B = M.BENCH;
+    const COL = {you: 'var(--gain)', typ: 'var(--ink-2)', avg: 'var(--muted)'};
+    const group = (name, note, good, bars, foot) => {
+      const max = Math.max(...bars.map(x => x.v), 1e-9);
+      return h('div', {class: 'peer'},
+        h('div', {class: 'peer-top'}, h('b', {class: 'peer-name', text: name}), note ? h('span', {class: 'peer-note' + (good ? '' : ' dn'), text: note}) : null),
+        bars.map(x => h('div', {class: 'pbar' + (x.kind === 'you' ? ' you' : ''), style: `--c:${COL[x.kind]};--w:${Math.max(0.6, x.v / max * 100).toFixed(1)}%`},
+          h('span', {text: x.label}), h('span', {class: 'trk', 'aria-hidden': 'true'}, h('i')), h('span', {class: 'v', text: x.fmt(x.v)}))),
+        foot ? h('p', {class: 'peer-foot', text: foot}) : null);
+    };
+    const pctTxt = P.pctile == null ? null : P.pctile >= 0.995 ? 'the top 1%' : `about the ${ordinal(Math.round(P.pctile * 100))} percentile`;
+    const groups = [group('Net worth', P.nw > 0 ? `${fmtX(P.nw / b.nwMedian)} the typical` : 'below the typical', P.nw >= b.nwMedian, [
+      {label: 'You', v: Math.max(0, P.nw), fmt: F.k, kind: 'you'}, {label: 'Typical', v: b.nwMedian, fmt: F.k, kind: 'typ'}, {label: 'Average', v: b.nwMean, fmt: F.k, kind: 'avg'},
+    ], (pctTxt ? `That puts you at ${pctTxt} for your age (an estimate). ` : '') + '“Typical” is the median household; the average is pulled up by the wealthiest few.')];
+    if (P.retire > 0) groups.push(group('Retirement accounts', `${fmtX(P.retire / b.raMedian)} the typical`, P.retire >= b.raMedian, [
+      {label: 'You', v: P.retire, fmt: F.k, kind: 'you'}, {label: 'Typical', v: b.raMedian, fmt: F.k, kind: 'typ'}, {label: 'Average', v: b.raMean, fmt: F.k, kind: 'avg'},
+    ], '401(k), 403(b), IRA and TSP balances, among households that have these accounts.'));
+    if (P.saveRate != null) groups.push(group('Savings rate', P.saveRate >= 0.15 ? 'above the guideline' : 'below the guideline', P.saveRate >= 0.15, [
+      {label: 'You', v: P.saveRate, fmt: v => F.pct(v, 0), kind: 'you'}, {label: 'Guideline', v: 0.15, fmt: v => F.pct(v, 0), kind: 'typ'}, {label: '401(k) average', v: B.vanguard.total, fmt: v => F.pct(v, 0), kind: 'avg'},
+    ], `Fidelity’s guideline, and the average 401(k) saver of any age, match included (Vanguard, ${B.vanguard.year}). Americans overall saved ${F.pct(B.bea.rate, 1)} of after-tax income in ${B.bea.period} (BEA).`));
+    const facts = [];
+    const fact = (ok, text) => facts.push(h('li', {class: 'pfact'},
+      h('span', {class: 'ck' + (ok ? '' : ' no'), 'aria-hidden': 'true', html: ok ? ICON.check : '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4.5 8h7"/></svg>'}),
+      h('span', null, h('span', {class: 'vh', text: ok ? 'Yes: ' : 'Not yet: '}), text)));
+    const mult = R.subjects.find(s => s.key === 'mult' && s.exact != null);
+    if (mult) fact(mult.raw >= mult.target, `Retirement savings of ${fmtX(mult.raw)} your pay, against Fidelity’s ${fmtX(mult.target)} for age ${R.age.age}.`);
+    if (P.months != null) fact(P.months >= 3, `${P.months.toFixed(1)} months of spending in cash. ${F.pct(B.shed.threeMonths, 0)} of U.S. adults have 3 months set aside, and ${F.pct(B.shed.cover400, 0)} could cover a $400 surprise with cash (Federal Reserve, ${B.shed.year}).`);
+    if (b.label === B.census.band) fact(P.owns, (P.owns ? 'You own your home, like ' : 'Homeownership: ') + `${F.pct(B.census.own, 1)} of households aged ${b.label} (Census Bureau, ${B.census.period}).`);
+    return h('section', {class: 'sec tight keep', 'aria-label': 'You vs. people your age'},
+      secHead(`You vs. households ${b.lo < 35 ? 'under 35' : 'aged ' + b.label}`, `Age ${R.age.age}, from ${R.age.src}. U.S. figures are from the Federal Reserve’s ${B.scf.year} Survey of Consumer Finances unless noted.`),
+      h('div', {class: 'peers'}, groups),
+      facts.length ? h('ul', {class: 'pfacts'}, facts) : null);
+  },
+};
+
+/* ---------------- NET WORTH BY AGE ---------------- */
+const AgeChart = {
+  data(R){
+    const yr = 365.25 * DAY, ageAt = dt => (dt - R.age.birth) / yr, r2 = v => Math.round(v * 100) / 100;
+    /* your net worth history, one point a month (portfolio + home equity - loans), broken across long gaps */
+    const byMonth = new Map();
+    M.Household.netWorthSeries(d, d.rows).forEach(p => byMonth.set(p.date.getFullYear() * 12 + p.date.getMonth(), p));
+    const pts = [...byMonth.values()], you = [];
+    pts.forEach((p, i) => {
+      if (i && p.date - pts[i - 1].date > 62 * DAY) you.push([r2(ageAt(p.date) - 0.01), null]);
+      if (p.net > 0) you.push([r2(ageAt(p.date)), Math.round(p.net)]);
+    });
+    const now = [r2(ageAt(new Date())), Math.round(R.net)];
+    /* the Annual Forecast's projection, shrunk to today's dollars */
+    const y0 = new Date().getFullYear(), plan = [];
+    if (d.forecast) d.forecast.rows.filter(r => r.projected && r.year >= y0 && r.begin > 0)
+      .forEach(r => plan.push([r2(ageAt(new Date(r.year, 0, 1))), Math.round(r.begin / Math.pow(1.025, r.year - y0))]));
+    return {you, now, plan};
+  },
+  section(){
+    const R = state.model.all.R;
+    if (!R.age) return null;
+    const t = Color.theme(), D = this.data(R), B = M.BENCH;
+    this.D = D;
+    return h('section', {class: 'sec tight keep', 'aria-label': 'Net worth by age'},
+      secHead('Net worth by age', `U.S. households by age (Federal Reserve, ${B.scf.year} dollars) against your net worth over time${D.plan.length ? ' and your Annual Forecast' : ''}. The scale is logarithmic, so each gridline is 10 times the one below.`),
+      h('div', {class: 'toolrow'},
+        legendOf([[t.gain, 'You', 'line']].concat(D.plan.length ? [[t.gain, 'Your plan (portfolio, today’s dollars)', 'dotted']] : []).concat([[t.ink2, 'Typical household (median)', 'line'], [t.muted, 'Average household', 'dash']])),
+        h('div', {class: 'tools-r'}, tableToggle('c-age'))),
+      h('div', {class: 'chart h-age', id: 'c-age', role: 'img', 'aria-label': 'Your net worth by age compared with the typical and average U.S. household'}),
+      h('div', {class: 'tbl-wrap', id: 'tbl-c-age', hidden: true}));
+  },
+  chart(t){
+    const R = state.model.all.R, {you, now, plan} = this.D, bands = M.BENCH.scf.bands;
+    const steps = key => bands.map(b => [Math.max(20, b.lo), b[key]]).concat([[85, bands[bands.length - 1][key]]]);
+    const bandAt = a => bands.find(b => a >= b.lo && a < b.hi + 1) || (a < bands[0].lo ? bands[0] : bands[bands.length - 1]);
+    const along = (arr, a) => {                             // interpolated value of a line at age a (null outside it)
+      const q = arr.filter(p => p[1] != null);
+      if (!q.length || a < q[0][0] || a > q[q.length - 1][0]) return null;
+      for (let i = 1; i < q.length; i++) if (a <= q[i][0]){
+        const f = (a - q[i - 1][0]) / ((q[i][0] - q[i - 1][0]) || 1);
+        return q[i - 1][1] + (q[i][1] - q[i - 1][1]) * f;
+      }
+      return q[q.length - 1][1];
+    };
+    const xMax = Math.max(80, Math.ceil((plan.length ? plan[plan.length - 1][0] : 0) / 5) * 5);
+    const narrow = ($('#c-age').clientWidth || 800) < 620;
+    const line = (color, label, v, style) => `<div style="display:flex;gap:14px;justify-content:space-between;align-items:center"><span><span style="display:inline-block;width:14px;border-top:2px ${style || 'solid'} ${color};vertical-align:middle;margin-right:7px"></span>${esc(label)}</span><b>${esc(F.k(v))}</b></div>`;
+    Charts.mount('c-age', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, axisPointer: {type: 'line', snap: false, lineStyle: {color: t.muted, width: 1}}, formatter: ps => {
+        const a = ps.length ? (typeof ps[0].axisValue === 'number' ? ps[0].axisValue : ps[0].value[0]) : null;
+        if (a == null) return '';
+        const bd = bandAt(a), mine = along(you, a), pl = along(plan, a);
+        return `<div style="color:${t.muted};font-size:12px;margin-bottom:3px">Age ${Math.floor(a)}</div>` + (mine != null ? line(t.gain, 'You', mine) : '') + (pl != null ? line(t.gain, 'Your plan', pl, 'dotted') : '') +
+          line(t.ink2, `Typical, ${bd.label}`, bd.nwMedian) + line(t.muted, `Average, ${bd.label}`, bd.nwMean, 'dashed');
+      }},
+      grid: {left: 4, right: 18, top: 30, bottom: 30, containLabel: true},
+      xAxis: {type: 'value', min: 20, max: xMax, interval: narrow ? 10 : 5, name: 'Age', nameLocation: 'middle', nameGap: 28, nameTextStyle: {color: t.muted, fontSize: 12, fontFamily: FONT},
+              axisLine: {lineStyle: {color: t.hair2}}, axisTick: {show: false}, splitLine: {show: false}, axisLabel: {color: t.muted, fontSize: 12, fontFamily: FONT}},
+      yAxis: {type: 'log', logBase: 10, min: 10000, axisLine: {show: false}, axisTick: {show: false}, splitLine: {lineStyle: {color: t.hair, width: 1}},
+              axisLabel: {color: t.muted, fontSize: 12, fontFamily: FONT, formatter: v => axisMoney(v)}},
+      series: [
+        {name: 'Typical household (median)', type: 'line', step: 'end', data: steps('nwMedian'), showSymbol: false, emphasis: {disabled: true}, lineStyle: {width: 2, color: t.ink2}, itemStyle: {color: t.ink2}},
+        {name: 'Average household', type: 'line', step: 'end', data: steps('nwMean'), showSymbol: false, emphasis: {disabled: true}, lineStyle: {width: 1.5, type: [6, 5], color: t.muted}, itemStyle: {color: t.muted}},
+        plan.length ? {name: 'Your plan', type: 'line', data: plan, showSymbol: false, smooth: .2, emphasis: {disabled: true}, lineStyle: {width: 2, type: [2, 4], color: t.gain}, itemStyle: {color: t.gain}} : null,
+        {name: 'You', type: 'line', data: you, showSymbol: false, connectNulls: false, emphasis: {disabled: true}, z: 5, lineStyle: {width: 2.5, color: t.gain}, itemStyle: {color: t.gain},
+         markPoint: {symbol: 'circle', symbolSize: 12, silent: true, data: [{coord: now, value: now[1]}], itemStyle: {color: t.gain, borderColor: t.page, borderWidth: 2},
+                     label: {show: true, position: 'top', distance: 8, formatter: () => 'You today · ' + F.k(now[1]), color: t.ink, fontSize: 12, fontWeight: 650, fontFamily: FONT}}},
+      ].filter(Boolean),
+    });
+    Tables.set('c-age', {cols: ['Ages', 'Typical household', 'Average household', 'You'],
+      rows: bands.map(b => {
+        const inBand = you.filter(p => p[1] != null && p[0] >= b.lo && p[0] < b.hi + 1);
+        const mine = b === R.band ? F.usd(R.net) + ' today' : inBand.length ? `${F.usd(inBand[inBand.length - 1][1])} at ${Math.floor(inBand[inBand.length - 1][0])}` : 'Not yet';
+        return [b.label, F.usd(b.nwMedian), F.usd(b.nwMean), mine];
+      })});
+  },
+};
+
+/* ---------------- HOW THE GRADES WORK, AND SOURCES ---------------- */
+const Method = {
+  /* what each subject measures, and where an A starts (the weights come from the card itself) */
+  ROWS: {
+    save: ['Everything saved this year ÷ pay', '25% of pay'],
+    mult: ['Investments ÷ yearly pay, against Fidelity’s multiple for your age', '1.15× the guideline'],
+    ready: ['Projected retirement income (4% rule + pension + Social Security) ÷ today’s spending', '117% covered'],
+    nw: ['Net worth ÷ (age × yearly pay ÷ 10)', '1.6× expected'],
+    cash: ['Savings + checking ÷ monthly spending', '5 months'],
+    debt: ['Monthly loan payments ÷ monthly gross pay, minus points for costly debt', 'under 24% of pay'],
+    track: ['Portfolio ÷ what your own plan expected by now', '1% ahead'],
+    kids: ['Each 529 at age 18 ÷ four years at a public in-state college', '63% covered'],
+  },
+  section(R){
+    const B = M.BENCH;
+    const table = tableEl(['Subject', 'Weight', 'What it measures', 'An A starts at'], R.subjects.map(s => { const r = this.ROWS[s.key] || ['', '']; return [s.name, s.weight + '%', r[0], r[1]]; }), {stack: true, text: true});
+    const sources = [['Federal Reserve, Survey of Consumer Finances 2022: net worth and retirement accounts by age', B.scf.url],
+      ['Fidelity: how much to have saved by each age', B.fidelity.url],
+      ['Thomas Stanley and William Danko, The Millionaire Next Door (1996): expected net worth', null],
+      ['College Board, Trends in College Pricing 2025', B.college.url],
+      ['Federal Reserve, Economic Well-Being of U.S. Households in 2025', B.shed.url],
+      ['Vanguard, How America Saves 2025', B.vanguard.url],
+      ['U.S. Bureau of Economic Analysis, Personal Income and Outlays, July 2026', B.bea.url],
+      ['U.S. Census Bureau, Housing Vacancies and Homeownership, Q2 2026', B.census.url]];
+    return h('section', {class: 'sec tight keep', 'aria-label': 'How the grades work'},
+      h('details', {class: 'method', id: 'methodBox'},
+        h('summary', null, h('span', {class: 'chev', html: ICON.chevron}), h('span', null, h('span', {class: 'mh', text: 'How the grades work, and sources'}), h('span', {class: 'msub', text: 'The weights, the scale, and where each comparison comes from'}))),
+        h('div', {class: 'method-body'},
+          h('p', {class: 'prose', text: 'Each subject turns one number from your workbook into a 0 to 100 score by comparing it with a published rule of thumb. The overall grade is the weighted average; a subject that can’t be graded yet is left out and the rest are reweighted. Letters follow the school scale: 97 A+, 93 A, 90 A−, 87 B+, 83 B, 80 B−, 77 C+, 73 C, 70 C−, 67 D+, 63 D, 60 D−, lower is F.'}),
+          table,
+          h('p', {class: 'prose', text: 'Percentiles are estimated from each age group’s median and average, assuming the usual lopsided (log-normal) shape of wealth, so treat them as approximate. Sources:'}),
+          h('ul', {class: 'src-list'}, sources.map(([text, url]) => h('li', null, url ? h('a', {href: url, target: '_blank', rel: 'noopener noreferrer', text}) : text))))));
+  },
+};
+
+/* ---------------- PRINT: light colors, every section open, then back to how it was ---------------- */
+const Print = {
+  saved: null,
+  prep(){
+    if (this.saved) return;
+    const wasDark = ROOT.dataset.theme === 'dark';
+    this.saved = {wasDark, open: !!($('#methodBox') && $('#methodBox').open)};
+    document.body.classList.add('printing');
+    if (wasDark){ ROOT.dataset.theme = 'light'; renderView(); }                     // charts paint their own colors, so redraw in light
+    const m = $('#methodBox'); if (m) m.open = true;
+  },
+  done(){
+    if (!this.saved) return;
+    const was = this.saved; this.saved = null;
+    document.body.classList.remove('printing');
+    if (was.wasDark){ ROOT.dataset.theme = 'dark'; renderView(); }
+    const m = $('#methodBox'); if (m) m.open = was.open;
+  },
+};
+addEventListener('beforeprint', () => Print.prep());
+addEventListener('afterprint', () => Print.done());
+
 const OWN = {pulse: Pulse, report: Report, accounts: Accounts, networth: NetWorth, saving: Saving, plan: Plan, lab: Lab};
 
 /* axis ticks: $250k, $1M, $1.5M (no trailing zeros) */
@@ -3290,12 +3749,12 @@ function useData(next){
     Data.init({M, d: next});
     const model = Data.build('ALL');
     d = next; state.range = 'ALL'; state.model = model; state.group = null; state.acct = null;
-    planDefaults();
+    planDefaults(); state.whatIf = {};
     renderShell(); renderBand(); renderView();
   } catch (err){
     const swapped = d !== was.d;
     d = was.d; M.state.data = was.d; Data.init({M, d: was.d}); state.range = was.range; state.model = was.model;
-    if (swapped) planDefaults();
+    if (swapped){ planDefaults(); state.whatIf = {}; }
     try { renderShell(); renderBand(); renderView(); } catch (e2){ console.error(e2); }
     throw err;
   }
