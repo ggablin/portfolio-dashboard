@@ -241,16 +241,16 @@ svg{display:block}
 .pin.is-done .plab{fill:var(--band-text-2);font-weight:560}
 .pin .ring,.bead .ring{fill:none;stroke:var(--band-mark);stroke-width:2;opacity:0;transition:opacity .15s var(--ease)}
 .pin .scale,.bead .scale{transition:transform .15s var(--ease)}
-.pin:hover .scale,.pin:focus-visible .scale,.pin.is-twin .scale,.bead:hover .scale,.bead.is-twin .scale{transform:scale(1.28)}
-.pin:hover .ring,.pin:focus-visible .ring,.pin.is-twin .ring,.bead:hover .ring,.bead.is-twin .ring{opacity:1}
-.pin.is-twin .plab,.pin:hover .plab{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
+.pin:focus-visible .scale,.pin.is-twin .scale,.bead.is-twin .scale{transform:scale(1.28)}
+.pin:focus-visible .ring,.pin.is-twin .ring,.bead.is-twin .ring{opacity:1}
+.pin.is-twin .plab{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
 .bead{cursor:pointer;outline:none}
 /* each tab is a lens on the band: the Report card brings the badge pins forward */
 .band .pin .scale,.band .pin .pole{transition:opacity .2s var(--ease)}
 .band.lens-report .pin:not(.has-badge) .scale{opacity:.36}
 .band.lens-report .pin:not(.has-badge) .pole{opacity:.4}
 .band.lens-report .pin:not(.has-badge) .plab{fill:var(--band-text-2);font-weight:440}
-.band.lens-report .pin:not(.has-badge):hover .scale,.band.lens-report .pin:not(.has-badge):focus-visible .scale,.band.lens-report .pin.is-twin .scale{opacity:1}
+.band.lens-report .pin:not(.has-badge):focus-visible .scale,.band.lens-report .pin.is-twin .scale{opacity:1}
 .bead .hit{fill:transparent}
 .bead .ghost{fill:var(--band);stroke:var(--band-mark);stroke-width:1.5}
 .b-shelflab{fill:var(--band-text);font-size:12.5px}
@@ -261,8 +261,18 @@ svg{display:block}
 .strip.on{transform:none}
 .strip svg{width:100%;height:44px}
 .strip .pin .head{stroke-width:1.25}
-.strip .pin:hover .scale,.strip .pin.is-twin .scale{transform:scale(1.6)}
-.strip .bead:hover .scale,.strip .bead.is-twin .scale{transform:scale(1.5)}
+.strip .pin.is-twin .scale{transform:scale(1.6)}
+.strip .bead.is-twin .scale{transform:scale(1.5)}
+@media (hover:hover){
+  .pin:hover .scale,.bead:hover .scale{transform:scale(1.28)}
+  .pin:hover .ring,.bead:hover .ring{opacity:1}
+  .pin:hover .plab{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
+  .band.lens-report .pin:not(.has-badge):hover .scale{opacity:1}
+  .strip .pin:hover .scale{transform:scale(1.6)}
+  .strip .bead:hover .scale{transform:scale(1.5)}
+}
+/* taps on the timeline: no double-tap zoom, no gray flash, no text selection while pressing */
+.band svg,.strip svg{touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .s-lab{fill:var(--band-text);font-size:11.5px;font-weight:700}
 .s-lab2{fill:var(--band-text-2);font-size:11.5px;font-weight:520}
 .s-count{fill:var(--band-knock);font-size:10px;font-weight:760;pointer-events:none}
@@ -1108,9 +1118,10 @@ const Tip = (() => {
     t.classList.add('on');
   }
   function hide(){ const t = el(); t.classList.remove('on'); t.hidden = true; }
+  const isOn = () => !el().hidden && el().classList.contains('on');
   addEventListener('scroll', hide, {passive: true});
   document.addEventListener('scroll', e => { if (e.target !== document) hide(); }, {passive: true, capture: true});
-  return {show, hide};
+  return {show, hide, isOn};
 })();
 
 const Twins = (() => {
@@ -1129,6 +1140,51 @@ const Twins = (() => {
   document.addEventListener('focusin', e => { const t = e.target.closest && e.target.closest('[data-twin]'); if (t) on(t); });
   document.addEventListener('focusout', () => off());
   return {on, off, keysOf};
+})();
+
+/* ======================================================================
+   TOUCH: a finger can't hover, so a tap pins the tooltip (and its twins) until
+   you tap somewhere else or scroll. Pins are small and close together, so a tap
+   goes to the nearest pin within reach, not to whichever circle is on top.
+   ====================================================================== */
+const TouchTips = (() => {
+  let last = 'mouse', cur = null, undo = [];
+  const isTouch = () => last === 'touch';
+  const headRect = el => el.querySelector('.head').getBoundingClientRect();
+  function clear(){ if (cur){ cur = null; Tip.hide(); Twins.off(); undo.splice(0).forEach(f => f()); } }
+  document.addEventListener('pointerdown', e => {
+    last = e.pointerType || 'mouse';
+    if (last === 'touch' && cur && !(e.target.closest && e.target.closest('#bandSvg, #stripSvg'))) clear();
+  }, true);
+  addEventListener('scroll', clear, {passive: true});
+  document.addEventListener('scroll', e => { if (e.target !== document) clear(); }, {passive: true, capture: true});
+  /* show something for `key` (a pin, or 'cross'); a second tap on the same one closes it */
+  function toggle(key, show, onClear){
+    if (cur === key && Tip.isOn()){ clear(); return; }
+    clear();
+    cur = key; if (onClear) undo.push(onClear);
+    show();
+    if (key instanceof Element) Twins.on(key);
+  }
+  /* mouse and keys: hover and keyboard focus. Touch is handled by wire() below. */
+  function bind(el, fns, place){
+    el.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') Tip.show(fns.get(el)(), headRect(el), place); });
+    el.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch') Tip.hide(); });
+    el.addEventListener('focus', () => { if (el.matches(':focus-visible')) Tip.show(fns.get(el)(), headRect(el), place); });
+    el.addEventListener('blur', () => { if (!isTouch()) Tip.hide(); });
+  }
+  function wire(svg, fns, {place, reach = 26, background} = {}){
+    svg.onclick = e => {   // one handler per svg, so re-rendering never stacks them
+      if (!isTouch()) return;
+      let best = null, bd = reach;
+      fns.forEach((fn, el) => { const r = headRect(el), dd = Math.hypot(r.left + r.width / 2 - e.clientX, r.top + r.height / 2 - e.clientY); if (dd < bd){ bd = dd; best = el; } });
+      if (!best){ const g = e.target.closest && e.target.closest('.pin, .bead'); if (g && fns.has(g)) best = g; }
+      if (best){ e.stopPropagation(); toggle(best, () => Tip.show(fns.get(best)(), headRect(best), place)); return; }
+      if (background && background(e)) return;
+      clear();
+    };
+  }
+  return {isTouch, toggle, clear, bind, wire};
 })();
 
 /* ======================================================================
@@ -1164,6 +1220,8 @@ const Band = (() => {
   function render(model, opts){
     const {F} = opts;
     const svg = $('#bandSvg'), wrap = $('#bandScroll');
+    TouchTips.clear();
+    const tipFns = new Map();
     const vw = wrap.clientWidth || innerWidth;
     const phone = innerWidth < 720;
     const W = Math.max(vw, 1040);
@@ -1287,10 +1345,8 @@ const Band = (() => {
         t.textContent = p.label;
       }
       const sc = head(g, R, p.glyph);
-      g.addEventListener('pointerenter', () => Tip.show(pinTip(p, F, m.ageAt), g.querySelector('.head').getBoundingClientRect()));
-      g.addEventListener('pointerleave', Tip.hide);
-      g.addEventListener('focus', () => Tip.show(pinTip(p, F, m.ageAt), g.querySelector('.head').getBoundingClientRect()));
-      g.addEventListener('blur', Tip.hide);
+      tipFns.set(g, () => pinTip(p, F, m.ageAt));
+      TouchTips.bind(g, tipFns);
     });
     measure.remove();
 
@@ -1316,11 +1372,8 @@ const Band = (() => {
       const g = sv('g', {class: 'bead', transform: `translate(${cx} ${cy})`, tabindex: 0, role: 'img', 'data-twin': b.keys.join(' '), 'aria-label': `Badge earned: ${b.title}. ${b.sub}`}, L.shelf);
       const mv = sv('g', {class: 'bead-move'}, g);
       head(mv, 9.5, b.glyph);
-      const tipOf = () => [h('div', {class: 't1', text: b.title}), h('div', {class: 't3', text: b.sub}), h('div', {class: 't2', style: 'margin-top:6px;font-weight:650', text: 'Badge earned'})];
-      g.addEventListener('pointerenter', () => Tip.show(tipOf(), g.querySelector('.head').getBoundingClientRect()));
-      g.addEventListener('pointerleave', Tip.hide);
-      g.addEventListener('focus', () => Tip.show(tipOf(), g.querySelector('.head').getBoundingClientRect()));
-      g.addEventListener('blur', Tip.hide);
+      tipFns.set(g, () => [h('div', {class: 't1', text: b.title}), h('div', {class: 't3', text: b.sub}), h('div', {class: 't2', style: 'margin-top:6px;font-weight:650', text: 'Badge earned'})]);
+      TouchTips.bind(g, tipFns);
     });
 
     /* where the record starts, if there's room before the shelf */
@@ -1361,8 +1414,10 @@ const Band = (() => {
       const bx = box.left + cx * (box.width / W), by = box.top + ((top + rail) / 2) * (box.height / H);
       Tip.show(nodes, {left: bx, top: by, width: 0, height: 0, right: bx, bottom: by}, 'side');
     };
-    cap.addEventListener('pointermove', move);
-    cap.addEventListener('pointerleave', () => { cross.setAttribute('visibility', 'hidden'); dots.forEach(d => d.setAttribute('visibility', 'hidden')); Tip.hide(); });
+    const hideCross = () => { cross.setAttribute('visibility', 'hidden'); dots.forEach(d => d.setAttribute('visibility', 'hidden')); };
+    cap.addEventListener('pointermove', e => { if (e.pointerType !== 'touch') move(e); });
+    cap.addEventListener('pointerleave', e => { if (e.pointerType === 'touch') return; hideCross(); Tip.hide(); });
+    TouchTips.wire(svg, tipFns, {background: e => { if (e.target !== cap) return false; TouchTips.toggle('cross', () => move(e), () => hideCross()); return true; }});
 
     /* one tab stop for the whole timeline; the arrow keys walk the pins in time order */
     const stops = [...svg.querySelectorAll('.pin, .bead')].map(el => ({el, x: el.getBoundingClientRect().left})).sort((a, b) => a.x - b.x).map(o => o.el);
@@ -1392,6 +1447,8 @@ const Band = (() => {
   function renderStrip(model, opts){
     const {F} = opts;
     const svg = $('#stripSvg');
+    TouchTips.clear();
+    const stripFns = new Map();
     const W = svg.clientWidth || innerWidth, H = 44;
     svg.textContent = '';
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
@@ -1421,17 +1478,18 @@ const Band = (() => {
     m.pins.forEach(p => {
       const g = sv('g', {class: 'pin ' + (p.state === 'done' ? 'is-done' : 'is-ahead'), transform: `translate(${X(p.date.getTime()).toFixed(1)} ${rail})`, 'data-twin': p.keys.join(' ')}, svg);
       head(g, 4, null);
-      g.addEventListener('pointerenter', () => Tip.show(pinTip(p, F, m.ageAt), g.querySelector('.head').getBoundingClientRect(), 'below'));
-      g.addEventListener('pointerleave', Tip.hide);
+      stripFns.set(g, () => pinTip(p, F, m.ageAt));
+      TouchTips.bind(g, stripFns, 'below');
     });
     /* earned badges ride along as one counter just behind today; any earned badge lights it */
     if (m.shelf.length){
       const g = sv('g', {class: 'bead', transform: `translate(${xT - 13} 13)`, 'data-twin': m.shelf.flatMap(b => b.keys).join(' ')}, svg);
       const sc = head(g, 8, null);
       const n = sv('text', {class: 's-count', x: 0, y: 3.8, 'text-anchor': 'middle'}, sc); n.textContent = String(m.shelf.length);
-      g.addEventListener('pointerenter', () => Tip.show([h('div', {class: 't1', text: `${m.shelf.length} badges earned`}), h('div', {class: 't3', text: m.shelf.map(b => b.title).join(', ')})], g.querySelector('.head').getBoundingClientRect(), 'below'));
-      g.addEventListener('pointerleave', Tip.hide);
+      stripFns.set(g, () => [h('div', {class: 't1', text: `${m.shelf.length} badges earned`}), h('div', {class: 't3', text: m.shelf.map(b => b.title).join(', ')})]);
+      TouchTips.bind(g, stripFns, 'below');
     }
+    TouchTips.wire(svg, stripFns, {place: 'below', reach: 22});
   }
 
   return {render, renderStrip, get ctx(){ return ctx; }};
