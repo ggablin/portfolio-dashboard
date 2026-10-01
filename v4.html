@@ -155,7 +155,7 @@ svg{display:block}
 .btn svg{width:16px;height:16px;flex:none}
 .btn:hover{background:var(--surface-2);border-color:var(--muted)}
 .btn:active{background:var(--surface-3)}
-.btn:focus-visible,.icon-btn:focus-visible,.tab:focus-visible,.seg button:focus-visible,.src:focus-visible,.link:focus-visible,.medal:focus-visible,.tgl:focus-visible{outline:2px solid var(--focus);outline-offset:2px;box-shadow:0 0 0 6px var(--halo)}
+.btn:focus-visible,.icon-btn:focus-visible,.tab:focus-visible,.seg button:focus-visible,.src:focus-visible,.link:focus-visible,.medal:focus-visible,.later button:focus-visible,.tgl:focus-visible{outline:2px solid var(--focus);outline-offset:2px;box-shadow:0 0 0 6px var(--halo)}
 .btn:disabled,.icon-btn:disabled{cursor:not-allowed;color:var(--muted);background:transparent;border-color:var(--hair)}
 .icon-btn{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;border:1px solid transparent;background:transparent;color:var(--ink);cursor:pointer;transition:background-color .15s var(--ease),border-color .15s var(--ease)}
 .icon-btn svg{width:20px;height:20px}
@@ -447,17 +447,21 @@ button.medal{cursor:pointer}
 .medal .mt{font-size:var(--fs-xs);font-weight:680;line-height:1.3;color:var(--ink)}
 .medal .md{font-size:12px;line-height:1.35;color:var(--muted)}
 .medal .mw{font-size:12px;line-height:1.35;color:var(--ink-2);font-weight:600}
-button.medal:hover .disc,.medal.is-twin .disc{transform:translateY(-3px)}
-button.medal:hover .disc{box-shadow:0 0 0 5px var(--page),0 8px 18px oklch(0.25 0.04 60 / .22)}
+/* hover only where there is a hover: after a tap, a phone keeps :hover on the button and it looks stuck */
+@media (hover:hover){
+  button.medal:hover .disc{transform:translateY(-3px);box-shadow:0 0 0 5px var(--page),0 8px 18px oklch(0.25 0.04 60 / .22)}
+  button.medal.is-ahead:hover .disc{box-shadow:0 0 0 5px var(--page),inset 0 0 0 1.75px var(--ink),0 8px 18px oklch(0.25 0.04 60 / .22)}
+}
+.medal.is-twin .disc{transform:translateY(-3px)}
 button.medal:active .disc{transform:translateY(0) scale(.96)}
 .medal.is-twin .mt{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
 .more-ahead{margin-top:18px;padding-left:120px}
-.later{display:flex;flex-wrap:wrap;gap:10px 22px;list-style:none;margin:14px 0 0;padding:0}
-.later li{display:flex;align-items:center;gap:8px;font-size:var(--fs-xs);color:var(--ink-2);border-radius:8px}
-.later li b{color:var(--ink);font-weight:650}
+.later{display:flex;flex-wrap:wrap;gap:0 18px;list-style:none;margin:8px 0 0;padding:0}
+.later button{display:flex;align-items:center;gap:8px;padding:8px 4px;border:0;background:none;font-size:var(--fs-xs);color:var(--ink-2);text-align:left;cursor:pointer;border-radius:8px}
+.later b{color:var(--ink);font-weight:650}
 .later .mini{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;box-shadow:inset 0 0 0 1.5px var(--ink);color:var(--ink);flex:none}
 .later .mini svg{width:13px;height:13px}
-.later li.is-twin b{text-decoration:underline;text-underline-offset:3px}
+.later button.is-twin b{text-decoration:underline;text-underline-offset:3px}
 .weekmoves{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);column-gap:64px;align-items:start}
 .wk-head{font-size:var(--fs-f1);line-height:1.05;font-weight:760;font-variation-settings:"opsz" 48;letter-spacing:-.025em}
 .wk-sub{margin-top:8px;color:var(--ink-2)}
@@ -502,10 +506,12 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
 .tip .tv{font-size:var(--fs-m);font-weight:760;letter-spacing:-.01em}
 .tip .row{display:flex;justify-content:space-between;gap:16px}
 .tip .row b{font-variant-numeric:tabular-nums}
-.toast{position:fixed;left:50%;bottom:28px;z-index:850;display:flex;align-items:center;gap:12px;max-width:min(520px,calc(100vw - 32px));padding:12px 18px 12px 12px;border-radius:999px;background:var(--ink);color:var(--page);box-shadow:var(--shadow);font-weight:600;transform:translate(-50%,16px);opacity:0;pointer-events:none;transition:opacity .2s var(--ease),transform .2s var(--ease)}
+.toast{position:fixed;left:50%;bottom:28px;z-index:850;display:flex;align-items:center;gap:12px;width:max-content;max-width:min(440px,calc(100vw - 32px));padding:12px 18px 12px 12px;border-radius:18px;background:var(--ink);color:var(--page);box-shadow:var(--shadow);font-weight:600;transform:translate(-50%,16px);opacity:0;pointer-events:none;transition:opacity .2s var(--ease),transform .2s var(--ease)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .toast .tg{width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:none}
 .toast .tg svg{width:16px;height:16px}
+.toast .tx{display:grid;gap:2px;min-width:0;line-height:1.35}
+.toast .tx span{font-size:var(--fs-xs);font-weight:500;opacity:.82}
 .confetti{position:fixed;inset:0;z-index:840;pointer-events:none;overflow:hidden}
 .confetti i{position:absolute;display:block;width:8px;height:12px;border-radius:2px}
 
@@ -637,7 +643,7 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
 .chip.est{color:var(--ink-2);border-style:dashed}
 .slider{display:grid;gap:8px;max-width:560px}
 .slider-l{display:flex;justify-content:space-between;align-items:baseline;gap:16px;font-weight:650;color:var(--ink-2)}
-.slider-l output{font-size:var(--fs-m);font-weight:740;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.slider-l output{white-space:nowrap;font-size:var(--fs-m);font-weight:740;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 .slider input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;margin:0;background:transparent;cursor:pointer}
 .slider input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(to right,var(--ink) var(--fill,50%),var(--hair-2) var(--fill,50%))}
 .slider input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:var(--hair-2)}
@@ -848,6 +854,7 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
 .lever .chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
 .lever .slider-h{margin:8px 0 0}
 .wi-top{display:flex;align-items:center;gap:22px}
+.wi-top .wi-reset{display:none}
 .wi-top .eyebrow{font-size:var(--fs-s);margin:0 0 2px}
 .wi-delta{margin:0;font-size:var(--fs-f1);line-height:1.05;font-weight:760;font-variation-settings:"opsz" 48;letter-spacing:-.025em}
 .wi-line{margin:6px 0 0;color:var(--ink-2)}
@@ -903,15 +910,18 @@ details.method>summary:focus-visible{outline:2px solid var(--focus);outline-offs
   .gpa .rc-print{grid-column:1 / -1;justify-self:start;margin-top:14px}
 }
 @media (max-width:900px){
-  .wi{display:flex;flex-direction:column}
+  /* the live grade rides at the bottom of the screen while you drag (the top already has the timeline strip) */
+  .wi{display:flex;flex-direction:column;align-items:stretch}
   .wi-side{display:contents}
-  .wi-top{position:sticky;top:46px;z-index:5;order:-1;gap:16px;padding:10px 0 12px;margin-bottom:18px;background:var(--page);border-bottom:1px solid var(--hair)}
+  .wi-top{order:3;position:sticky;bottom:12px;z-index:5;gap:12px;padding:8px 18px 8px 8px;margin-top:20px;background:var(--page);border:1px solid var(--hair-2);border-radius:999px;box-shadow:var(--shadow)}
   .wi-detail,.wi-sum{order:2}
   .wi-detail .wi-rows:first-child{margin-top:8px}
-  .sun.sm{width:64px;height:64px}
-  .sun.sm .letter{font-size:2.4rem}
-  .wi-delta{font-size:var(--fs-xl)}
-  .wi-top.on .wi-line{display:none}
+  .sun.sm{width:48px;height:48px;flex:none}
+  .sun.sm .letter{font-size:1.8rem}
+  .wi-top .eyebrow{font-size:var(--fs-xs)}
+  .wi-delta{font-size:var(--fs-l)}
+  .wi-line{display:none}
+  .wi-top .wi-reset{display:inline-flex;margin-left:auto}
   .peers{grid-template-columns:minmax(0,1fr);row-gap:40px}
   .pfacts{grid-template-columns:minmax(0,1fr);margin-top:32px}
 }
@@ -1442,9 +1452,12 @@ const Twins = (() => {
     lit.forEach(e => e.classList.add('is-twin'));
   }
   function off(){ lit.forEach(e => e.classList.remove('is-twin')); lit = []; }
-  document.addEventListener('pointerover', e => { const t = e.target.closest && e.target.closest('[data-twin]'); if (t) on(t); });
-  document.addEventListener('pointerout', e => { const t = e.target.closest && e.target.closest('[data-twin]'); if (t && !(e.relatedTarget && t.contains(e.relatedTarget))) off(); });
-  document.addEventListener('focusin', e => { const t = e.target.closest && e.target.closest('[data-twin]'); if (t) on(t); });
+  /* a mouse hovers and the keys focus, so those light twins by themselves. A finger can't hover, and a tapped
+     button keeps its focus afterwards, so a tap lights twins only through TouchTips, which also turns them off. */
+  const hovers = e => e.pointerType !== 'touch';
+  document.addEventListener('pointerover', e => { if (!hovers(e)) return; const t = e.target.closest && e.target.closest('[data-twin]'); if (t) on(t); });
+  document.addEventListener('pointerout', e => { if (!hovers(e)) return; const t = e.target.closest && e.target.closest('[data-twin]'); if (t && !(e.relatedTarget && t.contains(e.relatedTarget))) off(); });
+  document.addEventListener('focusin', e => { const t = e.target.closest && e.target.closest('[data-twin]'); if (t && t.matches(':focus-visible')) on(t); });
   document.addEventListener('focusout', () => off());
   return {on, off, keysOf};
 })();
@@ -1461,8 +1474,12 @@ const TouchTips = (() => {
   function clear(){ if (cur){ cur = null; Tip.hide(); Twins.off(); undo.splice(0).forEach(f => f()); } }
   document.addEventListener('pointerdown', e => {
     last = e.pointerType || 'mouse';
-    if (last === 'touch' && cur && !(e.target.closest && e.target.closest('#bandSvg, #stripSvg'))) clear();
+    if (last !== 'touch' || !cur) return;
+    if (e.target.closest && e.target.closest('#bandSvg, #stripSvg')) return;     // the svg's own tap handler decides
+    if (cur instanceof Element && cur.contains(e.target)) return;                 // tapping the open one again closes it (see toggle)
+    clear();
   }, true);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape'){ Tip.hide(); clear(); } });
   addEventListener('scroll', clear, {passive: true});
   document.addEventListener('scroll', e => { if (e.target !== document) clear(); }, {passive: true, capture: true});
   /* show something for `key` (a pin, or 'cross'); a second tap on the same one closes it */
@@ -4622,32 +4639,35 @@ const Report = {
     /* 3. badges: behind today, and ahead */
     const B = rc.badges, near = B.ahead.slice(0, 8), later = B.ahead.slice(8);
     const earnedRow = h('div', {class: 'medals earned'},
-      B.earned.map(b => h('button', {class: 'medal is-earned', type: 'button', 'data-twin': Data.badgeKey(b), title: b.desc,
-          'aria-label': `${b.title}, earned. ${b.desc}. Celebrate again`, onclick: e => celebrate(b, e.currentTarget)},
-        h('span', {class: 'disc', html: glyphSvg(Data.badgeGlyph(b))}), h('span', {class: 'mt', text: b.title}))),
+      B.earned.map(b => badgeBtn(h('button', {class: 'medal is-earned', type: 'button', 'data-twin': Data.badgeKey(b),
+          'aria-label': `${b.title}, earned. ${b.desc}. Celebrate again`},
+        h('span', {class: 'disc', html: glyphSvg(Data.badgeGlyph(b))}), h('span', {class: 'mt', text: b.title})), b)),
       h('div', {class: 'todaytick', 'aria-hidden': 'true'}, h('i'), h('span', {text: 'Today'})));
     const aheadRow = h('div', {class: 'medals ahead'},
       h('div', {class: 'todaytick', 'aria-hidden': 'true'}, h('i'), h('span', {text: 'Today'})),
-      near.map(b => h('div', {class: 'medal is-ahead', tabindex: 0, role: 'group', 'data-twin': Data.badgeKey(b),
+      near.map(b => badgeBtn(h('button', {class: 'medal is-ahead', type: 'button', 'data-twin': Data.badgeKey(b),
           'aria-label': `${b.title}: ${F.pct(b.progress, 0)} of the way. ${b.desc}.${b.when ? ' ' + b.when + '.' : ''}`},
         h('span', {class: 'disc'}, h('span', {class: 'fill', style: `height:${(b.progress * 100).toFixed(1)}%`}), h('span', {html: glyphSvg(Data.badgeGlyph(b))})),
         h('span', {class: 'mt', text: b.title}),
         h('span', {class: 'mw', text: b.when || 'No date yet'}),
-        h('span', {class: 'md', text: `${F.pct(b.progress, 0)} of the way`}))));
+        h('span', {class: 'md', text: `${F.pct(b.progress, 0)} of the way`})), b)));
     const laterList = later.length ? h('div', {class: 'more-ahead'},
       h('button', {class: 'tgl', type: 'button', 'aria-expanded': 'false', 'aria-controls': 'laterList', onclick: e => {
         const b = e.currentTarget, open = b.getAttribute('aria-expanded') !== 'true';
         b.setAttribute('aria-expanded', String(open)); $('#laterList').hidden = !open; b.lastChild.textContent = open ? 'Hide the ones further out' : `${later.length} more, further out`;
       }, html: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg><span></span>'}),
-      h('ul', {class: 'later', id: 'laterList', hidden: true}, later.map(b => h('li', {'data-twin': Data.badgeKey(b), tabindex: 0},
-        h('span', {class: 'mini', html: glyphSvg(Data.badgeGlyph(b))}), h('span', null, h('b', {text: b.title}), ' · ', b.when || `${F.pct(b.progress, 0)} of the way`))))) : null;
+      h('ul', {class: 'later', id: 'laterList', hidden: true}, later.map(b => h('li', null, badgeBtn(h('button', {type: 'button', 'data-twin': Data.badgeKey(b),
+          'aria-label': `${b.title}: ${F.pct(b.progress, 0)} of the way. ${b.desc}.${b.when ? ' ' + b.when + '.' : ''}`},
+        h('span', {class: 'mini', html: glyphSvg(Data.badgeGlyph(b))}), h('span', null, h('b', {text: b.title}), ' · ', b.when || `${F.pct(b.progress, 0)} of the way`)), b))))) : null;
     if (laterList) laterList.querySelector('.tgl span').textContent = `${later.length} more, further out`;
     root.append(h('section', {class: 'sec', id: 'badges'},
       secHead('Badges', `${B.earned.length} earned, ${B.ahead.length} to look forward to, closest first. Dates assume your plan's return and saving.`),
-      h('p', {class: 'badges-hint', text: 'Every badge is also a pin on the timeline above. Tap one you have earned to celebrate it again.'}),
+      h('p', {class: 'badges-hint', text: 'Hover or tap a badge to see what it is and find its pin on the timeline above. Click or tap an earned one to celebrate.'}),
       h('div', {class: 'trailrow'}, h('div', {class: 'rl'}, h('b', {text: 'Behind today'}), h('span', {text: `${B.earned.length} earned`})), h('div', {class: 'medals-scroll', 'data-scroll-x': ''}, earnedRow)),
       h('div', {class: 'trailrow'}, h('div', {class: 'rl'}, h('b', {text: 'Ahead'}), h('span', {text: 'closest first'})), h('div', {class: 'medals-scroll', 'data-scroll-x': ''}, aheadRow)),
       laterList));
+    /* the earned row opens at its right end, beside today, so the newest badges are the ones in view on a phone */
+    requestAnimationFrame(() => { const er = $('#badges .medals.earned'); if (er && er.parentNode) er.parentNode.scrollLeft = er.parentNode.scrollWidth; });
 
     /* 4 and 5. this week, and the next best moves */
     root.append(h('section', {class: 'sec weekmoves'}, this.week(t, all), this.moves(rc)));
@@ -5905,6 +5925,7 @@ const WhatIf = {
         h('p', {class: 'wi-delta ' + (active.length ? dir(dl) : ''), text: !active.length ? `${o0.letter}, ${o0.score} out of 100` : dl ? `${arrow(dl)} ${Math.abs(dl).toFixed(1)} points` : 'No change'}),
         h('p', {class: 'wi-line', text: !active.length ? 'Drag a slider or pick a suggestion to try a change.'
           : `From ${o0.letter} (${o0.score}) today` + (o1.letter !== o0.letter ? ` to ${o1.letter} (${o1.score})` : `, still ${o1.letter}`)})));
+    if (active.length) top.append(h('button', {class: 'tgl wi-reset', type: 'button', text: 'Reset', onclick: () => c.sets.forEach(({lv, setTo}) => setTo(lv.def))}));
     if (active.length){
       /* the subjects that move */
       const rows = h('div', {class: 'wi-rows', role: 'list'});
@@ -6158,8 +6179,8 @@ function celebrateNew(){
   requestAnimationFrame(() => {
     const first = fresh[0], key = Data.badgeKey(first);
     const from = $$('.bead').find(e => Twins.keysOf(e).includes(key)) || $('#band');
-    if (fresh.length === 1){ celebrate(first, from); return; }
-    toast([h('span', {class: 'tg', html: glyphSvg(Data.badgeGlyph(first))}), h('span', {text: `New badges: ${joinList(fresh.map(b => b.title))}.`})]);
+    if (fresh.length === 1){ toast(badgeToast(first, 'New badge: ' + first.title, first.desc)); celebrate(first, from); return; }
+    toast(badgeToast(first, `${fresh.length} new badges`, joinList(fresh.map(b => b.title))));
     if (!MOTION) return;
     fresh.forEach(flyBeads);
     confetti(from);
@@ -6181,7 +6202,30 @@ function toast(nodes, opts = {}){
   el.classList.toggle('err', !!opts.error);
   el.classList.add('on');
   clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove('on'), opts.ms || 4200);
+  el._t = setTimeout(() => el.classList.remove('on'), opts.ms || Math.min(9000, Math.max(4200, 1800 + el.textContent.length * 55)));   // time to read it
+}
+/* a badge's toast: its glyph, a bold line, and a quieter line under it */
+function badgeToast(b, head, sub){
+  return [h('span', {class: 'tg', html: glyphSvg(Data.badgeGlyph(b))}), h('span', {class: 'tx'}, h('b', {text: head}), sub ? h('span', {text: sub}) : null)];
+}
+/* a badge's details, as a tooltip card: what it is and where it stands */
+function badgeTip(b){
+  return [h('div', {class: 't1', text: b.title}), h('div', {class: 't2', text: b.desc}),
+    h('div', {class: 't2', style: 'margin-top:6px;font-weight:650', text: b.earned ? 'Earned' : `${F.pct(b.progress, 0)} of the way` + (b.when ? ` · ${b.when}` : '')})];
+}
+/* hover and the keys show a badge's card; a tap pins it (and lights the badge's pin on the timeline) until you tap elsewhere.
+   An earned badge also celebrates whenever you click or tap it. */
+function badgeBtn(el, b){
+  const show = () => Tip.show(badgeTip(b), el.querySelector('.disc, .mini').getBoundingClientRect(), 'above');
+  el.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') show(); });
+  el.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch') Tip.hide(); });
+  el.addEventListener('focus', () => { if (el.matches(':focus-visible')) show(); });
+  el.addEventListener('blur', () => { if (!TouchTips.isTouch()) Tip.hide(); });
+  el.addEventListener('click', () => {
+    if (TouchTips.isTouch()) TouchTips.toggle(el, show);
+    if (b.earned) celebrate(b, el);
+  });
+  return el;
 }
 /* the pin's trip: from just ahead of today, across the line, into its place on the shelf */
 function flyBeads(b){
@@ -6196,7 +6240,6 @@ function flyBeads(b){
   });
 }
 function celebrate(b, from){
-  toast([h('span', {class: 'tg', html: glyphSvg(Data.badgeGlyph(b))}), h('span', {text: `Earned: ${b.title}. ${b.desc}.`})]);
   if (!MOTION) return;
   flyBeads(b);
   confetti(from);
