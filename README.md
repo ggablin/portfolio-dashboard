@@ -5,7 +5,7 @@
 | `v3.html` | **Meridian v3.** Portfolio, report card, net worth, saving and plan views. Loads the workbook straight from OneDrive. |
 | `v2.html` | Meridian v2 (upload a file each visit). |
 | `index.html` | The original dashboard. |
-| `previews/long-game.html` | A design preview for the next version, in the "Long game" look: Pulse, Report card, Accounts and Net worth so far (Saving, Plan and Lab are still to come), with demo data, or your own workbook (use **Open workbook** or drop the file on the page; it's read in the browser, never uploaded or kept). It runs v3's own logic through `previews/kit.js`, and Appearance switches light/dark and the Harbor or Stone color. It doesn't connect to OneDrive or use the numbers saved in v3's Your numbers panel. |
+| `previews/long-game.html` | A design preview for the next version, in the "Long game" look: all seven tabs (Pulse, Report card, Accounts, Net worth, Saving, Plan and Lab; the Report card's what-if sliders, peer comparison and print view are still to come), with demo data, or your own workbook (use **Open workbook** or drop the file on the page; it's read in the browser, never uploaded or kept). It runs v3's own logic through `previews/kit.js`, and Appearance switches light/dark and the Harbor or Stone color. It doesn't connect to OneDrive or use the numbers saved in v3's Your numbers panel. |
 
 Nothing personal is stored in this repository. Each page reads the workbook in the browser: from OneDrive, from a file you pick, or from a copy saved in that browser. The demo buttons use made-up numbers.
 

@@ -301,6 +301,7 @@ main{max-width:calc(var(--maxw) + 2 * var(--gutter));margin:0 auto;padding:48px 
 .legend li{display:inline-flex;align-items:center;gap:7px}
 .key{display:inline-block;width:22px;height:0;border-top:2px solid var(--port)}
 .key.dash{border-top:2px dashed var(--plan)}
+.key.dotted{border-top:2px dotted var(--plan)}
 .key.dot{width:10px;height:10px;border:0;border-radius:50%;background:var(--port);box-shadow:0 0 0 2px var(--page)}
 .key.dia{width:9px;height:9px;border:0;background:var(--ink-2);transform:rotate(45deg)}
 .key.sq{width:10px;height:10px;border:0;border-radius:3px}
@@ -488,16 +489,6 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
 .road .rt b{font-weight:680}
 .road .rt p{color:var(--ink-2);font-size:var(--fs-xs);line-height:1.45;margin-top:2px}
 
-/* ============ STUB VIEWS ============ */
-.stub{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);column-gap:56px;align-items:center}
-.stub h1{font-size:var(--fs-f3);line-height:1;font-weight:800;font-variation-settings:"opsz" 80;letter-spacing:-.035em}
-.stub .lede{margin-top:18px;font-size:var(--fs-m);line-height:1.45;max-width:44ch}
-.stub .note{margin-top:14px;color:var(--muted)}
-.stub .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
-.stub figure{margin:0}
-.stub figcaption{margin-top:10px;color:var(--muted);font-size:var(--fs-xs)}
-.h-stub{height:260px}
-
 /* ============ TOOLTIP, TOAST, CONFETTI ============ */
 .tip{position:fixed;z-index:800;left:0;top:0;max-width:280px;padding:10px 12px;border-radius:12px;border:1px solid var(--hair-2);background:var(--page);color:var(--ink);box-shadow:var(--shadow);font-size:var(--fs-xs);line-height:1.45;pointer-events:none;opacity:0;transition:opacity .15s var(--ease)}
 .tip.on{opacity:1}
@@ -523,11 +514,10 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
   .now{grid-template-columns:1fr}
   .now-side{padding-left:0;border-left:0;margin-top:28px;grid-template-columns:1fr 1fr;column-gap:28px;border-top:1px solid var(--hair)}
   .sign+.sign{border-top:0}
-  .pair,.pair.flip,.climb,.weekmoves,.stub,.road{grid-template-columns:minmax(0,1fr)}
+  .pair,.pair.flip,.climb,.weekmoves,.road{grid-template-columns:minmax(0,1fr)}
   .pair.flip .figs{order:2}
   .figs{grid-template-columns:1fr 1fr;gap:24px 28px;padding-top:24px}
   .climb>*+*,.weekmoves>*+*{margin-top:56px}
-  .stub figure{margin-top:36px}
   .grade{grid-template-columns:auto minmax(0,1fr);column-gap:36px}
   .gpa{grid-column:1 / -1;grid-row:3;margin-top:12px;text-align:left;border-left:0;padding-left:0;border-top:1px solid var(--hair);padding-top:18px;grid-template-columns:auto auto 1fr;align-items:baseline;column-gap:16px}
   .subjects{grid-template-columns:minmax(0,1fr)}
@@ -548,8 +538,8 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
   .bandhead .eyebrow{font-size:var(--fs-s);margin-bottom:2px}
   .bandhead .hero-fig{font-size:var(--fs-f2);line-height:1}
   .bandhead .deltas{margin-top:8px;font-size:var(--fs-s)}
-  .now-main .hero-fig,.now-main .eyebrow{display:none}
-  .now-main .deltas{margin-top:0}
+  #view-pulse .now-main .hero-fig,#view-pulse .now-main .eyebrow{display:none}
+  #view-pulse .now-main .deltas{margin-top:0}
   .now-side{grid-template-columns:1fr;margin-top:18px}
   .sign+.sign{border-top:1px solid var(--hair)}
   .tabs-wrap{padding:0}
@@ -593,7 +583,6 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
   .medals.ahead .medal{flex-basis:118px}
   .more-ahead{padding-left:0}
   .mv{grid-template-columns:96px minmax(0,1fr) 64px;column-gap:10px}
-  .stub h1{font-size:var(--fs-f2)}
   .toast{bottom:16px}
 }
 
@@ -774,6 +763,73 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
   .kv{grid-template-columns:1fr 1fr}
 }
 
+/* ============ SAVING, PLAN AND LAB ============ */
+.kpis.duo{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sliders{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:36px;row-gap:24px;align-items:end}
+.sliders.two-up{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sliders .slider{max-width:none}
+.presets{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:20px 0 0}
+.presets .pl{color:var(--muted);font-size:var(--fs-xs);font-weight:650;margin-right:4px}
+.meter{height:10px;border-radius:5px;background:var(--surface-3);overflow:hidden}
+.meter i{display:block;height:100%;border-radius:5px;background:var(--c,var(--ink));width:var(--w,0)}
+.mhead{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:8px;font-weight:650;color:var(--ink-2)}
+.mscale{display:flex;justify-content:space-between;margin-top:6px;color:var(--muted);font-size:var(--fs-xs);font-variant-numeric:tabular-nums}
+.mhead b,.mhead output{color:var(--ink);font-variant-numeric:tabular-nums}
+.bigfig{margin:0 0 6px;font-size:var(--fs-f2);line-height:1;font-weight:760;font-variation-settings:"opsz" 64;letter-spacing:-.03em}
+.note-l{margin:8px 0 0;color:var(--ink-2);font-size:var(--fs-xs);line-height:1.5}
+.note-l.first{margin-top:14px}
+.sbar{display:flex;gap:2px;height:30px;margin:0 0 12px}
+.sbar i{display:block;background:var(--c);min-width:3px}
+.sbar i:first-child{border-radius:6px 0 0 6px}
+.sbar i:last-child{border-radius:0 6px 6px 0}
+.tbl-x{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.tbl th{text-align:right;font-size:var(--fs-xs);font-weight:650;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--hair-2);white-space:nowrap}
+.tbl td{text-align:right;padding:10px 12px;border-bottom:1px solid var(--hair);white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left;padding-left:0;white-space:normal}
+@media (max-width:719px){
+  .tbl-stack thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  .tbl-stack,.tbl-stack tbody,.tbl-stack tr,.tbl-stack td{display:block}
+  .tbl-stack tr{padding:14px 0 10px;border-bottom:1px solid var(--hair-2)}
+  .tbl-stack td{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:4px 0;border:0;white-space:normal;text-align:right}
+  .tbl-stack td:first-child{display:block;padding:0 0 6px;font-weight:700;text-align:left}
+  .tbl-stack td:not(:first-child)::before{content:attr(data-label);flex:none;color:var(--muted);font-size:var(--fs-xs);font-weight:560;text-align:left}
+}
+.tbl td small{display:block;color:var(--muted);font-size:var(--fs-xs);font-weight:500}
+.tbl td.d{font-weight:650}
+.field{display:grid;gap:6px;margin:18px 0 0}
+.field label{font-weight:650;color:var(--ink-2)}
+.field input[type=number]{width:100%;max-width:280px;min-height:42px;padding:8px 14px;border:1px solid var(--hair-2);border-radius:12px;background:var(--page);color:var(--ink);font:inherit;font-variant-numeric:tabular-nums}
+.field input[type=number]:hover{border-color:var(--muted)}
+.field input[type=number]:focus-visible{outline:2px solid var(--focus);outline-offset:2px;box-shadow:0 0 0 6px var(--halo)}
+.check{display:inline-flex;align-items:center;gap:10px;margin-top:20px;color:var(--ink-2);font-weight:560;cursor:pointer}
+.check input{width:20px;height:20px;margin:0;accent-color:var(--ink);cursor:pointer}
+.h-plan{height:440px}
+.h-lab{height:320px}
+.h-contrib{height:360px}
+.h-sv{height:300px}
+.h-pay{height:280px}
+.h-hist{height:380px}
+.h-pace{height:280px}
+.h-inc{height:280px}
+.stack{display:grid;gap:56px}
+.stack>*,.two>*,.pair>*{min-width:0}
+.toolrow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;margin:0 0 16px}
+.tools-r{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.bsr .bv{min-width:5.2em}
+.empty{padding:36px 0}
+.empty p{max-width:56ch}
+@media (max-width:1020px){
+  .sliders{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:719px){
+  .figs.one{grid-template-columns:minmax(0,1fr)}
+  .sliders,.sliders.two-up{grid-template-columns:minmax(0,1fr)}
+  .bigfig{font-size:var(--fs-f1)}
+  .h-plan,.h-lab,.h-contrib,.h-hist{height:300px}
+  .h-sv,.h-pay,.h-pace,.h-inc{height:250px}
+}
+
 /* ============ MOTION OFF ============ */
 .shot *,.shot *::before,.shot *::after{transition:none!important;animation:none!important}
 @media (prefers-reduced-motion:reduce){
@@ -819,7 +875,9 @@ button.medal:active .disc{transform:translateY(0) scale(.96)}
   <section class="view" id="view-report" role="tabpanel" aria-labelledby="tab-report" hidden></section>
   <section class="view" id="view-accounts" role="tabpanel" aria-labelledby="tab-accounts" hidden></section>
   <section class="view" id="view-networth" role="tabpanel" aria-labelledby="tab-networth" hidden></section>
-  <section class="view" id="view-other" role="tabpanel" hidden></section>
+  <section class="view" id="view-saving" role="tabpanel" aria-labelledby="tab-saving" hidden></section>
+  <section class="view" id="view-plan" role="tabpanel" aria-labelledby="tab-plan" hidden></section>
+  <section class="view" id="view-lab" role="tabpanel" aria-labelledby="tab-lab" hidden></section>
 </main>
 
 <div class="strip" id="strip" aria-hidden="true"><svg id="stripSvg"></svg></div>
@@ -1534,6 +1592,15 @@ const Charts = (() => {
 
 /* table twins for charts (the no-hover way to read every value) */
 const Tables = new Map();
+function fillTable(chartId){
+  const spec = Tables.get(chartId), wrap = document.getElementById('tbl-' + chartId);
+  if (!spec || !wrap) return;
+  wrap.textContent = '';
+  wrap.append(h('table', {class: 'dtable'}, h('thead', null, h('tr', null, spec.cols.map((c, i) => h('th', {scope: 'col', class: spec.noteCol === i ? 'note' : null, text: c})))),
+    h('tbody', null, spec.rows.map(r => h('tr', null, r.map((v, i) => h('td', {class: spec.noteCol === i ? 'note' : null, text: v})))))));
+}
+/* a chart that redraws while its table is open keeps the table in step */
+function refreshTable(chartId){ const wrap = document.getElementById('tbl-' + chartId); if (wrap && !wrap.hidden) fillTable(chartId); }
 function tableToggle(chartId){
   const b = h('button', {class: 'tgl', type: 'button', 'aria-pressed': 'false', 'aria-controls': chartId, html: ICON.table + '<span>Table</span>'});
   b.addEventListener('click', () => {
@@ -1542,10 +1609,7 @@ function tableToggle(chartId){
     b.innerHTML = (on ? ICON.chart + '<span>Chart</span>' : ICON.table + '<span>Table</span>');
     const box = document.getElementById(chartId), wrap = document.getElementById('tbl-' + chartId);
     if (on){
-      const spec = Tables.get(chartId);
-      wrap.textContent = '';
-      wrap.append(h('table', {class: 'dtable'}, h('thead', null, h('tr', null, spec.cols.map((c, i) => h('th', {scope: 'col', class: spec.noteCol === i ? 'note' : null, text: c})))),
-        h('tbody', null, spec.rows.map(r => h('tr', null, r.map((v, i) => h('td', {class: spec.noteCol === i ? 'note' : null, text: v})))))));
+      fillTable(chartId);
       box.hidden = true; wrap.hidden = false;
     } else { wrap.hidden = true; box.hidden = false; const c = Charts.get(chartId); if (c) c.resize(); }
   });
@@ -2006,7 +2070,6 @@ const Report = {
   },
 };
 
-/* ---------------- THE OTHER FIVE LENSES (not in this preview) ---------------- */
 /* ======================================================================
    LENS TAB HELPERS (shared by Accounts, Net worth and the tabs after them)
    ====================================================================== */
@@ -2022,7 +2085,7 @@ function blend(fg, bg, a){
 /* the parts of a gain: your own money strongest, then dividends, then the market; fees are a loss */
 const partColors = t => ({contribs: t.gain, divs: blend(t.gain, t.page, .7), growth: blend(t.gain, t.page, .45), fees: t.loss});
 const PART_LABEL = {contribs: 'Contributions', divs: 'Dividends', growth: 'Market', fees: 'Fees'};
-const swatch = (color, cls) => cls === 'line' ? h('i', {class: 'key', style: 'border-top-color:' + color, 'aria-hidden': 'true'}) : h('i', {class: 'key ' + (cls || 'sq'), style: 'background:' + color, 'aria-hidden': 'true'});
+const swatch = (color, cls) => ['line', 'dash', 'dotted'].includes(cls) ? h('i', {class: 'key' + (cls === 'line' ? '' : ' ' + cls), style: 'border-top-color:' + color, 'aria-hidden': 'true'}) : h('i', {class: 'key ' + (cls || 'sq'), style: 'background:' + color, 'aria-hidden': 'true'});
 function legendOf(items){
   return h('ul', {class: 'legend', 'aria-label': 'Legend'}, items.map(([color, label, cls]) => h('li', null, swatch(color, cls), label)));
 }
@@ -2451,71 +2514,532 @@ const NetWorth = {
   },
 };
 
-const OWN = {pulse: Pulse, report: Report, accounts: Accounts, networth: NetWorth};
+/* ======================================================================
+   MORE HELPERS: meters, tables, the plan's shared settings
+   ====================================================================== */
+const fmtYears = v => (v % 1 ? v.toFixed(2).replace(/0$/, '') : String(v)) + ' yrs';
+const retireYear = v => new Date(Date.now() + v * 365.25 * DAY).getFullYear();
+/* the projection charts have one point per year and a last point at the exact horizon */
+const yearsAt = (n, years, i) => i === 0 ? 0 : i === n - 1 ? years : i;
+const yearLab = (n, years, i) => i === 0 ? 'Now' : String(retireYear(yearsAt(n, years, i)));
+const axisYear = (n, years) => (v, i) => i > 0 && yearLab(n, years, i) === yearLab(n, years, i - 1) ? '' : yearLab(n, years, i);
+const whenAt = (n, years, i) => i === 0 ? 'Now' : `${yearLab(n, years, i)}, ${+yearsAt(n, years, i).toFixed(2)} years from now`;
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+const kpis = (items, cls) => h('div', {class: 'kpis' + (cls ? ' ' + cls : '')}, items.filter(Boolean));
+/* a labeled bar: the label and value above, the fill below */
+function meterEl(label, valueText, frac, color, opts = {}){
+  return h('div', null, h('div', {class: 'mhead'}, h('span', {text: label}), opts.quiet ? null : h('b', {text: valueText})),
+    h('div', {class: 'meter', role: 'img', 'aria-label': `${label}: ${valueText}`}, h('i', {style: `--c:${color};--w:${(clamp(frac, 0, 1) * 100).toFixed(1)}%`})),
+    opts.scale ? h('div', {class: 'mscale', 'aria-hidden': 'true'}, opts.scale.map(x => h('span', {text: x}))) : null);
+}
+/* a plain table; a cell is text, or {t, cls, node} */
+function tableEl(cols, rows, opts = {}){
+  const st = !!opts.stack, aria = r => st ? {role: r} : {};
+  const cell = (c, i) => { const o = c && typeof c === 'object' && !c.nodeType ? c : {t: c}; return h('td', {class: o.cls || null, 'data-label': cols[i] || null, ...aria('cell')}, o.node || o.t); };
+  return h('div', {class: 'tbl-x'}, h('table', {class: 'tbl' + (st ? ' tbl-stack' : ''), ...aria('table')},
+    h('thead', aria('rowgroup'), h('tr', aria('row'), cols.map(c => h('th', {scope: 'col', text: c, ...aria('columnheader')})))),
+    h('tbody', aria('rowgroup'), rows.map(r => h('tr', aria('row'), r.map(cell))))));
+}
+const signedK = v => F.signed(v, F.k);
+const deltaCell = (v, text) => ({t: text, cls: 'd ' + dir(v)});
 
-const OTHER = {
-  saving: {title: 'Saving', lede: 'Every month\'s saving as ticks along the past, this year\'s 401(k) limit as the goal ahead, and the streak counting toward its next badge.'},
-  plan: {title: 'Plan', lede: 'Drag the fan: change the return, the monthly saving or the retirement date, and watch every pin ahead slide to its new date.'},
-  lab: {title: 'Lab', lede: 'Side trails off the main one: work optional, paying extra on the mortgage versus investing, and other what-ifs, each drawn as its own fan.'},
-};
-const Other = {
-  render(key){
-    const root = $('#view-other');
-    const o = OTHER[key], t = Color.theme();
-    root.setAttribute('aria-labelledby', 'tab-' + key);
+/* the settings the Plan tab's sliders and the Lab tab share */
+function planDefaults(){
+  const rows = d.rows, rr = M.Compute.realizedRate(rows), sp = M.Household.sheetPlan(d);
+  const sheet = {rate: sp.rate != null ? Math.round(sp.rate * 1000) / 10 : null, years: sp.years != null ? Math.round(sp.years * 4) / 4 : null, contrib: sp.contrib != null ? Math.round(sp.contrib) : null};
+  const bits = [sheet.rate != null && sheet.rate + '% a year', sheet.contrib != null && F.usd(sheet.contrib) + '/mo',
+                sp.retireDate ? 'retiring ' + F.month(sp.retireDate) : sheet.years != null && fmtYears(sheet.years) + ' to go'].filter(Boolean);
+  const cur4 = rows[rows.length - 1].total * 0.04 / 12;
+  state.sheet = sheet; state.sheetBits = bits; state.realized = rr;
+  state.plan = {rate: clamp(sheet.rate ?? Math.round(rr * 1000) / 10, 3, 12), years: clamp(sheet.years ?? 22, 5, 40), contrib: clamp(sheet.contrib ?? Math.round(M.Household.planContrib(d)), 0, 8000), infl: 2.5};
+  state.ptsExtra = 0; state.labExtra = 500; state.etaTarget = null; state.histH = 'near';
+  state.fire = {spend: Math.min(20000, Math.max(6000, Math.round(cur4 / 100) * 100)), swr: 4, pension: true};
+}
+const planArgs = () => { const p = state.plan; return {rate: p.rate / 100, years: p.years, contrib: p.contrib, infl: p.infl / 100, start: d.rows[d.rows.length - 1].total}; };
+
+/* ======================================================================
+   SAVING: what goes in each month, and how much of the growth is yours
+   ====================================================================== */
+const Saving = {
+  render(){
+    const root = $('#view-saving'), t = Color.theme(), H = M.Household;
     root.textContent = '';
-    root.append(h('section', {class: 'sec stub'},
-      h('div', null,
-        h('h1', {text: o.title}),
-        h('p', {class: 'lede', text: o.lede}),
-        h('p', {class: 'note', text: 'Not in this preview. Pulse and Report card are fully designed.'}),
-        h('div', {class: 'acts'}, h('button', {class: 'btn', type: 'button', onclick: () => go('pulse'), html: '<span>Open Pulse</span>' + ICON.arrow}), h('button', {class: 'btn', type: 'button', onclick: () => go('report'), html: '<span>Open Report card</span>' + ICON.arrow}))),
-      h('figure', null, h('div', {class: 'chart h-stub', id: 'c-stub', role: 'img', 'aria-label': `A first look at the ${o.title} lens`}), h('figcaption', {id: 'stubCap'}))));
-    this.sketch(key, t);
-  },
-  /* a small real-data sketch of what each lens adds */
-  sketch(key, t){
-    const {all} = state.model, cap = $('#stubCap');
-    const narrow = ($('#c-stub').clientWidth || 600) < 560;          // the legend wraps to two lines
-    const opt = {...Charts.base(t), grid: {left: 4, right: 12, top: narrow && key === 'saving' ? 60 : 34, bottom: 4, containLabel: true}, xAxis: Charts.timeAxis(t), yAxis: Charts.valAxis(t, axisMoney)};
-    /* legends mirror the mark: a short line for lines, a square for areas and bars */
-    const lg = (names, kind) => ({top: 0, left: 0, itemGap: 16, textStyle: {color: t.ink2, fontFamily: FONT, fontSize: 12},
-      ...(kind === 'line' ? {icon: 'rect', itemWidth: 18, itemHeight: 2.5} : {icon: 'roundRect', itemWidth: 11, itemHeight: 11}), data: names});
-    const row = (name, color, val, dashed) => `<div style="display:flex;justify-content:space-between;gap:14px;align-items:center"><span><span style="display:inline-block;width:14px;border-top:2px ${dashed ? 'dashed' : 'solid'} ${color};vertical-align:middle;margin-right:7px"></span>${esc(name)}</span><b>${esc(val)}</b></div>`;
-    const head = ms => `<div style="color:${t.muted};font-size:12px;margin-bottom:3px">${esc(F.month(new Date(ms)))}</div>`;
-    const xFor = (a, b, short) => Charts.timeAxis(t, short, Charts.yearStep($('#c-stub'), b - a));
-    if (key === 'saving'){
-      const cm = M.Household.contribMonths(d);
-      const G = [['retire', 'Retirement accounts'], ['match', 'Employer match'], ['broker', 'Brokerage'], ['cash', 'Savings'], ['kids', "Kids' 529s"]];
-      Charts.mount('c-stub', {...opt, legend: lg(G.map(g => g[1]), 'bar'), xAxis: xFor(cm[0].date.getTime(), cm[cm.length - 1].date.getTime(), true),
-        tooltip: {...opt.tooltip, axisPointer: {type: 'shadow', shadowStyle: {color: t.hair}}, formatter: ps => { const l = [].concat(ps).filter(p => p.value[1]); if (!l.length) return ''; const m0 = cm.find(m => m.date.getTime() === l[0].value[0]);
-          return head(l[0].value[0]).replace('</div>', (m0 && m0.planned ? ' · planned' : '') + '</div>') + l.slice().reverse().map(p => row(p.seriesName, p.color, F.usd(p.value[1]))).join(''); }},
-        yAxis: {...opt.yAxis, scale: false},
-        series: G.map(([k, name]) => ({name, type: 'bar', stack: 'm', barMaxWidth: 18, itemStyle: {color: t.groups[k], borderColor: t.page, borderWidth: 1}, emphasis: {disabled: true},
-          data: cm.map(m => ({value: [m.date.getTime(), Math.round((m.byGroup || {})[k] || 0)], itemStyle: {opacity: m.planned ? .4 : 1}}))}))});
-      cap.textContent = 'Money saved each month, by where it went. Lighter bars are planned months still ahead.';
-    } else {
-      /* the fan from the band, large: 5% to 9% as a wash, the plan's 7% dashed through it */
-      const fanM = state.model.band.fan;
-      if (!fanM){ cap.textContent = 'Needs a plan in the workbook.'; return; }
-      const thin = ln => ln.pts.filter((_, i, a) => i % 3 === 0 || i === a.length - 1);
-      const lo = thin(fanM.low), hi = thin(fanM.high), pl = thin(fanM.plan);
-      const fiRoad = all.report.road.find(r => r.kind === 'fi');
-      Charts.mount('c-stub', {...opt, xAxis: {...Charts.timeAxis(t, false, 1), minInterval: 4 * 365.25 * DAY},
-        legend: lg(['7% a year, the plan', '5% to 9% a year'], 'line'),
-        tooltip: {...opt.tooltip, formatter: ps => { const l = [].concat(ps); if (!l.length) return ''; const i = l[0].dataIndex;
-          return head(l[0].value[0]) + row('At 9%', t.port, F.k(hi[i][1])) + row('At 7%', t.port, F.k(pl[i][1]), true) + row('At 5%', t.port, F.k(lo[i][1])) + `<div style="color:${t.muted};font-size:12px;margin-top:4px">An estimate</div>`; }},
-        series: [
-          {name: '5% to 9% a year', type: 'line', stack: 'fan', data: lo, showSymbol: false, lineStyle: {width: 1, color: t.port, opacity: .6}, itemStyle: {color: t.port}, emphasis: {disabled: true}},
-          {name: 'fanband', type: 'line', stack: 'fan', data: hi.map((p, i) => [p[0], p[1] - lo[i][1]]), showSymbol: false, lineStyle: {width: 1, color: t.port, opacity: .6}, itemStyle: {color: t.port}, areaStyle: {color: t.portWash, opacity: 1}, emphasis: {disabled: true}},
-          {name: '7% a year, the plan', type: 'line', data: pl, showSymbol: false, lineStyle: {width: 2, type: [7, 5], color: t.port}, itemStyle: {color: t.port}, emphasis: {disabled: true},
-           markLine: key === 'lab' && fiRoad ? {silent: true, symbol: 'none', lineStyle: {color: t.muted, width: 1, type: 'solid'},
-             label: {color: t.ink2, fontFamily: FONT, fontSize: 12, fontWeight: 600, formatter: 'Work optional, ' + F.month(fiRoad.date), position: 'insideEndTop'}, data: [{xAxis: fiRoad.date.getTime()}]} : undefined},
-        ]});
-      cap.textContent = key === 'plan' ? "The fan from the band, drawn large: the plan's 7% between 5% and 9%. An estimate." : 'The same fan, with the work-optional date from the road ahead. An estimate.';
+    const S = H.contribSummary(d), R = H.savingsRate(d), P = H.paycheck(d);
+    const years = M.Compute.yearTable(d).filter(y => y.growth != null);
+    if (!S && !P && !years.length){
+      root.append(h('section', {class: 'sec empty'}, h('h2', {class: 'h3', text: 'Nothing to show yet'}),
+        h('p', {class: 'prose', text: 'This tab reads the Average Savings sheet (every deposit, by month) and the paycheck rows on the Amortization sheet. Neither was found in this file.'})));
+      return;
     }
+    if (S) root.append(this.top(S, R), this.monthsSec(S), this.destRate(S, R));
+    if (years.length) root.append(this.svmSec(years));
+    if (P) root.append(this.paySec(P));
+    if (S) this.monthsChart(t);
+    if (years.length) this.svmChart(years, t);
+    if (P) this.payChart(P, t);
+  },
+
+  top(S, R){
+    const lastM = S.done.length ? M.MONTH_ABBR[S.done[S.done.length - 1].m] : '', ch = S.prevSame ? S.ytd / S.prevSame - 1 : null;
+    return h('section', {class: 'sec now', 'aria-label': 'Saving this year'},
+      h('div', {class: 'now-main'},
+        h('p', {class: 'eyebrow', text: `Saved in ${S.year} so far`}),
+        h('p', {class: 'hero-fig', text: F.usd(S.ytd)}),
+        h('ul', {class: 'deltas'},
+          ch != null ? deltaLine(ch, `${word(ch)} ${F.pct(Math.abs(ch), 1)} on Jan–${lastM} ${S.year - 1}`) : h('li', null, h('span', {class: 'txt', text: `${S.nDone} months logged`})),
+          h('li', null, h('span', {class: 'txt', text: `${F.usd(S.avg)} a month on average. The plan for the full year is ${F.usd(S.full)}.`})))),
+      h('div', {class: 'now-side'},
+        h('div', {class: 'sign'}, h('p', {class: 'sign-label', text: 'Employer match'}), h('p', {class: 'sign-fig', text: S.match ? F.usd(S.match) : 'None'}),
+          h('p', {class: 'sign-sub', text: S.match ? 'Free money from your employer this year' : 'No match logged'})),
+        h('div', {class: 'sign'}, h('p', {class: 'sign-label', text: 'Savings rate'}), h('p', {class: 'sign-fig', text: R && R.rate != null ? F.pct(R.rate, 0) : 'Not yet'}),
+          h('p', {class: 'sign-sub', text: R ? (R.household ? 'Of household pay. Details below.' : 'Of your pay. Details below.') : 'Needs paycheck rows'}))));
+  },
+
+  groups(){
+    const months = M.Household.contribMonths(d);
+    const groups = M.CONTRIB_GROUPS.filter(g => months.some(m => (m.byGroup[g.key] || 0) > 0));
+    [...new Set(months.flatMap(m => Object.keys(m.byGroup)))].filter(k => !M.CONTRIB_GROUPS.some(g => g.key === k)).forEach(k => groups.push({key: k, label: k}));
+    return {months, groups};
+  },
+  colorOf(t, k){ return t.groups[k] || t.muted; },
+
+  monthsSec(S){
+    const t = Color.theme(), {months, groups} = this.groups(), planned = months.filter(m => m.planned).length;
+    const fy = d.contrib && d.contrib.fixedYears && d.contrib.fixedYears[0];
+    return h('section', {class: 'sec tight', 'aria-label': 'Contributions by month'},
+      secHead('Contributions by month', 'Every deposit logged in your Average Savings sheet.' + (planned ? ` The faded ${planned === 1 ? 'month is' : planned + ' months are'} planned, not made yet.` : '') +
+        (fy ? ` The second block in the sheet is labeled ${fy.was}, so it is read as ${fy.now}.` : ''),
+        legendOf(groups.map(g => [this.colorOf(t, g.key), g.label])), tableToggle('c-contrib')),
+      h('div', {class: 'chart h-contrib', id: 'c-contrib', role: 'img', 'aria-label': 'Monthly contributions stacked by where the money went'}),
+      h('div', {class: 'tbl-wrap', id: 'tbl-c-contrib', hidden: true}));
+  },
+  monthsChart(t){
+    const {months, groups} = this.groups(), step = Charts.yearStep($('#c-contrib'), months[months.length - 1].date - months[0].date);
+    Charts.mount('c-contrib', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, axisPointer: {type: 'shadow', shadowStyle: {color: t.hair}}, formatter: ps => {
+        const l = [].concat(ps); if (!l.length) return '';
+        const m = months[l[0].dataIndex]; if (!m) return '';
+        return `<div style="color:${t.muted};font-size:12px;margin-bottom:3px">${esc(M.MONTH_ABBR[m.m] + ' ' + m.year)}${m.planned ? ' · planned' : ''}</div>` +
+          l.filter(p => p.value[1]).reverse().map(p => tipRow(p.seriesName, p.color, F.usd(p.value[1]))).join('') +
+          `<div style="margin-top:4px;padding-top:4px;border-top:1px solid ${t.hair2};display:flex;justify-content:space-between"><span>Total</span><b>${esc(F.usd(m.total))}</b></div>` +
+          (m.blanks && m.blanks.length ? `<div style="color:${t.muted};max-width:220px;white-space:normal;margin-top:3px">No amount entered: ${esc(m.blanks.join(', '))}</div>` : '');
+      }},
+      grid: {left: 4, right: 12, top: 12, bottom: 6, containLabel: true},
+      xAxis: Charts.timeAxis(t, false, step), yAxis: {...Charts.valAxis(t, axisMoney), min: 0, scale: false},
+      series: groups.map((g, gi) => ({name: g.label, type: 'bar', stack: 'c', barMaxWidth: 18, emphasis: {disabled: true},
+        itemStyle: {color: this.colorOf(t, g.key), borderColor: t.page, borderWidth: 1, borderRadius: gi === groups.length - 1 ? [3, 3, 0, 0] : 0},
+        data: months.map(m => ({value: [m.date.getTime(), Math.round((m.byGroup[g.key] || 0) * 100) / 100], itemStyle: {opacity: m.planned ? .35 : 1}}))})),
+    });
+    Tables.set('c-contrib', {cols: ['Month', ...groups.map(g => g.label), 'Total', ''],
+      rows: months.slice().reverse().map(m => [M.MONTH_ABBR[m.m] + ' ' + m.year, ...groups.map(g => F.usd(m.byGroup[g.key] || 0)), F.usd(m.total), m.planned ? 'planned' : ''])});
+  },
+
+  destRate(S, R){
+    const t = Color.theme(), max = Math.max(...S.dests.map(x => x.amount), 1), lastM = S.done.length ? M.MONTH_ABBR[S.done[S.done.length - 1].m] : '';
+    const dests = S.dests.map(x => { const g = M.CONTRIB_GROUPS.find(c => c.key === x.group);
+      return h('div', {class: 'bsr', style: `--c:${this.colorOf(t, x.group)};--w:${(x.amount / max * 100).toFixed(1)}%`},
+        h('div', {class: 'bn'}, h('span', {text: x.dest}), h('small', {text: (g ? g.label + ' · ' : '') + F.pct(x.amount / (S.ytd || 1), 0) + ' of the total'})),
+        h('div', {class: 'btrack', 'aria-hidden': 'true'}, h('i')), h('div', {class: 'bv', text: F.usd(x.amount)})); });
+    let rate;
+    if (!R || R.rate == null) rate = [secHead('Savings rate', 'Needs this year’s paycheck rows on the Amortization sheet.')];
+    else rate = [secHead('Savings rate', (R.household ? 'Everything saved ÷ household pay' : 'Everything saved ÷ your pay') + ', this year so far.'),
+      h('p', {class: 'bigfig', text: F.pct(R.rate, 0)}),
+      meterEl('Share of pay saved', F.pct(R.rate, 0), R.rate * 2, t.gain, {quiet: true, scale: ['0%', '50%']}),
+      h('p', {class: 'note-l first', text: `Saved: ${F.usd(R.saved)} (${S.nDone} months)`}),
+      h('p', {class: 'note-l', text: `Pay: ${F.usd(R.gross)} gross from your paychecks` + (R.ang ? ` + ${F.usd(R.ang)} Guard pay${R.guardSrc === 'budget' ? ' (from the Budget sheet)' : ''}` : '') + (R.spouseYtd ? ` + ${F.usd(R.spouseYtd)} second income` : '')}),
+      h('p', {class: 'note-l', text: `401(k): ${F.pct(R.empRate, 0)} of each check, plus a ${F.pct(R.matchRate, 0)} employer match`}),
+      R.takeHomeMonthly ? h('p', {class: 'note-l', text: `Take-home: about ${F.usd(R.takeHomeMonthly)} a month from paychecks and Guard pay`}) : null,
+      !R.household ? h('p', {class: 'note-l', text: 'A second paycheck (and its 403(b) deposits) isn’t included.'}) : null,
+      h('p', {class: 'note-l', text: 'The bar is full at 50%. Many planners suggest 15 to 20% for retirement alone.'})];
+    return h('section', {class: 'sec tight pair gapped', 'aria-label': 'Where the money went and the savings rate'},
+      h('div', null, secHead(`Where ${S.year}’s savings went`, `January to ${lastM}: ${F.usd(S.ytd)} in all.` + (S.blanks.length ? ` ${S.blanks.join(' and ')} rows have no amounts in some months, so they count as $0.` : '')), h('div', null, dests)),
+      h('div', null, rate));
+  },
+
+  svmSec(years){
+    const tot = years.reduce((a, y) => ({c: a.c + y.contribs, g: a.g + y.growth}), {c: 0, g: 0}), pc = partColors(Color.theme());
+    return h('section', {class: 'sec tight', 'aria-label': 'Saved versus market growth'},
+      secHead('Saved vs. market growth', `Since ${years[0].year}: you added ${F.k(tot.c)} and the market added ${F.k(tot.g)}` + (tot.c + tot.g > 0 ? `, so ${F.pct(tot.g / (tot.c + tot.g), 0)} of the growth came from the market.` : '.') + ' Labels show each year’s market return.',
+        legendOf([[pc.contribs, 'You added'], [pc.growth, 'Market growth']]), tableToggle('c-svm')),
+      h('div', {class: 'chart h-sv', id: 'c-svm', role: 'img', 'aria-label': 'Contributions versus market growth by year'}),
+      h('div', {class: 'tbl-wrap', id: 'tbl-c-svm', hidden: true}));
+  },
+  svmChart(years, t){
+    const pc = partColors(t), labels = years.map(y => String(y.year) + (y.isCurrent ? ' YTD' : ''));
+    Charts.mount('c-svm', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, axisPointer: {type: 'shadow', shadowStyle: {color: t.hair}}, formatter: ps => { const l = [].concat(ps); if (!l.length) return ''; return `<div style="color:${t.muted};font-size:12px;margin-bottom:3px">${esc(l[0].name)}</div>` + l.slice().reverse().map(p => tipRow(p.seriesName, p.color, F.signed(p.value))).join(''); }},
+      grid: {left: 4, right: 12, top: 28, bottom: 6, containLabel: true},
+      xAxis: {type: 'category', data: labels, axisLine: {lineStyle: {color: t.hair2}}, axisTick: {show: false}, axisLabel: {color: t.muted, fontSize: 12, fontFamily: FONT, hideOverlap: true}},
+      yAxis: {...Charts.valAxis(t, axisMoney), scale: false},
+      series: [{name: 'You added', type: 'bar', stack: 'g', barMaxWidth: 40, emphasis: {disabled: true}, data: years.map(y => Math.round(y.contribs)), itemStyle: {color: pc.contribs, borderColor: t.page, borderWidth: 1}},
+               {name: 'Market growth', type: 'bar', stack: 'g', barMaxWidth: 40, emphasis: {disabled: true}, data: years.map(y => Math.round(y.growth)), itemStyle: {color: pc.growth, borderColor: t.page, borderWidth: 1, borderRadius: [4, 4, 0, 0]},
+                label: {show: true, position: 'top', color: t.ink2, fontSize: 12, fontWeight: 650, fontFamily: FONT, formatter: p => { const y = years[p.dataIndex]; return y.ret != null ? SP(y.ret) : ''; }}}],
+    });
+    Tables.set('c-svm', {cols: ['Year', 'You added', 'Market growth', 'Market return', 'Total change'],
+      rows: years.slice().reverse().map(y => [labels[years.indexOf(y)], F.usd(y.contribs), F.signed(y.growth), SP(y.ret), F.signed(y.change)])});
+  },
+
+  paySec(P){
+    const t = Color.theme(), L = P.latest, today = new Date(), I = d.inputs, np = I && I.num(/net pay|take-?home/i);
+    const Rr = M.Household.savingsRate(d);
+    const items = [figBlock('Gross per paycheck', F.cents(L.gross), '', `${F.k(P.annual)} a year, ${P.perYear} checks, ${F.date(L.date)}`),
+      np ? figBlock('Take-home per paycheck', F.cents(np.v), '', `${F.pct(np.v / L.gross, 0)} of gross` + (np.asOf ? ', as of ' + F.date(np.asOf) : '')) : figBlock('Take-home per paycheck', 'Not yet', 'flat', d.source === 'file' ? 'Add “Net pay per check” to a Dashboard sheet' : 'Not in the sheet'),
+      figBlock('To your 401(k)', F.cents(L.employee), '', `${F.pct(L.employee / L.gross, 0)} plus ${F.cents(L.match)} match (${F.pct(L.match / L.gross, 0)})`),
+      P.yearAgo ? figBlock('Past year', SP(L.gross / P.yearAgo.gross - 1), dir(L.gross / P.yearAgo.gross - 1), `From ${F.cents(P.yearAgo.gross)} on ${F.date(P.yearAgo.date)}`) : figBlock('Past year', 'Not yet', 'flat', 'Needs a year of paychecks')];
+    let split = null;
+    if (np){
+      const other = L.gross - L.employee - np.v;
+      if (other < 0) split = h('p', {class: 'prose', text: 'Take-home plus the 401(k) comes to more than gross pay, so the take-home figure may be from a different paycheck.'});
+      else {
+        const parts = [{label: '401(k)', v: L.employee, c: t.groups.retire}, {label: 'Taxes and other deductions', v: other, c: blend(t.muted, t.page, .55)}, {label: 'Take-home', v: np.v, c: t.groups.cash}];
+        split = h('div', {style: 'margin-bottom:28px'}, h('p', {class: 'cap', text: 'Where each paycheck goes'}),
+          h('div', {class: 'sbar', role: 'img', 'aria-label': 'Each paycheck: ' + parts.map(x => `${x.label} ${F.cents(x.v)}`).join(', ')}, parts.map(x => h('i', {style: `flex:${x.v} 1 0;--c:${x.c}`, title: `${x.label}: ${F.cents(x.v)} (${F.pct(x.v / L.gross, 0)})`}))),
+          legendOf(parts.map(x => [x.c, `${x.label} ${F.cents(x.v)} · ${F.pct(x.v / L.gross, 0)}`])));
+      }
+    }
+    const changes = P.changes.slice().reverse();
+    const raise = changes.length ? tableEl(['Paycheck', 'New gross', 'Change', ''], changes.map(c => [F.date(c.date), F.cents(c.to), deltaCell(c.delta, F.signed(c.delta) + ' · ' + SP(c.pct)), c.planned ? 'planned' : '']))
+                                : h('p', {class: 'prose', text: 'No pay changes in these rows.'});
+    const B = d.budget && d.budget.paycheck;
+    let note;
+    if (np){ note = [h('b', {text: F.usd(np.v * P.perYear / 12) + ' a month'}), ' is what this job brings home'];
+      if (Rr && Rr.takeHomeMonthly && Rr.guardSrc) note.push(', or ', h('b', {text: F.usd(Rr.takeHomeMonthly) + ' a month'}), ' with Guard pay'); note.push('.'); }
+    else if (B && B.net && B.net.now && B.gross && B.gross.now) note = [`Your Budget sheet’s paycheck table shows take-home of `, h('b', {text: F.cents(B.net.now)}), ` on ${F.cents(B.gross.now)} gross${B.gross.now < L.gross * 0.95 ? ', which is older than the checks above' : ''}.`];
+    else note = ['Take-home pay isn’t in the sheet.'];
+    return h('section', {class: 'sec tight', 'aria-label': 'Paycheck'},
+      secHead('Paycheck', `From the per-paycheck 401(k) rows on your Amortization sheet, ${P.perYear} paychecks a year.` + (P.all.some(x => x.date > today) ? ' Later checks this year are the sheet’s plan.' : ''),
+        legendOf([[t.groups.retire, '401(k)'], [t.groups.match, 'Employer match'], [t.ink2, 'Gross pay', 'line']]), tableToggle('c-pay')),
+      kpis(items), split,
+      h('div', {class: 'chart h-pay', id: 'c-pay', role: 'img', 'aria-label': 'Gross pay per paycheck with the 401(k) deferral and employer match'}),
+      h('div', {class: 'tbl-wrap', id: 'tbl-c-pay', hidden: true}),
+      h('div', {class: 'two', style: 'margin-top:36px'}, h('div', null, h('p', {class: 'cap', text: 'Pay changes'}), raise), h('p', {class: 'prose', style: 'align-self:end'}, note)));
+  },
+  payChart(P, t){
+    const today = new Date(), pts = P.all.map(x => x.date.getTime()), cut = P.paid.length, step = Charts.yearStep($('#c-pay'), pts[pts.length - 1] - pts[0]);
+    const gross = P.all.map((x, i) => [pts[i], i < cut ? x.gross : null]), plannedLine = P.all.map((x, i) => [pts[i], i >= cut - 1 && cut < P.all.length ? x.gross : null]);
+    Charts.mount('c-pay', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, formatter: ps => { const l = [].concat(ps).filter(p => p.value && p.value[1] != null); if (!l.length) return ''; return tipHead(t, l[0].value[0]).replace('Week of', 'Paycheck of') + l.map(p => tipRow(p.seriesName, p.color, F.cents(p.value[1]))).join(''); }},
+      grid: {left: 4, right: 16, top: 12, bottom: 6, containLabel: true},
+      xAxis: Charts.timeAxis(t, false, step), yAxis: {...Charts.valAxis(t, axisMoney), min: 0, scale: false},
+      series: [{name: '401(k)', type: 'bar', stack: 'k', barMaxWidth: 12, emphasis: {disabled: true}, itemStyle: {color: t.groups.retire}, data: P.all.map((x, i) => ({value: [pts[i], Math.round(x.employee * 100) / 100], itemStyle: {opacity: i < cut ? 1 : .35}}))},
+               {name: 'Employer match', type: 'bar', stack: 'k', barMaxWidth: 12, emphasis: {disabled: true}, itemStyle: {color: t.groups.match, borderRadius: [3, 3, 0, 0]}, data: P.all.map((x, i) => ({value: [pts[i], Math.round(x.match * 100) / 100], itemStyle: {opacity: i < cut ? 1 : .35}}))},
+               {name: 'Gross pay', type: 'line', step: 'end', data: gross, connectNulls: false, showSymbol: false, emphasis: {disabled: true}, lineStyle: {width: 2, color: t.ink2}, itemStyle: {color: t.ink2}}]
+        .concat(cut < P.all.length ? [{name: 'Planned', type: 'line', step: 'end', data: plannedLine, connectNulls: false, showSymbol: false, emphasis: {disabled: true}, lineStyle: {width: 2, type: [6, 5], color: t.muted}, itemStyle: {color: t.muted}}] : []),
+    });
+    Tables.set('c-pay', {cols: ['Paycheck', 'Gross', '401(k)', 'Match', ''], rows: P.all.slice().reverse().map(x => [F.date(x.date), F.cents(x.gross), F.cents(x.employee), F.cents(x.match), x.date > today ? 'planned' : ''])});
   },
 };
+
+/* ======================================================================
+   PLAN: the retirement projector, income, pension points, history, 401(k) pacing
+   ====================================================================== */
+const Plan = {
+  render(){
+    const root = $('#view-plan'), t = Color.theme(), p = state.plan, H = M.Household;
+    root.textContent = '';
+    const sl = (id, label, min, max, step, key, fmt) => slider({id, label, min, max, step, value: p[key], fmt, onInput: v => { p[key] = v; this.update(); }});
+    const presets = [];
+    if (state.sheetBits.length) presets.push(['Your sheet', () => { const s = state.sheet; if (s.rate != null) p.rate = clamp(s.rate, 3, 12); if (s.years != null) p.years = clamp(s.years, 5, 40); if (s.contrib != null) p.contrib = clamp(s.contrib, 0, 8000); }, 'Reset return, years and contribution to the sheet’s values']);
+    [['Conservative: 6%', 6], ['S&P 500 average: 10%', 10], [`Your realized: ${clamp(Math.round(state.realized * 1000) / 10, 3, 12)}%`, clamp(Math.round(state.realized * 1000) / 10, 3, 12)]].forEach(([lab, r]) => presets.push([lab, () => { p.rate = r; }]));
+    root.append(h('section', {class: 'sec', 'aria-label': 'Retirement projector'},
+      secHead('Retirement projector', state.sheetBits.length ? `Starts from your sheet’s projection row: ${state.sheetBits.join(', ')}. Drag to explore.` : 'Drag the sliders. Everything below recalculates live.',
+        legendOf([[t.port, 'Nominal', 'line'], [t.ink2, 'Today’s dollars', 'dash']]), tableToggle('c-ret')),
+      h('div', {class: 'sliders'}, sl('retRate', 'Annual return', 3, 12, 0.1, 'rate', v => v.toFixed(1) + '%'), sl('retYears', 'Years to go', 5, 40, 0.25, 'years', v => fmtYears(v) + ' · ' + retireYear(v)),
+        sl('retContrib', 'Monthly contribution', 0, 8000, 1, 'contrib', v => F.usd(v)), sl('retInfl', 'Inflation', 0, 6, 0.1, 'infl', v => v.toFixed(1) + '%')),
+      h('div', {class: 'presets', role: 'group', 'aria-label': 'Return presets'}, h('span', {class: 'pl', text: 'Try'}),
+        presets.map(([lab, fn, title]) => h('button', {class: 'tgl', type: 'button', title: title || null, text: lab, onclick: () => { fn(); this.render(); this.after(); }}))),
+      h('div', {class: 'pair', style: 'margin-top:36px'}, h('div', null, h('div', {class: 'chart h-plan', id: 'c-ret', role: 'img', 'aria-label': 'Retirement projection chart, nominal and inflation adjusted'}), h('div', {class: 'tbl-wrap', id: 'tbl-c-ret', hidden: true})), h('div', {class: 'figs', id: 'retFigs'})),
+      h('p', {class: 'prose story', id: 'retStory'})));
+    root.append(...[this.incomeSec(), this.pointsSec(), this.historySec(), this.pacingSec()].filter(Boolean));
+    this.update(); this.points(); this.after();
+  },
+  /* the parts of the page that don't depend on the sliders */
+  after(){
+    const t = Color.theme();
+    if (this.hasHistory) this.histChart(t);
+    if (this.hasPacing) this.pacingChart(t);
+  },
+
+  update(){
+    const t = Color.theme(), p = state.plan, a = planArgs(), r = M.Compute.retirement(a), real = (1 + a.rate) / (1 + a.infl) - 1;
+    const figs = $('#retFigs'); figs.textContent = '';
+    figs.append(figBlock('Projected value', F.k(r.finalNominal), '', `At ${F.pct(a.rate)} and ${F.usd(p.contrib)} a month over ${fmtYears(p.years)}`),
+      figBlock('In today’s dollars', F.k(r.finalReal), '', `After ${F.pct(a.infl)} annual inflation`),
+      figBlock('4% rule income', F.k(r.income4) + '/mo', '', `${F.k(r.income4Real)}/mo in today’s dollars`),
+      figBlock('Nest egg runway', r.runwayYears >= 80 ? '80+ yrs' : r.runwayYears + ' yrs', '', '4% withdrawals, 5% return in retirement'));
+    Charts.mount('c-ret', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, formatter: ps => { const l = [].concat(ps); if (!l.length) return ''; return `<div style="color:${t.muted};font-size:12px;margin-bottom:3px">${esc(whenAt(r.labels.length, p.years, l[0].dataIndex))}</div>` + l.map(x => tipRow(x.seriesName, x.seriesName === 'Nominal' ? t.port : t.ink2, F.k(x.value))).join(''); }},
+      grid: {left: 4, right: 16, top: 12, bottom: 6, containLabel: true},
+      xAxis: {type: 'category', boundaryGap: false, data: r.labels, axisLine: {lineStyle: {color: t.hair2}}, axisTick: {show: false}, axisLabel: {color: t.muted, fontSize: 12, fontFamily: FONT, hideOverlap: true, formatter: axisYear(r.labels.length, p.years)}},
+      yAxis: Charts.valAxis(t, axisMoney),
+      series: [{name: 'Nominal', type: 'line', data: r.nominal.map(v => Math.round(v)), showSymbol: false, smooth: .25, emphasis: {disabled: true}, lineStyle: {width: 2, color: t.port}, itemStyle: {color: t.port}, areaStyle: {color: t.portWash}},
+               {name: 'Today’s dollars', type: 'line', data: r.real.map(v => Math.round(v)), showSymbol: false, smooth: .25, emphasis: {disabled: true}, lineStyle: {width: 2, type: [7, 5], color: t.ink2}, itemStyle: {color: t.ink2}}],
+    });
+    Tables.set('c-ret', {cols: ['Year', 'Years from now', 'Nominal', 'In today’s dollars'], rows: r.labels.map((_, i) => [yearLab(r.labels.length, p.years, i), String(+yearsAt(r.labels.length, p.years, i).toFixed(2)), F.usd(r.nominal[i]), F.usd(r.real[i])])});
+    refreshTable('c-ret');
+    const st = $('#retStory'); st.textContent = '';
+    st.append('Keep contributing ', h('b', {text: F.usd(p.contrib) + ' a month'}), ' at a ', h('b', {text: F.pct(a.rate)}), ` return and in ${fmtYears(p.years)} this lands at `, h('b', {text: F.usd(Math.round(r.finalNominal))}),
+      ', worth ', h('b', {text: F.usd(Math.round(r.finalReal))}), ` in today’s dollars (a real return of ${SP(real)} after inflation). Under the 4% rule that is `, h('b', {text: F.usd(Math.round(r.income4Real)) + ' a month'}), ' of spending power, and the nest egg lasts ', h('b', {text: r.runwayYears >= 80 ? '80+ years' : r.runwayYears + ' years'}), '.');
+    this.income();
+  },
+
+  /* ---- retirement income: the portfolio, the Guard pension and Social Security ---- */
+  incomeSec(){
+    const pen = d.pension;
+    this.hasIncome = !!pen;
+    if (!pen) return null;
+    return h('section', {class: 'sec tight', id: 'sec-income', 'aria-label': 'Retirement income'},
+      secHead('Retirement income', 'Portfolio income (today’s dollars) plus your ANG pension' + (this.ss() ? ' and Social Security' : '') + ', across return scenarios.', h('div', {id: 'incLegend'}), tableToggle('c-income')),
+      h('div', {id: 'penCards'}),
+      h('div', {class: 'chart h-inc', id: 'c-income', role: 'img', 'aria-label': 'Retirement income by scenario, stacked'}),
+      h('div', {class: 'tbl-wrap', id: 'tbl-c-income', hidden: true}));
+  },
+  ss(){ const I = d.inputs, x = I && I.num(/social security/i); return x ? x.v : 0; },
+  income(){
+    const pen = d.pension; if (!pen || !$('#c-income')) return;
+    const t = Color.theme(), p = state.plan, last = d.rows[d.rows.length - 1].total, ss = this.ss(), a = planArgs();
+    const grow = rate => { let b = last; const mr = Math.pow(1 + rate, 1 / 12) - 1; for (let m = 1; m <= Math.round(a.years * 12); m++) b = b * (1 + mr) + a.contrib; return (b * 0.04 / 12) / Math.pow(1 + a.infl, a.years); };
+    const mine = grow(a.rate), combined = mine + pen.estMonthly + ss;
+    const cards = $('#penCards'); cards.textContent = '';
+    cards.append(kpis([figBlock('Portfolio (4% rule)', F.k(mine) + '/mo', '', 'Today’s dollars, at your sliders'),
+      figBlock('ANG pension', F.k(pen.estMonthly) + '/mo', '', pen.estTotalPts ? pen.estTotalPts.toLocaleString() + ' est. points, starts at 60' : 'Starts at age 60'),
+      ss ? figBlock('Social Security', F.k(ss) + '/mo', '', 'Your estimate, Dashboard sheet') : null,
+      figBlock('Combined', F.k(combined) + '/mo', 'up', F.k(combined * 12) + ' a year in today’s dollars')], ss ? '' : 'three'));
+    const cols = [t.ink2, t.gain, blend(t.gain, t.page, .45)];
+    const names = ['Portfolio (4%)', 'ANG pension'].concat(ss ? ['Social Security'] : []);
+    $('#incLegend').replaceWith(h('div', {id: 'incLegend'}, legendOf(names.map((n, i) => [cols[i], n]))));
+    const rr = state.realized, sc = [{label: '6%', rate: .06}, {label: '8%', rate: .08}, {label: '10%', rate: .10}, {label: 'Yours ' + (rr * 100).toFixed(1) + '%', rate: rr}];
+    const data = [sc.map(s => Math.round(grow(s.rate))), sc.map(() => Math.round(pen.estMonthly))].concat(ss ? [sc.map(() => Math.round(ss))] : []);
+    Charts.mount('c-income', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, axisPointer: {type: 'shadow', shadowStyle: {color: t.hair}}, formatter: ps => { const l = [].concat(ps); if (!l.length) return ''; return `<div style="color:${t.muted};font-size:12px;margin-bottom:3px">At ${esc(l[0].name)} a year</div>` + l.slice().reverse().map(x => tipRow(x.seriesName, x.color, F.usd(x.value) + '/mo')).join(''); }},
+      grid: {left: 4, right: 12, top: 12, bottom: 6, containLabel: true},
+      xAxis: {type: 'category', data: sc.map(s => s.label), axisLine: {lineStyle: {color: t.hair2}}, axisTick: {show: false}, axisLabel: {color: t.muted, fontSize: 12, fontFamily: FONT, interval: 0}},
+      yAxis: {...Charts.valAxis(t, v => F.k(v)), scale: false, min: 0},
+      series: names.map((n, i) => ({name: n, type: 'bar', stack: 'inc', barMaxWidth: 34, emphasis: {disabled: true}, data: data[i], itemStyle: {color: cols[i], borderColor: t.page, borderWidth: 1, borderRadius: i === names.length - 1 ? [4, 4, 0, 0] : 0}})),
+    });
+    Tables.set('c-income', {cols: ['Return'].concat(names, ['Total']), rows: sc.map((x, j) => [x.label].concat(names.map((_, i) => F.usd(data[i][j]) + '/mo'), [F.usd(data.reduce((acc, col) => acc + col[j], 0)) + '/mo']))});
+    refreshTable('c-income');
+  },
+
+  /* ---- pension points ---- */
+  pointsSec(){
+    const pen = d.pension;
+    this.hasPoints = !!(pen && pen.perPoint && pen.currentPoints);
+    if (!this.hasPoints) return null;
+    const sec = h('section', {class: 'sec tight', 'aria-label': 'Pension points'},
+      secHead('Pension points', `Guard retirement pay = points ÷ 360 × 2.5% × High-3 base pay (${F.usd(pen.high3)} a month in your sheet).`),
+      slider({id: 'ptsExtra', label: 'Extra points beyond your plan', min: 0, max: 1000, step: 10, value: state.ptsExtra, fmt: v => '+' + v.toLocaleString(), onInput: v => { state.ptsExtra = v; this.points(); }}),
+      h('div', {id: 'ptsBody', style: 'margin-top:32px'}));
+    return sec;
+  },
+  points(){
+    const pen = d.pension, body = $('#ptsBody'); if (!pen || !body) return;
+    const t = Color.theme(), extra = state.ptsExtra, cur = pen.currentPoints, goal = Math.max(pen.estTotalPts || cur, cur), monthly = pts => pts * pen.perPoint, target = goal + extra;
+    const fc = d.forecast, aged = fc && fc.rows && fc.rows.find(r => r.age != null), y60 = aged ? aged.year + (60 - aged.age) : null, left = goal - cur;
+    body.textContent = '';
+    body.append(meterEl(`${cur.toLocaleString()} of ${goal.toLocaleString()} planned points`, F.pct(Math.min(1, cur / goal), 0), cur / goal, cur >= goal ? t.good : t.gain),
+      h('div', {style: 'margin-top:28px'}, kpis([figBlock('Earned so far', F.usd(monthly(cur)) + '/mo', '', `${(cur / 360).toFixed(2)} years of credit`),
+        figBlock(extra ? 'With the extra points' : 'At your plan', F.usd(monthly(target)) + '/mo', '', `${target.toLocaleString()} points, ${F.k(monthly(target) * 12)} a year`),
+        figBlock('Each 100 points', '+' + F.usd(pen.perPoint * 100) + '/mo', '', `+${F.usd(pen.perPoint * 1200)} a year for life`)], 'three')),
+      h('p', {class: 'prose'}, 'Guard retired pay normally starts at age 60' + (y60 ? `, around ${y60} for you` : '') + '. ',
+        left > 0 ? [`The ${left.toLocaleString()} points still in your plan add `, h('b', {text: F.usd(monthly(left)) + ' a month'}), '. '] : '',
+        extra ? [`${extra.toLocaleString()} more on top would add `, h('b', {text: F.usd(monthly(extra)) + ' a month'}), `, about ${F.k(monthly(extra) * 12 * 25)} over 25 years of retirement. `] : '',
+        'These use the High-3 in your sheet; raises in your base pay before you retire lift every figure here.'));
+  },
+
+  /* ---- plan history: every plan in the workbook against what happened ---- */
+  historySec(){
+    const H = M.Household.planHistory(d);
+    this.H = H; this.hasHistory = !!(H.lines.length || H.bench);
+    if (!this.hasHistory) return null;
+    const t = Color.theme(), cur = H.expected.find(e => e.key === 'amort' && e.value != null) || H.expected.find(e => e.value != null), asOf = H.asOf;
+    const exp = tableEl(['Plan', 'Assumes', `Expected ${F.day(asOf)}`, 'Actual', 'Difference', 'Where it ends'], H.expected.map(e => [
+      {node: h('span', null, e.label, e.built ? h('small', {text: e.built}) : null)}, e.assumes, e.value != null ? F.usd(e.value) : 'Not yet', F.usd(H.actual),
+      e.value != null ? deltaCell(H.actual - e.value, `${H.actual - e.value >= 0 ? '▲' : '▼'} ${signedK(H.actual - e.value)}`) : 'Not yet', e.end ? `${F.k(e.end.value)} · ${e.end.date.getFullYear()}` : 'Not yet']), {stack: true});
+    const yt = M.Compute.yearTable(d).filter(y => y.isCurrent && y.ret != null && !H.returns.some(r => r.year === y.year));
+    const retRows = H.returns.map(r => ({...r, label: String(r.year)})).concat(yt.map(y => ({year: y.year, label: y.year + ' YTD', actual: y.ret, assumed: (H.returns[0] || {}).assumed, contribs: y.contribs})));
+    const ret = retRows.length ? tableEl(['Year', 'Your market return', 'Plan assumed', 'Difference', 'You added'], retRows.slice().reverse().map(r => { const dl = r.assumed != null ? r.actual - r.assumed : null;
+      return [r.label, {t: SP(r.actual), cls: 'd ' + dir(r.actual)}, r.assumed != null ? F.pct(r.assumed, 1) : 'Not yet', dl != null ? deltaCell(dl, `${dl >= 0 ? '▲' : '▼'} ${minus((dl * 100).toFixed(1))} pts`) : '', r.contribs != null ? F.k(r.contribs) : 'Not yet']; }), {stack: true})
+      : h('p', {class: 'prose', text: 'No yearly actuals on the Amortization sheet yet.'});
+    const col = this.planColors(t);
+    return h('section', {class: 'sec tight', 'aria-label': 'Plan history'},
+      secHead('Plan history', 'Every plan in your workbook against what actually happened' + (cur ? `. Today you are ${signedK(H.actual - cur.value)} against the ${cur.label.toLowerCase()}.` : '.') + ' The benchmark applies the plan’s return to the money you really put in, so the gap above it is market luck and skill.'),
+      h('div', {class: 'toolrow'},
+        legendOf([[t.ink, 'Actual', 'line']].concat(H.bench ? [[t.ink2, 'Benchmark', 'dash']] : []).concat(H.lines.map(l => [col[l.key], `${l.label} (${l.assumes})`, 'dash']))),
+        h('div', {class: 'tools-r'},
+          h('div', {class: 'seg', id: 'histSeg', role: 'group', 'aria-label': 'Chart horizon'}, [['near', 'Next 5 years'], ['far', 'To retirement']].map(([k, lab]) => h('button', {type: 'button', 'aria-pressed': String((state.histH || 'near') === k), text: lab, onclick: () => { state.histH = k; $$('#histSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.textContent === lab))); this.histChart(Color.theme()); }}))),
+          tableToggle('c-hist'))),
+      h('div', {class: 'chart h-hist', id: 'c-hist', role: 'img', 'aria-label': 'Actual balance compared with each plan’s projection'}),
+      h('div', {class: 'tbl-wrap', id: 'tbl-c-hist', hidden: true}),
+      h('div', {class: 'stack', style: 'margin-top:40px'}, h('div', null, h('p', {class: 'cap', text: 'Where each plan expected you to be today'}), exp), h('div', null, h('p', {class: 'cap', text: 'Your market return each year against the plan’s assumption'}), ret)));
+  },
+  planColors: t => ({forecast: t.groups.home, amort: t.gain}),
+  histChart(t){
+    const H = this.H, far = state.histH === 'far', asOf = H.asOf, col = this.planColors(t);
+    const all = H.lines.flatMap(l => l.pts).concat(H.bench ? H.bench.pts : []), minD = all.length ? new Date(Math.min(...all.map(p => p.date.getTime()))) : d.rows[0].date;
+    const start = far ? minD : new Date(Math.max(minD.getTime(), new Date(asOf.getFullYear() - 3, 0, 1).getTime())), end = far ? new Date(Math.max(...all.map(p => p.date.getTime()), asOf.getTime())) : new Date(asOf.getFullYear() + 5, 11, 31);
+    const inR = p => p.date >= start && p.date <= end;
+    const series = [{name: 'Actual', type: 'line', data: MeridianKit.gapSeries(d.rows.filter(r => r.date >= start), r => r.total), connectNulls: false, showSymbol: false, emphasis: {disabled: true}, lineStyle: {width: 2.5, color: t.ink}, itemStyle: {color: t.ink}, z: 5}];
+    if (H.bench) series.push({name: 'Benchmark', type: 'line', data: H.bench.pts.filter(inR).map(p => [p.date.getTime(), Math.round(p.value)]), showSymbol: false, emphasis: {disabled: true}, lineStyle: {width: 1.5, type: [6, 5], color: t.ink2}, itemStyle: {color: t.ink2}});
+    H.lines.forEach(l => series.push({name: `${l.label} (${l.assumes})`, type: 'line', data: l.pts.filter(inR).map(p => [p.date.getTime(), Math.round(p.value)]), symbol: 'circle', symbolSize: 7, showSymbol: true, emphasis: {disabled: true},
+      lineStyle: {width: 2, type: [6, 5], color: col[l.key]}, itemStyle: {color: col[l.key], borderColor: t.page, borderWidth: 2}}));
+    Charts.mount('c-hist', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, formatter: ps => { const l = [].concat(ps).filter(p => p.value && p.value[1] != null); if (!l.length) return ''; return tipHead(t, l[0].value[0]).replace('Week of', 'Date') + l.map(p => tipRow(p.seriesName, p.color, F.usd(p.value[1]))).join(''); }},
+      grid: {left: 4, right: 16, top: 12, bottom: 6, containLabel: true},
+      xAxis: {...Charts.timeAxis(t, false, 1), min: start.getTime(), max: end.getTime()}, yAxis: Charts.valAxis(t, axisMoney), series,
+    });
+    const cols = ['Date', 'Actual'].concat(H.bench ? ['Benchmark'] : []).concat(H.lines.map(l => l.label)), trows = [];
+    for (let y = start.getFullYear(); y <= end.getFullYear(); y++){
+      const dt = new Date(y, 0, 1), act = dt <= asOf ? d.rows.filter(r => r.date <= new Date(y, 0, 10)).pop() : null, row = [F.date(dt), act ? F.usd(act.total) : 'Not yet'];
+      if (H.bench){ const v = M.Household.interp(H.bench.pts, dt); row.push(v != null ? F.usd(v) : 'Not yet'); }
+      H.lines.forEach(l => { const v = M.Household.interp(l.pts, dt); row.push(v != null ? F.usd(v) : 'Not yet'); });
+      trows.push(row);
+    }
+    Tables.set('c-hist', {cols, rows: trows.reverse()});
+  },
+
+  /* ---- 401(k) pacing: this year's block against this year's IRS limit ---- */
+  pacingSec(){
+    const k = M.Household.k401Year(d);
+    this.k = k; this.hasPacing = !!k;
+    if (!k) return null;
+    const t = Color.theme(), L = k.limit.limit, n = k.done.length, N = k.deps.length, tsp = k.tsp.projected > 0 ? k.tsp : null, room = L - (tsp ? tsp.projected : 0);
+    const over = k.over > 1, onTrack = k.onPace && !over, soFar = k.ytd + (tsp ? tsp.ytd : 0), pctDone = Math.min(soFar / L, 1);
+    const sub = `${F.usd(k.ytd)} of the ${F.usd(L)} ${k.year} employee limit through ${n} of ${N} paychecks.` + (tsp ? ` Plus ${F.usd(tsp.ytd)} into the TSP, which counts toward the same limit, Roth or not.` : '') +
+      (k.limit.known ? '' : ` Using the ${k.limit.year} limit until ${k.year}’s is added.`) + ` ${F.usd(k.matchYtd)} of employer match is on top and doesn’t count toward the limit.`;
+    const rate = k.newRate && k.curRate ? ` (about ${F.pct(k.newRate, 1)} instead of ${F.pct(k.curRate, 0)})` : '';
+    const chipTxt = onTrack ? `On track: ${F.usd(k.combined)} by year-end, right at the limit` : over ? `Over the limit: on pace for ${F.usd(k.combined)}, ${F.usd(k.over)} too much` : `Under the limit: on pace for ${F.usd(k.combined)}, ${F.usd(k.short)} short of the max`;
+    return h('section', {class: 'sec tight', 'aria-label': '401(k) contribution pacing'},
+      secHead('401(k) contribution pacing', sub, legendOf([[t.ink, 'Your deferrals', 'line'], [t.muted, 'Pace to max', 'dash'], [t.loss, tsp ? 'Limit minus TSP' : 'IRS limit', 'dash']]), tableToggle('c-pacing')),
+      h('div', {class: 'pair'},
+        h('div', null, h('div', {class: 'chart h-pace', id: 'c-pacing', role: 'img', 'aria-label': 'Cumulative 401(k) deferrals against the pace to max the limit'}), h('div', {class: 'tbl-wrap', id: 'tbl-c-pacing', hidden: true})),
+        h('div', {class: 'figs one'},
+          figBlock(tsp ? `401(k) plus TSP, ${k.year} so far` : `Deferrals, ${k.year} so far`, F.usd(soFar), '', `Of the ${F.usd(L)} IRS limit (${(pctDone * 100).toFixed(1)}%)`),
+          h('div', null, meterEl('Toward the limit', F.pct(pctDone, 0), pctDone, onTrack ? t.good : t.loss),
+            h('p', {class: 'note-l first'}, h('b', {text: chipTxt}), '.'),
+            tsp ? h('p', {class: 'note-l', text: `The year-end figure includes about ${F.usd(tsp.projected)} in the TSP, at this year’s monthly pace.`}) : null,
+            k.remaining > 0 && (over || !onTrack) ? h('p', {class: 'note-l', text: over
+              ? `To stay under: take ${F.usd(k.over / k.remaining)} off each of the last ${k.remaining} checks${rate}. Money over the limit has to be refunded by April 15, or it’s taxed twice.`
+              : `To max out: add ${F.usd(k.extraPerCheck)} to each of the last ${k.remaining} checks${rate}. For a full year at the latest pay, ${F.pct(room / (k.periods * k.next.gross), 1)} would do it.`}) : null))));
+  },
+  pacingChart(t){
+    const k = this.k, L = k.limit.limit, n = k.done.length, N = k.deps.length, tsp = k.tsp.projected > 0 ? k.tsp : null, room = L - (tsp ? tsp.projected : 0);
+    let run = 0;
+    const cum = k.deps.map(x => { run += x.employee; return Math.round(run); }), pace = cum.map((_, i) => Math.round(room / N * (i + 1)));
+    const actual = cum.map((v, i) => i < n ? v : null), planned = cum.map((v, i) => (i >= n - 1 && n < N) ? v : null);
+    Tables.set('c-pacing', {cols: ['Paycheck', 'Deferred this check', 'Running total', 'Pace to max', ''], rows: k.deps.map((x, i) => [F.date(x.date), F.cents(x.employee), F.usd(cum[i]), F.usd(pace[i]), i < n ? '' : 'planned'])});
+    Charts.mount('c-pacing', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, formatter: ps => { const l = [].concat(ps).filter(p => p.value != null); if (!l.length) return ''; return `<div style="color:${t.muted};font-size:12px;margin-bottom:3px">Paycheck of ${esc(l[0].name)}</div>` + l.map(p => tipRow(p.seriesName, p.color, F.usd(p.value))).join(''); }},
+      grid: {left: 4, right: 12, top: 12, bottom: 6, containLabel: true},
+      xAxis: {type: 'category', data: k.deps.map(x => F.day(x.date)), axisLine: {lineStyle: {color: t.hair2}}, axisTick: {show: false}, axisLabel: {color: t.muted, fontSize: 12, fontFamily: FONT, hideOverlap: true}},
+      yAxis: {...Charts.valAxis(t, axisMoney), min: 0, scale: false},
+      series: [{name: 'Your deferrals', type: 'line', data: actual.map((v, i) => v == null ? null : {value: v, symbolSize: i === n - 1 ? 8 : 0}), symbol: 'circle', emphasis: {disabled: true}, lineStyle: {width: 2, color: t.ink}, itemStyle: {color: t.ink, borderColor: t.page, borderWidth: 2}},
+               {name: 'Planned', type: 'line', data: planned, showSymbol: false, emphasis: {disabled: true}, lineStyle: {width: 2, type: [6, 5], color: t.ink}, itemStyle: {color: t.ink}},
+               {name: 'Pace to max', type: 'line', data: pace, symbol: 'none', emphasis: {disabled: true}, lineStyle: {width: 1.5, type: [6, 5], color: t.muted}, itemStyle: {color: t.muted}},
+               {name: tsp ? 'Limit minus TSP' : 'IRS limit', type: 'line', data: pace.map(() => Math.round(room)), symbol: 'none', emphasis: {disabled: true}, lineStyle: {width: 1.5, type: [2, 4], color: t.loss}, itemStyle: {color: t.loss}}],
+    });
+  },
+};
+
+/* ======================================================================
+   LAB: side trails. What if you saved more, when do you reach a number, and what is "enough"?
+   ====================================================================== */
+const Lab = {
+  render(){
+    const root = $('#view-lab'), t = Color.theme();
+    root.textContent = '';
+    root.append(h('section', {class: 'sec', 'aria-label': 'Contribution what-if'},
+      secHead('Contribution what-if', 'What changing your monthly contribution does to the finish line. It uses the Plan tab’s return, horizon and inflation.', legendOf([[t.muted, 'Current plan', 'dash'], [t.ink, 'Adjusted', 'line']]), tableToggle('c-whatif')),
+      slider({id: 'labExtra', label: 'Extra per month', min: -1000, max: 3000, step: 50, value: state.labExtra, fmt: v => F.signed(v), onInput: v => { state.labExtra = v; this.whatIf(); }}),
+      h('div', {class: 'pair', style: 'margin-top:36px'}, h('div', null, h('div', {class: 'chart h-lab', id: 'c-whatif', role: 'img', 'aria-label': 'Baseline versus adjusted contribution projection chart'}), h('div', {class: 'tbl-wrap', id: 'tbl-c-whatif', hidden: true})), h('div', {class: 'figs', id: 'wiFigs'}))));
+    root.append(h('section', {class: 'sec tight two', 'aria-label': 'Milestone ETA and FIRE'},
+      h('div', null, secHead('Milestone ETA', 'Two honest estimates: compound growth, and your recent straight-line pace.'), h('div', {id: 'etaChips', class: 'presets', style: 'margin-top:0', role: 'group', 'aria-label': 'Milestone targets'}),
+        h('div', {class: 'field'}, h('label', {for: 'etaCustom', text: 'Custom target'}), h('input', {type: 'number', id: 'etaCustom', min: 0, step: 50000, placeholder: 'e.g. 1250000'})),
+        h('div', {id: 'etaBody', style: 'margin-top:28px'}), legendOf([[t.port, 'Your history', 'line'], [t.ink, 'Compounding', 'dash'], [t.muted, 'Straight-line pace', 'dotted']]), h('div', {class: 'chart h-lab', id: 'c-eta', style: 'margin-top:12px', role: 'img', 'aria-label': 'Projected paths to the milestone'})),
+      h('div', null, secHead('FIRE explorer', 'The nest egg that funds your spending, and when you get there.'),
+        h('div', {class: 'sliders two-up'},
+          slider({id: 'fireSpend', label: 'Monthly spend', hint: 'In today’s dollars', min: 2000, max: 20000, step: 100, value: state.fire.spend, fmt: v => F.usd(v), onInput: v => { state.fire.spend = v; this.fire(); }}),
+          slider({id: 'fireSwr', label: 'Withdrawal rate', hint: '4% is the usual starting point', min: 2.5, max: 5, step: 0.1, value: state.fire.swr, fmt: v => v.toFixed(1) + '%', onInput: v => { state.fire.swr = v; this.fire(); }})),
+        d.pension ? h('label', {class: 'check'}, h('input', {type: 'checkbox', id: 'firePension', checked: state.fire.pension, onchange: e => { state.fire.pension = e.target.checked; this.fire(); }}), 'Count the ANG pension against spending') : null,
+        h('div', {id: 'fireBody', style: 'margin-top:32px'}))));
+    this.whatIf(); this.eta(); this.fire(); this.chips();
+    let tm; $('#etaCustom').addEventListener('input', e => { clearTimeout(tm); tm = setTimeout(() => { const v = parseFloat(e.target.value); state.etaTarget = v && v > 0 ? v : null; this.eta(); this.chips(); }, 250); });
+  },
+
+  whatIf(){
+    const t = Color.theme(), p = planArgs(), extra = state.labExtra, base = M.Compute.retirement(p), adj = M.Compute.retirement({...p, contrib: Math.max(0, p.contrib + extra)});
+    const dNom = adj.finalNominal - base.finalNominal, dReal = adj.finalReal - base.finalReal, mr = Math.pow(1 + p.rate, 1 / 12) - 1, n = Math.round(p.years * 12), per100 = mr > 0 ? 100 * (Math.pow(1 + mr, n) - 1) / mr : 100 * n;
+    const f = $('#wiFigs'); f.textContent = '';
+    f.append(figBlock('Change at retirement', F.signed(dNom, F.k), dir(dNom), `${F.signed(extra)} a month for ${fmtYears(state.plan.years)}`), figBlock('In today’s dollars', F.signed(dReal, F.k), dir(dReal), 'Adjusted for inflation'), figBlock('Rule of thumb', '+' + F.k(per100), '', 'For each extra $100 a month'));
+    const lower = base.nominal.map((v, i) => Math.round(Math.min(v, adj.nominal[i]))), diff = base.nominal.map((v, i) => Math.round(Math.abs(adj.nominal[i] - v)));
+    Tables.set('c-whatif', {cols: ['Year', 'Years from now', 'Current plan', 'Adjusted', 'Difference'], rows: base.labels.map((_, i) => [yearLab(base.labels.length, p.years, i), String(+yearsAt(base.labels.length, p.years, i).toFixed(2)), F.usd(base.nominal[i]), F.usd(adj.nominal[i]), F.signed(adj.nominal[i] - base.nominal[i])])});
+    refreshTable('c-whatif');
+    Charts.mount('c-whatif', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, formatter: ps => { const l = [].concat(ps).filter(x => x.seriesName === 'Current plan' || x.seriesName === 'Adjusted'); if (!l.length) return ''; const a = l.find(x => x.seriesName === 'Adjusted'), b = l.find(x => x.seriesName === 'Current plan');
+        return `<div style="color:${t.muted};font-size:12px;margin-bottom:3px">${esc(whenAt(base.labels.length, p.years, l[0].dataIndex))}</div>` + l.map(x => tipRow(x.seriesName, x.seriesName === 'Adjusted' ? t.ink : t.muted, F.usd(x.value))).join('') + (a && b ? `<div style="color:${t.ink2};margin-top:3px">${esc(F.signed(a.value - b.value))} from the change</div>` : ''); }},
+      grid: {left: 4, right: 16, top: 12, bottom: 6, containLabel: true},
+      xAxis: {type: 'category', boundaryGap: false, data: base.labels, axisLine: {lineStyle: {color: t.hair2}}, axisTick: {show: false}, axisLabel: {color: t.muted, fontSize: 12, fontFamily: FONT, hideOverlap: true, formatter: axisYear(base.labels.length, p.years)}},
+      yAxis: Charts.valAxis(t, axisMoney),
+      series: [{name: '_lo', type: 'line', stack: 'gap', data: lower, silent: true, showSymbol: false, lineStyle: {width: 0, opacity: 0}, areaStyle: {opacity: 0}, tooltip: {show: false}},
+               {name: '_gap', type: 'line', stack: 'gap', data: diff, silent: true, showSymbol: false, lineStyle: {width: 0, opacity: 0}, areaStyle: {color: extra >= 0 ? t.gain : t.loss, opacity: .16}, tooltip: {show: false}},
+               {name: 'Current plan', type: 'line', data: base.nominal.map(v => Math.round(v)), showSymbol: false, smooth: .25, emphasis: {disabled: true}, lineStyle: {width: 2, type: [7, 5], color: t.muted}, itemStyle: {color: t.muted}},
+               {name: 'Adjusted', type: 'line', data: adj.nominal.map(v => Math.round(v)), showSymbol: false, smooth: .25, emphasis: {disabled: true}, lineStyle: {width: 2, color: t.ink}, itemStyle: {color: t.ink}}],
+    });
+  },
+
+  chips(){
+    const miles = M.Compute.milestones(d.rows), last = d.rows[d.rows.length - 1].total, target = state.etaTarget || miles.next;
+    const targets = [{label: 'Next ' + axisMoney(miles.next), v: miles.next}];
+    for (const v of [1000000, 2000000]) if (v > last && v !== miles.next) targets.push({label: axisMoney(v), v});
+    const box = $('#etaChips'); box.textContent = '';
+    targets.forEach(x => box.append(h('button', {class: 'tgl', type: 'button', 'aria-pressed': String(x.v === target && !$('#etaCustom').value), text: x.label, onclick: () => { state.etaTarget = x.v; $('#etaCustom').value = ''; this.eta(); this.chips(); }})));
+  },
+  eta(){
+    const t = Color.theme(), a = planArgs(), rows = d.rows, s = M.Compute.stats(rows), miles = M.Compute.milestones(rows), target = state.etaTarget || miles.next;
+    const eta = M.Compute.milestoneETA(rows, target, a.rate, a.contrib), body = $('#etaBody'); body.textContent = '';
+    if (eta.reached) body.append(kpis([figBlock('Compounding', 'Done', 'up', 'Already past this target'), figBlock('Linear pace', 'Done', 'up', '')], 'duo'));
+    else body.append(kpis([
+      eta.compound ? figBlock('Compounding', F.month(eta.compound.date), '', `${(eta.compound.months / 12).toFixed(1)} years at ${F.pct(a.rate)} and ${F.k(a.contrib)} a month`) : figBlock('Compounding', 'Not reachable', 'flat', 'At these settings'),
+      eta.linear ? figBlock('Linear pace', F.month(eta.linear.date), '', `${(eta.linear.weeks / 52).toFixed(1)} years at ${F.k(s.avgWeekly52)} a week, your recent pace`) : figBlock('Linear pace', 'Not reachable', 'flat', 'Recent pace is flat or negative')], 'duo'));
+    const hist = s.totalSeries.slice(-104), lastTs = s.last.date.getTime(), lastV = s.last.total, comp = [[lastTs, lastV]], lin = [[lastTs, lastV]];
+    if (!eta.reached && eta.compound){ const mr = Math.pow(1 + Math.max(a.rate, .0001), 1 / 12) - 1; let bal = lastV; for (let m = 1; m <= Math.min(Math.ceil(eta.compound.months), 480); m++){ bal = bal * (1 + mr) + a.contrib; comp.push([lastTs + m * 30.44 * DAY, Math.round(bal)]); if (bal >= target) break; } }
+    if (!eta.reached && eta.linear) for (let w = 4; w <= Math.min(Math.ceil(eta.linear.weeks) + 4, 4160); w += 4) lin.push([lastTs + w * 7 * DAY, Math.round(lastV + s.avgWeekly52 * w)]);
+    const end = Math.max(comp[comp.length - 1][0], lin[lin.length - 1][0], lastTs + 365 * DAY), step = Charts.yearStep($('#c-eta'), end - hist[0][0]);
+    Charts.mount('c-eta', {
+      ...Charts.base(t),
+      tooltip: {...Charts.base(t).tooltip, formatter: ps => { const l = [].concat(ps).filter(p => p.value && p.value[1] != null); if (!l.length) return ''; return `<div style="color:${t.muted};font-size:12px;margin-bottom:3px">${esc(F.month(new Date(l[0].value[0])))}</div>` + l.map(p => tipRow(p.seriesName, p.color, F.usd(p.value[1]))).join(''); }},
+      legend: undefined,
+      grid: {left: 4, right: 16, top: 28, bottom: 6, containLabel: true},
+      xAxis: Charts.timeAxis(t, false, step), yAxis: Charts.valAxis(t, axisMoney),
+      series: [{name: 'History', type: 'line', data: hist, showSymbol: false, emphasis: {disabled: true}, lineStyle: {width: 2, color: t.port}, itemStyle: {color: t.port}, areaStyle: {color: t.portWash},
+                markLine: {symbol: 'none', silent: true, lineStyle: {color: t.ink2, type: 'solid', width: 1}, label: {formatter: 'Target ' + F.k(target), position: 'insideStartTop', color: t.ink2, fontFamily: FONT, fontSize: 12, fontWeight: 600}, data: [{yAxis: target}]}},
+               {name: 'Compounding', type: 'line', data: comp, showSymbol: false, emphasis: {disabled: true}, lineStyle: {width: 2, type: [7, 5], color: t.ink}, itemStyle: {color: t.ink}},
+               {name: 'Linear pace', type: 'line', data: lin, showSymbol: false, emphasis: {disabled: true}, lineStyle: {width: 2, type: [2, 4], color: t.muted}, itemStyle: {color: t.muted}}],
+    });
+    $('#c-eta').setAttribute('aria-label', `Projected paths to ${F.k(target)}: compounding dashed, straight-line pace dotted`);
+  },
+
+  fire(){
+    const a = planArgs(), last = d.rows[d.rows.length - 1], fr = state.fire, t = Color.theme();
+    const f = M.Compute.fire({monthlySpend: fr.spend, swr: fr.swr / 100, pensionMonthly: d.pension && fr.pension ? d.pension.estMonthly : 0, rate: a.rate, infl: a.infl, contrib: a.contrib, start: last.total, horizonYears: a.years});
+    const prog = Math.min(1, f.progress), body = $('#fireBody'); body.textContent = '';
+    body.append(kpis([figBlock('FIRE number', F.k(f.fireNumber), '', 'In today’s dollars'),
+      f.months === 0 ? figBlock('You’d reach it', 'Now', 'up', 'Your portfolio already covers it') : f.months != null ? figBlock('You’d reach it', F.month(new Date(last.date.getTime() + f.months * 30.44 * DAY)), '', (f.months / 12).toFixed(1) + ' years away') : figBlock('You’d reach it', '80+ yrs', 'flat', 'Not reachable at these settings'),
+      figBlock('Coast number', F.k(f.coast), '', 'Have this today and coast with nothing more added')], 'three'),
+      meterEl('Progress to the FIRE number', F.pct(prog, 0) + (f.progress > 1 ? ', past it' : ''), prog, prog >= 1 ? t.good : t.gain));
+  },
+};
+
+const OWN = {pulse: Pulse, report: Report, accounts: Accounts, networth: NetWorth, saving: Saving, plan: Plan, lab: Lab};
+
 /* axis ticks: $250k, $1M, $1.5M (no trailing zeros) */
 function axisMoney(v){ return Math.abs(v) >= 1e6 ? (v < 0 ? '−' : '') + '$' + (+(Math.abs(v) / 1e6).toFixed(2)) + 'M' : F.k(v); }
 
@@ -2605,7 +3129,7 @@ function renderShell(){
   /* tabs */
   const tabs = $('#tabs'); tabs.textContent = '';
   TABS.forEach(([k, lab]) => tabs.append(h('button', {class: 'tab', role: 'tab', id: 'tab-' + k, type: 'button', 'aria-selected': String(state.view === k), tabindex: state.view === k ? 0 : -1,
-    'aria-controls': OWN[k] ? 'view-' + k : 'view-other', onclick: () => go(k), text: lab})));
+    'aria-controls': 'view-' + k, onclick: () => go(k), text: lab})));
   /* the phone's headline, above the band */
   const P = all.portfolio;
   const bh = $('#bandHead'); bh.textContent = '';
@@ -2629,8 +3153,7 @@ function renderView(){
   const v = state.view;
   $('#band').classList.toggle('lens-report', v === 'report');
   Object.keys(OWN).forEach(k => { $('#view-' + k).hidden = v !== k; });
-  $('#view-other').hidden = !!OWN[v];
-  if (OWN[v]) OWN[v].render(); else Other.render(v);
+  OWN[v].render();
 }
 
 function go(v){
@@ -2767,9 +3290,12 @@ function useData(next){
     Data.init({M, d: next});
     const model = Data.build('ALL');
     d = next; state.range = 'ALL'; state.model = model; state.group = null; state.acct = null;
+    planDefaults();
     renderShell(); renderBand(); renderView();
   } catch (err){
+    const swapped = d !== was.d;
     d = was.d; M.state.data = was.d; Data.init({M, d: was.d}); state.range = was.range; state.model = was.model;
+    if (swapped) planDefaults();
     try { renderShell(); renderBand(); renderView(); } catch (e2){ console.error(e2); }
     throw err;
   }
@@ -2857,6 +3383,7 @@ addEventListener('resize', () => {
 await document.fonts.ready;
 await document.fonts.load('700 16px "Bricolage Grotesque"');
 state.model = Data.build(state.range);
+planDefaults();
 renderShell();
 renderBand();
 renderView();
